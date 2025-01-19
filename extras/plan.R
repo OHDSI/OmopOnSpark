@@ -17,9 +17,9 @@ sparkComputeTable(con, fullname, query, temporary)
 sparkDropTable(con, fullname) # try if we can make this work with temporary tables
 
 omopSparkSource(con, writeSchema) # class spark_cdm
-# con
-# writeSchema
-# temporary
+structure(
+  .Data = list(), con = con, write_schema = writeSchema, temporary = is.null(writeSchema)
+)
 
 cdmTableFromSource.spark_cdm(src, value)
 compute.spark_cdm(x, name, temporary, overwrite) # source <- attr(x, "tbl_source")
