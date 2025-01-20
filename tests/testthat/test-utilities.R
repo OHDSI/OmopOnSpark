@@ -22,4 +22,39 @@ test_that("test validateSchema", {
   writeSchema <- "schema"
   expect_message(res <- validateSchema(writeSchema))
   expect_identical(res, list(schema = "schema"))
+
+  writeSchema <- c(catalog = "schema")
+  expect_no_error(res <- validateSchema(writeSchema))
+  expect_identical(res, list(catalog = "schema"))
+
+  writeSchema <- list(catalog = "schema")
+  expect_no_error(res <- validateSchema(writeSchema))
+  expect_identical(res, list(catalog = "schema"))
+
+  writeSchema <- NULL
+  expect_no_error(res <- validateSchema(writeSchema))
+  expect_identical(res, list())
+
+  writeSchema <- list(catalog = 1)
+  expect_error(validateSchema(writeSchema))
+
+  writeSchema <- c("xx", "schema")
+  expect_message(res <- validateSchema(writeSchema))
+  expect_identical(res, list(catalog = "xx", schema = "schema"))
+
+  writeSchema <- c("xx", "schema", "pf")
+  expect_message(res <- validateSchema(writeSchema))
+  expect_identical(res, list(catalog = "xx", schema = "schema", prefix = "pf"))
+
+  writeSchema <- c("xx", "schema", "pf", "fghj")
+  expect_error(validateSchema(writeSchema))
+
+  writeSchema <- list(catalog = "xx", catalog = "schema")
+  expect_error(validateSchema(writeSchema))
+
+  writeSchema <- list(catalog = "xx", not_allowed_name = "schema")
+  expect_error(validateSchema(writeSchema))
+
+  writeSchema <- list(catalog = "xx", "schema")
+  expect_error(validateSchema(writeSchema))
 })

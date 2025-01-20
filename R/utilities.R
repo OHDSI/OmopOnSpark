@@ -18,13 +18,19 @@ validateSchema <- function(schema, con, call = parent.frame()) {
     cli::cli_abort(c(x = "{.arg {nm}} must be a named list or character vector."), call = call)
   }
 
+  # check for unnamed element
+  id <- which(names(schema) == "")
+  if (length(id) > 0) {
+    cli::cli_abort(c(x = "Not named elements found in {nm} (position: {id})."), call = call)
+  }
+
   # check elements are characters of length one
-  purrr::imap(schema, \(x, k) {
+  for (nam in names(schema)) {
+    x <- schema[[nam]]
     if (!is.character(x) || length(x) != 1) {
-      cli::cli_abort(c(x = "Elements of {.arg {nm}} must be characters of length 1; element {nm}[[{k}]] is not."), call = call)
+      cli::cli_abort(c(x = "Elements of {.arg {nm}} must be characters of length 1; element {nm}[[{nam}]] is not."), call = call)
     }
-  }) |>
-    invisible()
+  }
 
   # correct no names
   if (is.null(names(schema))) {
@@ -38,7 +44,7 @@ validateSchema <- function(schema, con, call = parent.frame()) {
     }  else if (l == 3) {
       cli::cli_inform(c("!" = "As no names where provided, it was assumed `{nm} = c(catalog = '{schema[[1]]}', schema = '{schema[[2]]}', prefix = '{schema[[3]]}')`"), call = call)
       names(schema) <- c("catalog", "schema", "prefix")
-    } else if (l > 4) {
+    } else if (l > 3) {
       cli::cli_abort(c(x = "{nm} can not be have length > 3 (length = {l})."), call = call)
     }
   }
@@ -46,14 +52,12 @@ validateSchema <- function(schema, con, call = parent.frame()) {
   # object names
   allowedNames <- c("catalog", "schema", "prefix")
   presentNames <- names(schema)
-  if (length(presentNames) != length(schema)) {
-    cli::cli_abort(c(x = "{.arg {nm}} must be a named list or character vector."), call = call)
-  }
   if (length(presentNames) != length(unique(presentNames))) {
     cli::cli_abort(c(x = "Names must be unique in {.arg {nm}}."), call = call)
   }
-  if (any(!presentNames %in% allowedNames)) {
-    cli::cli_abort(c(x = "Names in {.arg {nm}} must be a choice between {.var {allowedNames}}."), call = call)
+  notAllowed <- presentNames[!presentNames %in% allowedNames]
+  if (length(notAllowed) > 0) {
+    cli::cli_abort(c(x = "Names in {.arg {nm}} must be a choice between {.var {allowedNames}}. Not allowed names found: {.var {notAllowed}}."), call = call)
   }
 
   return(schema)

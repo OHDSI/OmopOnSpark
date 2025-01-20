@@ -6,8 +6,8 @@ achillesSchema = NULL
 cohortTables = NULL
 cdmVersion = NULL
 cdmName = NULL
-logSql = NULL
 .softValidation = FALSE
+logSql = NULL
 
 sparkFullName(schema, name)
 sparkListTables(con, schema)
