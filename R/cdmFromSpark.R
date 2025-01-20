@@ -22,7 +22,7 @@
 #' @param logSql Path to a folder to write the sql executed. Use `logSql = NULL`
 #' if you don't want the sql to be exported.
 #'
-#' @return
+#' @return A cdm reference object
 #' @export
 #'
 #' @examples

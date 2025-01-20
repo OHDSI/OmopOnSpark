@@ -6,17 +6,31 @@
 \usage{
 mockSparkCon(
   con = sparklyr::spark_connect(master = "local"),
-  databaseName = "GiBleed"
+  databaseName = "GiBleed",
+  cdmSchema = list(),
+  writeSchema = list()
 )
 }
 \arguments{
-\item{con}{connection to a database}
+\item{con}{A spark connection using \code{sparklyr::spark_connect()}.}
 
-\item{databaseName}{The data set name corresponds to the folder with the data set ZIP files}
+\item{databaseName}{Name of the dataset to download.}
+
+\item{cdmSchema}{Schema to include omop standard tables. Schema will be
+created if it does not exist.}
+
+\item{writeSchema}{Schema to include cohort tables. Schema will be created if
+it does not exist.}
 }
 \value{
-connection to a db containing Eunomia data
+Connection to the spark data set with Eunomia loaded.
 }
 \description{
 creates a local mock database connection
+}
+\examples{
+\dontrun{
+con <- mockSparkCon()
+}
+
 }
