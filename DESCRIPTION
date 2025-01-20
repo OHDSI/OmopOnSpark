@@ -17,5 +17,7 @@ Imports:
     cli,
     DBI,
     omopgenerics,
+    purrr,
     rlang,
-    sparklyr
+    sparklyr, 
+    utils
