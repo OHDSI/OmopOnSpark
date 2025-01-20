@@ -1,5 +1,11 @@
 fullName <- function(schema, name) {
-  DBI::Id(schema$catalog, schema$schema, paste0(schema$prefix, name))
+  c(schema$catalog, schema$schema, paste0(schema$prefix, name)) |>
+    paste0(collapse = ".")
+}
+quoteName <- function(name) {
+  strsplit(x = name, split = ".", fixed = TRUE) |>
+    purrr::map(\(x) paste0("`", x, "`")) |>
+    paste0(collapse = ".")
 }
 
 validateSchema <- function(schema, call = parent.frame()) {

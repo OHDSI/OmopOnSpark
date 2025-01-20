@@ -58,3 +58,22 @@ test_that("test validateSchema", {
   writeSchema <- list(catalog = "xx", "schema")
   expect_error(validateSchema(writeSchema))
 })
+
+test_that("test checkTemporary", {
+  schema1 <- list()
+  schema2 <- list(schema = "xxx")
+  schema3 <- list(catalog = "xxx", schema = "yyy")
+  schema4 <- list(catalog = "xxx", schema = "yyy", prefix = "zzz")
+  schema5 <- list(prefix = "zzz")
+
+  expect_identical(checkTemporary(TRUE, schema1), TRUE)
+  expect_identical(checkTemporary(TRUE, schema2), TRUE)
+  expect_identical(checkTemporary(TRUE, schema3), TRUE)
+  expect_identical(checkTemporary(TRUE, schema4), TRUE)
+  expect_identical(checkTemporary(TRUE, schema5), TRUE)
+  expect_identical(checkTemporary(FALSE, schema1), TRUE)
+  expect_identical(checkTemporary(FALSE, schema2), FALSE)
+  expect_identical(checkTemporary(FALSE, schema3), FALSE)
+  expect_identical(checkTemporary(FALSE, schema4), FALSE)
+  expect_identical(checkTemporary(FALSE, schema5), TRUE)
+})
