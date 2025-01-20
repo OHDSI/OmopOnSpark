@@ -62,3 +62,12 @@ validateSchema <- function(schema, call = parent.frame()) {
 
   return(schema)
 }
+validateConnection <- function(con, call = parent.frame()) {
+  if (!inherits(con, "spark_connection")) {
+    cli::cli_abort(c(x = "{.arg con} must a {.cls spark_connection} object."), call = call)
+  }
+  if (!sparklyr::connection_is_open(con)) {
+    cli::cli_abort(c(x = "{.arg con} connection is closed, please provide an open connection."), call = call)
+  }
+  return(con)
+}

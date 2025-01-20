@@ -16,4 +16,6 @@ Config/testthat/parallel: true
 Imports: 
     cli,
     DBI,
-    rlang
+    omopgenerics,
+    rlang,
+    sparklyr
