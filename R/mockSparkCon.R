@@ -1,18 +1,27 @@
+#' creates a local mock database connection
+#'
+#' @param con connection to a database
+#' @param databaseName  The data set name corresponds to the folder with the data set ZIP files
+#' @return connection to a db containing Eunomia data
+#'
+#' @export
+
 mockSparkCon <- function(con = sparklyr::spark_connect(master = "local"),
-                         databaseName = "GiBleed",
-                         schema = NULL){
+                         databaseName = "GiBleed"
+                         #schema = NULL
+                         ){
 
 
   validateConnection(con)
   omopgenerics::assertCharacter(databaseName, length = 1)
-  schema <- validateSchema(schema)
+  #validateSchema(schema)
 
   # download dataset in temp file
   url <- paste0("https://example-data.ohdsi.dev/", databaseName, ".zip")
   folder <- file.path(tempdir(), paste0("dataset_", paste0(sample(letters, 6), collapse = "")))
   dir.create(folder)
   zipFile <- file.path(folder, "dataset.zip")
-  download.file(url, zipFile)
+  utils::download.file(url, zipFile)
 
   # unzip dataset
   utils::unzip(zipFile, exdir = folder)
