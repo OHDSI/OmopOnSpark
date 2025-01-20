@@ -71,3 +71,12 @@ validateConnection <- function(con, call = parent.frame()) {
   }
   return(con)
 }
+validateLogSql <- function(logSql, call = parent.frame()) {
+  omopgenerics::assertCharacter(logSql, length = 1, null = TRUE, call = call)
+  if (!is.null(logSql)) {
+    if (!dir.exists(logSql)) {
+      cli::cli_abort(c("!" = "Directory {.path {logSql}} does not exist."), call = call)
+    }
+  }
+  return(logSql)
+}

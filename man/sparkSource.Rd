@@ -4,13 +4,15 @@
 \alias{sparkSource}
 \title{Create a spark source object.}
 \usage{
-sparkSource(con, writeSchema = NULL)
+sparkSource(con, writeSchema = NULL, logSql = NULL)
 }
 \arguments{
 \item{con}{A connection to a spark database.}
 
 \item{writeSchema}{A write schema with writing permissions. Use NULL to use
 temp tables.}
+
+\item{logSql}{Whether to log executed sql in a log file}
 }
 \value{
 A spark_cdm object.
