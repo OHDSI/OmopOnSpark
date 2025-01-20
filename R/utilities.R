@@ -8,7 +8,7 @@ validateSchema <- function(schema, call = parent.frame()) {
   }
 
   # name of object
-  nm <- capture.output(substitute(schema))
+  nm <- utils::capture.output(substitute(schema))
 
   # object type
   if (is.character(schema)) {
