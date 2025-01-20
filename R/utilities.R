@@ -2,7 +2,7 @@ fullName <- function(schema, name) {
   DBI::Id(schema$catalog, schema$schema, paste0(schema$prefix, name))
 }
 
-validateSchema <- function(schema, con, call = parent.frame()) {
+validateSchema <- function(schema, call = parent.frame()) {
   if (is.null(schema)) {
     return(list())
   }
