@@ -7,3 +7,5 @@
 ^\.github$
 ^extras$
 ^LICENSE\.md$
+^derby\.log
+^spark-warehouse$

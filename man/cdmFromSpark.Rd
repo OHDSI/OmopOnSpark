@@ -46,6 +46,9 @@ criteria.}
 \item{logSql}{Path to a folder to write the sql executed. Use \code{logSql = NULL}
 if you don't want the sql to be exported.}
 }
+\value{
+A cdm reference object
+}
 \description{
 Create a \code{cdm_reference} object from a \code{sparklyr} connection.
 }
