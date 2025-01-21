@@ -40,14 +40,21 @@ writeSchemaFromSource <- function(src) {
   attr(src, "write_schema")
 }
 
-sparkComputeTable <- function(x, name, temporary) {
-  #src <- attr(x, "tbl_source")
-  #con <- conFromSource(src)
-  #writeSchema <- writeSchemaFromSource(src)
+sparkComputeTable <- function(x, con, schema, name, temporary) {
+  temporary <- checkTemporary(temporary = temporary, schema = schema)
   if (temporary) {
-    writeSchema <- writeSchema[names(writeSchema) == "prefix"]
+    schema <- schema[names(schema) == "prefix"]
   }
-  fullname <- fullName(schema = writeSchema, name = name)
+
+  fullname <- fullName(schema = schema, name = name)
+
+  # drop table if already exists
+
+  # compute table
+
+  # reference table
+
+
   fullNameQuoted <- DBI::dbQuoteIdentifier(conn = con, x = fullname)
 
   sql <- glue::glue("SELECT * INTO {fullNameQuoted}
