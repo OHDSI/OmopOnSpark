@@ -16,6 +16,7 @@ Config/testthat/parallel: true
 Imports: 
     cli,
     DBI,
+    dplyr,
     glue,
     omopgenerics,
     purrr,
