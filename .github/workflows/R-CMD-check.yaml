@@ -45,6 +45,12 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
+      - name: Install Spark
+        uses: r-lib/actions/run-r-script@v2
+        with:
+          code: |
+            sparklyr::spark_install()
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
