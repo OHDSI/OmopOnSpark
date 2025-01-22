@@ -40,6 +40,11 @@ writeSchemaFromSource <- function(src) {
   attr(src, "write_schema")
 }
 
+sparkDropTable <- function(con, schema, name) {
+  sql <- glue::glue("DROP TABLE IF EXISTS {quoteName(fullName(schema, name))}")
+  DBI::dbExecute(conn = con, statement = sql)
+  invisible()
+}
 sparkComputeTable <- function(x, con, schema, name, temporary) {
   temporary <- checkTemporary(temporary = temporary, schema = schema)
   if (temporary) {
@@ -49,11 +54,21 @@ sparkComputeTable <- function(x, con, schema, name, temporary) {
   fullname <- fullName(schema = schema, name = name)
 
   # drop table if already exists
+  sparkDropTable(con = con, schema = schema, name = name)
 
   # compute table
+  if (temporary) {
+    create <- "CREATE TEMPORARY TABLE"
+  } else {
+    create <- "CREATE TABLE"
+  }
+  q <- dbplyr::sql_render(query = x, con = con)
+  sql <- "{create} {quoteName(fullname)} AS {q}" |>
+    glue::glue()
+  DBI::dbExecute(conn = con, statement = sql)
 
   # reference table
-
+  dplyr::tbl(con, fullname)
 
   fullNameQuoted <- DBI::dbQuoteIdentifier(conn = con, x = fullname)
 
@@ -61,7 +76,7 @@ sparkComputeTable <- function(x, con, schema, name, temporary) {
                       FROM ({dbplyr::sql_render(x)}) x")
 
   DBI::dbSendQuery(con, sql)
-  dplyr::tbl(con, fullname)
+
 }
 checkTemporary <- function(temporary, schema) {
   if (isTRUE(temporary)) return(TRUE)
