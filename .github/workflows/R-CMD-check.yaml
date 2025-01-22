@@ -46,10 +46,9 @@ jobs:
           needs: check
 
       - name: Install Spark
-        uses: r-lib/actions/run-r-script@v2
-        with:
-          code: |
+        run: |
             sparklyr::spark_install()
+        shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@v2
         with:
