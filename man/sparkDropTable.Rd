@@ -9,10 +9,10 @@ sparkDropTable(con, schema, tableName)
 \arguments{
 \item{con}{A valid Spark connection object. This is typically created using \code{sparklyr::spark_connect()}.}
 
-\item{schema}{A list specifying the schema details where the table is located. The list may contain:
+\item{schema}{A list specifying the schema details where the table is located. The list must contain:
 \itemize{
 \item \code{schema}: A string specifying the schema name.
-\item \code{catalog} (optional): If included, the function constructs a fully qualified table name with the catalog.
+\item \code{catalog}: A string specifying the catalog name.
 }}
 
 \item{tableName}{A string specifying the name of the table to drop.}

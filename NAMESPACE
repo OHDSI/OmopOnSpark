@@ -2,5 +2,4 @@
 
 export(cdmFromSpark)
 export(mockSparkCon)
-export(sparkDropTable)
 export(sparkSource)
