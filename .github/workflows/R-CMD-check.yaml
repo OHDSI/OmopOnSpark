@@ -47,7 +47,7 @@ jobs:
 
       - name: Install Spark
         run: |
-            sparklyr::spark_install(version = "2.4")
+            options(timeout = 600); sparklyr::spark_install(version = "2.4")
         shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@v2
