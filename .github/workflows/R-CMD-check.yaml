@@ -46,6 +46,9 @@ jobs:
           needs: check
 
       - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
 
       - name: Install Spark
         run: |
