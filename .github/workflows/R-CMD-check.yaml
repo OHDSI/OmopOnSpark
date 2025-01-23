@@ -45,6 +45,8 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
+      - uses: actions/setup-java@v4
+
       - name: Install Spark
         run: |
             options(timeout = 600)
