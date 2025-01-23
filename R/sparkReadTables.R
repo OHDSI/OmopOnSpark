@@ -5,17 +5,6 @@
 #' @param tableName A string specifying the name of the table to read from the Spark connection.
 #'
 #' @return A `tbl` object from the `dplyr` package, representing the Spark table specified by the `schema` and `tableName`.
-#' @examples
-#' \dontrun{
-#' # Establish a Spark connection
-#' con <- sparklyr::spark_connect(master = ...)
-#'
-#' # Read a table from the default schema
-#' table_data <- sparkReadTable(con, schema = list(catalog = "cat",schema = "default"), tableName = "my_table")
-#'
-#' # Disconnect from Spark
-#' sparklyr::spark_disconnect(con)
-#' }
 
 sparkReadTable <- function(con, schema, tableName){
   full_name <- paste(schema$catalog, schema$schema, paste0(schema$prefix, tableName), sep = ".")

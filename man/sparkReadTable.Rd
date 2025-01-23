@@ -9,7 +9,7 @@ sparkReadTable(con, schema, tableName)
 \arguments{
 \item{con}{A valid Spark connection object. This is typically created using \code{sparklyr::spark_connect()}.}
 
-\item{schema}{A list specifying the schema (and the catalog if present) where the table is located}
+\item{schema}{A list specifying the schema and the catalog where the table is located and any prefix}
 
 \item{tableName}{A string specifying the name of the table to read from the Spark connection.}
 }
@@ -18,27 +18,4 @@ A \code{tbl} object from the \code{dplyr} package, representing the Spark table 
 }
 \description{
 This function reads a table from a specified schema and table name in a Spark connection.
-}
-\details{
-\itemize{
-\item The function validates the input Spark connection using \code{validateConnection()}.
-\item It constructs the full name of the table using the \code{fullName()} function with the provided \code{schema} and \code{tableName}.
-\item The function then reads the table from the Spark connection using \code{dplyr::tbl()}, which returns a reference to the table.
-}
-}
-\examples{
-\dontrun{
-# Establish a Spark connection
-con <- sparklyr::spark_connect(master = ...)
-
-# Read a table from the default schema
-table_data <- sparkReadTable(con, schema = list(schema = "default"), tableName = "my_table")
-
-# Disconnect from Spark
-sparklyr::spark_disconnect(con)
-}
-
-}
-\seealso{
-\code{\link[sparklyr:spark-connections]{sparklyr::spark_connect()}}, \code{\link[dplyr:tbl]{dplyr::tbl()}}
 }
