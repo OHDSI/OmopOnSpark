@@ -45,6 +45,21 @@ jobs:
           extra-packages: any::rcmdcheck
           needs: check
 
+      - uses: actions/setup-java@v4
+        with:
+          distribution: 'temurin'
+          java-version: '11'
+
+      - name: Install Spark
+        run: |
+            options(timeout = 600)
+            options(sparklyr.log.console = TRUE)
+            sparklyr::spark_install(version = "3.0")
+            config <- sparklyr::spark_config()
+            config$spark.sql.warehouse.dir <- tempdir()
+            sparklyr::spark_connect(master = "local", config = config)
+        shell: Rscript {0}
+
       - uses: r-lib/actions/check-r-package@v2
         with:
           upload-snapshots: true
