@@ -4,15 +4,15 @@
 \alias{sparkListTables}
 \title{This function lists the tables available in a specified schema within a Spark connection.}
 \usage{
-sparkListTables(con, schema = list(schema = "default"))
+sparkListTables(con, schema)
 }
 \arguments{
 \item{con}{A valid Spark connection object. This is typically created using \code{sparklyr::spark_connect()}.}
 
-\item{schema}{A list containing the schema to connect to. The default is \code{list("schema" = "default")}. If more schemas are available, the function connects to the one specified in \code{schema$schema}.}
+\item{schema}{A list specifying the schema and the catalog where the tables are located}
 }
 \value{
-A character vector of table names available in the specified schema within the Spark connection.
+A character vector of table names available in the specified catalog and schema within the Spark connection.
 }
 \description{
 This function lists the tables available in a specified schema within a Spark connection.
@@ -26,10 +26,9 @@ con <- sparklyr::spark_connect(...)
 tables <- sparkListTables(con)
 
 # List tables in a specific schema
-tables_in_schema <- sparkListTables(con, schema = list("schema" = "my_schema"))
+tables_in_schema <- sparkListTables(con, schema = list(catalog = "cat", schema = "my_schema"))
 
 # Disconnect from Spark
 sparklyr::spark_disconnect(con)
 }
-
 }

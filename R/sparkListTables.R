@@ -2,9 +2,9 @@
 #' This function lists the tables available in a specified schema within a Spark connection.
 #'
 #' @param con A valid Spark connection object. This is typically created using `sparklyr::spark_connect()`.
-#' @param schema A list containing the schema to connect to. The default is `list("schema" = "default")`. If more schemas are available, the function connects to the one specified in `schema$schema`.
+#' @param schema A list specifying the schema and the catalog where the tables are located
 #'
-#' @return A character vector of table names available in the specified schema within the Spark connection.
+#' @return A character vector of table names available in the specified catalog and schema within the Spark connection.
 #'
 #' @examples
 #' \dontrun{
@@ -15,17 +15,17 @@
 #' tables <- sparkListTables(con)
 #'
 #' # List tables in a specific schema
-#' tables_in_schema <- sparkListTables(con, schema = list("schema" = "my_schema"))
+#' tables_in_schema <- sparkListTables(con, schema = list(catalog = "cat", schema = "my_schema"))
 #'
 #' # Disconnect from Spark
 #' sparklyr::spark_disconnect(con)
 #' }
-#'
-#' @export
-sparkListTables <- function(con, schema = list("schema" = "default")) {
-  con <- validateConnection(con)
-  schema <- validateSchema(schema)
-  sparklyr::tbl_change_db(con, schema$schema) # if there are more schemas, we connect to the one in schema$schema
-  return(DBI::dbListTables(con))
+
+sparkListTables <- function(con, schema) {
+
+  full_name <-  paste(schema$catalog, schema$schema, sep = ".")
+
+  return(DBI::dbGetQuery(con, sprintf("SHOW TABLES IN %s", full_name)))
+
 }
 
