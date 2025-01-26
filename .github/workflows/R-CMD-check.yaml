@@ -53,11 +53,11 @@ jobs:
       - name: Install Spark
         run: |
             options(timeout = 600)
-            options(sparklyr.log.console = TRUE)
+            # options(sparklyr.log.console = TRUE)
             sparklyr::spark_install(version = "3.0")
-            config <- sparklyr::spark_config()
-            config$spark.sql.warehouse.dir <- tempdir()
-            sparklyr::spark_connect(master = "local", config = config)
+            # config <- sparklyr::spark_config()
+            # config$spark.sql.warehouse.dir <- tempdir()
+            # sparklyr::spark_connect(master = "local", config = config)
         shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@v2
