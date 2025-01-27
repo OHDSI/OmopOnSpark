@@ -1,10 +1,12 @@
-fullName <- function(schema, name) {
-  DBI::Id(schema$catalog, schema$schema, paste0(schema$prefix, name))
+fullName <- function(schema, name, quote = FALSE) {
+  x <- c(schema$catalog, schema$schema, paste0(schema$prefix, name))
+  if (quote) {
+    x <- purrr::map(x, \(y) paste0("`", y, "`"))
+  }
+  paste0(x, collapse = ".")
 }
-quoteName <- function(schema, name) {
-  c(schema$catalog, schema$schema, paste0(schema$prefix, name)) |>
-    purrr::map(\(x) paste0("`", x, "`")) |>
-    paste0(collapse = ".")
+isTemporarySchema <- function(schema) {
+  !any(c("catalog", "schema") %in% names(schema))
 }
 
 validateSchema <- function(schema, call = parent.frame()) {

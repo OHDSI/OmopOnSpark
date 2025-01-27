@@ -3,3 +3,5 @@
 export(cdmFromSpark)
 export(mockSparkCon)
 export(sparkSource)
+importFrom(rlang,.data)
+importFrom(rlang,.env)
