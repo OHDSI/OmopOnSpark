@@ -32,10 +32,73 @@ newSparkSource <- function(con, schema, logSql) {
     log_sql = logSql,
     class = "spark_cdm"
   ) |>
-    omopgenerics::newCdmSource()
+    omopgenerics::newCdmSource(sourceType = "sparklyr")
 }
 
 # methods
+
+#' @export
+insertTable.spark_cdm <- function(cdm,
+                                  name,
+                                  table,
+                                  overwrite = TRUE,
+                                  temporary = FALSE) {
+  sparkWriteTable(con = attr(cdm, "con"), schema = attr(cdm, "write_schema"), name = name, value = table) |>
+    omopgenerics::newCdmTable(src = cdm, name = name)
+}
+
+#' @export
+compute.spark_cdm <- function(x, name, temporary = FALSE, overwrite = TRUE, ...) {
+  # check source and name
+  source <- attr(x, "tbl_source")
+  con <- attr(source, "con")
+  schema <- attr(source, "write_schema")
+
+  x <- sparkComputeTable(query = x, schema = schema, name = name)
+
+  class(x) <- c("db_cdm", class(x))
+  return(x)
+}
+
+#' @export
+cdmTableFromSource.spark_cdm <- function(src, value) {
+  if (inherits(value, "data.frame")) {
+    "To insert a local table to a cdm_reference object use insertTable function." |>
+      cli::cli_abort()
+  }
+  if (!inherits(value, "tbl_lazy")) {
+    cli::cli_abort(
+      "Can't assign an object of class: {paste0(class(value), collapse = ", ")}
+      to a spark cdm_reference object."
+    )
+  }
+  schema <- attr(src, "write_schema")
+
+  remoteName <- sparklyr::spark_table_name(value)
+  if ("prefix" %in% names(schema)) {
+    prefix <- schema$prefix
+    if (substr(remoteName, 1, nchar(prefix)) == prefix) {
+      remoteName <- substr(remoteName, nchar(prefix) + 1, nchar(remoteName))
+    }
+  }
+
+  omopgenerics::newCdmTable(table = value, src =src, name = remoteName)
+}
+
+#' @export
+listSourceTables.spark_cdm <- function(cdm) {
+  sparkListTables(con = attr(cdm, "con"), schema = attr(cdm, "write_schema"))
+}
+
+#' @export
+dropSourceTable.spark_cdm <- function(cdm, name) {
+  sparkDropTable(con = attr(cdm, "con"), schema = attr(cdm, "write_schema"), name = name)
+}
+
+#' @export
+readSourceTable.spark_cdm <- function(cdm, name) {
+  sparkReadTable(con = attr(cdm, "con"), schema = attr(cdm, "write_schema"), name = name)
+}
 
 # internal functions
 sparkListTables <- function(con, schema) {

@@ -115,3 +115,17 @@ test_that("test internal functions", {
   # disconnect
   disconnect(con)
 })
+
+test_that("test source can be created", {
+  skip_on_cran()
+  # create connection
+  con <- sparklyr::spark_connect(master = "local", config = config)
+
+  # no schema provided
+  tbls <- sparkListTables(con = con, schema = list())
+  expect_no_error(sparkSource(con))
+  expect_identical(tbls, sparkListTables(con = con, schema = list()))
+
+  # disconnect
+  disconnect(con)
+})
