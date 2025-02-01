@@ -53,6 +53,13 @@ compute.spark_cdm <- function(x, name, temporary = FALSE, overwrite = TRUE, ...)
   source <- attr(x, "tbl_source")
   con <- attr(source, "con")
   schema <- attr(source, "write_schema")
+  currentName <- attr(x, "tbl_name")
+
+  if (identical(currentName, name)) {
+    intermediate <- omopgenerics::uniqueTableName()
+    x <- sparkComputeTable(query = x, schema = list(), name = intermediate)
+    on.exit(sparkDropTable(con = con, schema = list(), name = intermediate))
+  }
 
   x <- sparkComputeTable(query = x, schema = schema, name = name)
 
@@ -137,6 +144,8 @@ sparkWriteTable <- function(con, schema, name, value) {
     x <- sparklyr::sdf_copy_to(con, value, name = fullname, overwrite = TRUE)
   } else {
     tmpName <- omopgenerics::uniqueTableName()
+    # drop table if exists
+    sparkDropTable(con = con, schema = schema, name = name)
     # insert as temp table
     sparklyr::sdf_copy_to(con, value, name = tmpName, overwrite = TRUE) |>
       # copy to permanent schema
