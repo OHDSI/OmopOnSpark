@@ -53,6 +53,7 @@ cdmFromSpark <- function(con,
   cdmSchema <- validateSchema(cdmSchema, FALSE)
   writeSchema <- validateSchema(writeSchema, FALSE)
   achillesSchema <- validateSchema(achillesSchema, TRUE)
+  tempSchema <- validateSchema(tempSchema, FALSE)
   omopgenerics::assertCharacter(cohortTables, null = TRUE)
   omopgenerics::assertChoice(cdmVersion, c("5.3", "5.4"), length = 1, null = T)
   omopgenerics::assertCharacter(cdmName, length = 1, null = TRUE)
@@ -64,6 +65,7 @@ cdmFromSpark <- function(con,
   }
 
   # create spark source
+  src <- sparkSource(con = con, writeSchema = writeSchema, tempSchema = tempSchema)
 
   # extract cdm name
 

@@ -3,6 +3,8 @@
 #'
 #' @param con A connection to a spark database.
 #' @param writeSchema A write schema with writing permissions.
+#' @param tempSchema A write schema with writing permissions to emulate
+#' temporary tables.
 #' @param logSql Whether to log executed sql in a log file
 #'
 #' @return A spark_cdm object.
@@ -14,23 +16,28 @@
 #' sparkSource(con)
 #' }
 #'
-sparkSource <- function(con, writeSchema, logSql = NULL) {
+sparkSource <- function(con, writeSchema, tempSchema = writeSchema, logSql = NULL) {
   con <- validateConnection(con)
   writeSchema <- validateSchema(writeSchema, FALSE)
+  tempSchema <- validateSchema(tempSchema, FALSE)
   logSql <- validateLogSql(logSql)
 
   # create source
-  newSparkSource(con = con, schema = writeSchema, logSql = logSql)
+  newSparkSource(
+    con = con,
+    writeSchema = writeSchema,
+    tempSchema = tempSchema,
+    logSql = logSql
+  )
 }
 
-newSparkSource <- function(con, schema, logSql) {
+newSparkSource <- function(con, writeSchema, tempSchema, logSql) {
   tempPrefix <- paste0("temp_", paste0(sample(letters, 5), collapse = ""), "_")
-  tempSchema <- schema
   tempSchema$prefix <- tempPrefix
   structure(
     .Data = list(),
     con = con,
-    write_schema = schema,
+    write_schema = writeSchema,
     log_sql = logSql,
     temp_schema = tempSchema,
     class = "spark_cdm"
@@ -73,12 +80,12 @@ compute.spark_cdm <- function(x, name, temporary = FALSE, overwrite = TRUE, ...)
 
   # get attributes
   schema <- schemaToWrite(src, temporary)
-  con <- getCon(cdm)
+  con <- getCon(src)
 
   if (identical(currentName, name)) {
     intermediate <- omopgenerics::uniqueTableName()
-    x <- x |>
-      sparkComputeTable(schema = schema, name = intermediate)
+    sparkComputeTable(query = x, schema = schema, name = intermediate)
+    x <- sparkReadTable(con = con, schema = schema, name = intermediate)
     on.exit(sparkDropTable(con = con, schema = schema, name = intermediate))
   }
 
@@ -102,7 +109,7 @@ cdmTableFromSource.spark_cdm <- function(src, value) {
   }
   schema <- writeSchema(src)
 
-  remoteName <- sparklyr::spark_table_name(value)
+  remoteName <-  dbplyr::remote_name(value)
   if ("prefix" %in% names(schema)) {
     prefix <- schema$prefix
     if (substr(remoteName, 1, nchar(prefix)) == prefix) {
@@ -212,7 +219,7 @@ writeSchema <- function(src) {
 getCon <- function(src) {
   attr(src, "con")
 }
-schemaToWrite <- function(src, tempoarary) {
+schemaToWrite <- function(src, temporary) {
   if (temporary) tempSchema(src) else writeSchema(src)
 }
 logSql <- function(src) {
