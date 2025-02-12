@@ -18,8 +18,8 @@
 #'
 mockSparkCon <- function(con = sparklyr::spark_connect(master = "local"),
                          databaseName = "GiBleed",
-                         cdmSchema = list(),
-                         writeSchema = list()) {
+                         cdmSchema = list(schema = "default"),
+                         writeSchema = list(schema = "default")) {
   # initial validation
   con <- validateConnection(con)
   omopgenerics::assertCharacter(databaseName, length = 1)

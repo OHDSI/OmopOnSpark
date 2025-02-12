@@ -3,12 +3,13 @@
 \docType{import}
 \name{reexports}
 \alias{reexports}
-\alias{insertTable}
 \alias{compute}
+\alias{insertTable}
 \alias{cdmTableFromSource}
 \alias{listSourceTables}
 \alias{dropSourceTable}
 \alias{readSourceTable}
+\alias{insertCdmTo}
 \title{Objects exported from other packages}
 \keyword{internal}
 \description{
@@ -18,6 +19,6 @@ below to see their documentation.
 \describe{
   \item{dplyr}{\code{\link[dplyr]{compute}}}
 
-  \item{omopgenerics}{\code{\link[omopgenerics]{cdmTableFromSource}}, \code{\link[omopgenerics]{dropSourceTable}}, \code{\link[omopgenerics]{insertTable}}, \code{\link[omopgenerics]{listSourceTables}}, \code{\link[omopgenerics]{readSourceTable}}}
+  \item{omopgenerics}{\code{\link[omopgenerics]{cdmTableFromSource}}, \code{\link[omopgenerics]{dropSourceTable}}, \code{\link[omopgenerics]{insertCdmTo}}, \code{\link[omopgenerics]{insertTable}}, \code{\link[omopgenerics]{listSourceTables}}, \code{\link[omopgenerics]{readSourceTable}}}
 }}
 

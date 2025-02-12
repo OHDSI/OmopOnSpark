@@ -35,9 +35,9 @@
 #' )
 #' }
 cdmFromSpark <- function(con,
-                         cdmSchema = list(),
-                         writeSchema = list(),
-                         achillesSchema = list(),
+                         cdmSchema,
+                         writeSchema,
+                         achillesSchema = NULL,
                          cohortTables = character(),
                          cdmVersion = NULL,
                          cdmName = NULL,
@@ -45,9 +45,9 @@ cdmFromSpark <- function(con,
                          logSql = NULL) {
   # initial checks
   con <- validateConnection(con)
-  cdmSchema <- validateSchema(cdmSchema)
-  writeSchema <- validateSchema(writeSchema)
-  achillesSchema <- validateSchema(achillesSchema)
+  cdmSchema <- validateSchema(cdmSchema, FALSE)
+  writeSchema <- validateSchema(writeSchema, FALSE)
+  achillesSchema <- validateSchema(achillesSchema, TRUE)
   omopgenerics::assertCharacter(cohortTables, null = TRUE)
   omopgenerics::assertChoice(cdmVersion, c("5.3", "5.4"), length = 1, null = T)
   omopgenerics::assertCharacter(cdmName, length = 1, null = TRUE)

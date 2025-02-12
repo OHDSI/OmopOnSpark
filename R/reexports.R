@@ -1,11 +1,11 @@
 
-#' @importFrom omopgenerics insertTable
-#' @export
-omopgenerics::insertTable
-
 #' @importFrom dplyr compute
 #' @export
 dplyr::compute
+
+#' @importFrom omopgenerics insertTable
+#' @export
+omopgenerics::insertTable
 
 #' @importFrom omopgenerics cdmTableFromSource
 #' @export
@@ -22,3 +22,7 @@ omopgenerics::dropSourceTable
 #' @importFrom omopgenerics readSourceTable
 #' @export
 omopgenerics::readSourceTable
+
+#' @importFrom omopgenerics insertCdmTo
+#' @export
+omopgenerics::insertCdmTo

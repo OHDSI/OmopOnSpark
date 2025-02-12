@@ -2,8 +2,7 @@
 #' Create a spark source object.
 #'
 #' @param con A connection to a spark database.
-#' @param writeSchema A write schema with writing permissions. Use NULL to use
-#' temp tables.
+#' @param writeSchema A write schema with writing permissions.
 #' @param logSql Whether to log executed sql in a log file
 #'
 #' @return A spark_cdm object.
@@ -15,9 +14,9 @@
 #' sparkSource(con)
 #' }
 #'
-sparkSource <- function(con, writeSchema = NULL, logSql = NULL) {
+sparkSource <- function(con, writeSchema, logSql = NULL) {
   con <- validateConnection(con)
-  writeSchema <- validateSchema(writeSchema)
+  writeSchema <- validateSchema(writeSchema, FALSE)
   logSql <- validateLogSql(logSql)
 
   # create source
@@ -25,17 +24,19 @@ sparkSource <- function(con, writeSchema = NULL, logSql = NULL) {
 }
 
 newSparkSource <- function(con, schema, logSql) {
+  tempPrefix <- paste0("temp_", paste0(sample(letters, 5), collapse = ""), "_")
+  tempSchema <- schema
+  tempSchema$prefix <- tempPrefix
   structure(
     .Data = list(),
     con = con,
     write_schema = schema,
     log_sql = logSql,
+    temp_schema = tempSchema,
     class = "spark_cdm"
   ) |>
     omopgenerics::newCdmSource(sourceType = "sparklyr")
 }
-
-# methods
 
 #' @export
 insertTable.spark_cdm <- function(cdm,
@@ -43,27 +44,47 @@ insertTable.spark_cdm <- function(cdm,
                                   table,
                                   overwrite = TRUE,
                                   temporary = FALSE) {
-  sparkWriteTable(con = attr(cdm, "con"), schema = attr(cdm, "write_schema"), name = name, value = table) |>
+  # get attributes
+  schema <- schemaToWrite(cdm, temporary)
+  con <- getCon(cdm)
+
+  # check overwrite
+  if (overwrite) {
+    sparkDropTable(con = con, schema = schema, name = name)
+  } else if (name %in% sparkListTables(con = con, schema = schema)) {
+    cli::cli_abort(c(
+      x = "Table {.pkg {name}} already exists use `overwrite = FALSE`."
+    ))
+  }
+
+  # write table
+  sparkWriteTable(con = con, schema = schema, name = name, value = table)
+
+  # read table
+  sparkReadTable(con = con, schema = schema, name = name) |>
     omopgenerics::newCdmTable(src = cdm, name = name)
 }
 
 #' @export
 compute.spark_cdm <- function(x, name, temporary = FALSE, overwrite = TRUE, ...) {
   # check source and name
-  source <- attr(x, "tbl_source")
-  con <- attr(source, "con")
-  schema <- attr(source, "write_schema")
+  src <- attr(x, "tbl_source")
   currentName <- attr(x, "tbl_name")
+
+  # get attributes
+  schema <- schemaToWrite(src, temporary)
+  con <- getCon(cdm)
 
   if (identical(currentName, name)) {
     intermediate <- omopgenerics::uniqueTableName()
-    x <- sparkComputeTable(query = x, schema = list(), name = intermediate)
-    on.exit(sparkDropTable(con = con, schema = list(), name = intermediate))
+    x <- x |>
+      sparkComputeTable(schema = schema, name = intermediate)
+    on.exit(sparkDropTable(con = con, schema = schema, name = intermediate))
   }
 
   x <- sparkComputeTable(query = x, schema = schema, name = name)
 
-  class(x) <- c("db_cdm", class(x))
+  class(x) <- c("spark_cdm", class(x))
   return(x)
 }
 
@@ -79,57 +100,141 @@ cdmTableFromSource.spark_cdm <- function(src, value) {
       to a spark cdm_reference object."
     )
   }
-  schema <- attr(src, "write_schema")
+  schema <- writeSchema(src)
 
   remoteName <- sparklyr::spark_table_name(value)
   if ("prefix" %in% names(schema)) {
     prefix <- schema$prefix
     if (substr(remoteName, 1, nchar(prefix)) == prefix) {
       remoteName <- substr(remoteName, nchar(prefix) + 1, nchar(remoteName))
+    } else {
+      cli::cli_warn(c("!" = "The {.var {remoteName}} does have the required prefix."))
+      cli::cli_inform(c(i = "Creating a copy in `writeSchema`"))
+      value <- sparkComputeTable(query = value, schema = schema, name = remoteName)
     }
   }
 
-  omopgenerics::newCdmTable(table = value, src =src, name = remoteName)
+  omopgenerics::newCdmTable(table = value, src = src, name = remoteName)
 }
 
 #' @export
 listSourceTables.spark_cdm <- function(cdm) {
-  sparkListTables(con = attr(cdm, "con"), schema = attr(cdm, "write_schema"))
+  sparkListTables(con = getCon(cdm), schema = writeSchema(cdm))
 }
 
 #' @export
 dropSourceTable.spark_cdm <- function(cdm, name) {
-  sparkDropTable(con = attr(cdm, "con"), schema = attr(cdm, "write_schema"), name = name)
+  sparkDropTable(con = getCon(cdm), schema = writeSchema(cdm), name = name)
 }
 
 #' @export
 readSourceTable.spark_cdm <- function(cdm, name) {
-  sparkReadTable(con = attr(cdm, "con"), schema = attr(cdm, "write_schema"), name = name)
+  sparkReadTable(con = getCon(cdm), schema = writeSchema(cdm), name = name)
+}
+
+#' @export
+cdmDisconnect.spark_cdm <- function(cdm, dropWriteSchema = FALSE, dropTempSchema = TRUE, ...) {
+  # input check
+  omopgenerics::assertLogical(dropWriteSchema, length = 1)
+  omopgenerics::assertLogical(dropTempSchema, length = 1)
+
+  # connection
+  con <- getCon(cdm)
+  on.exit(DBI::dbDisconnect(con, shutdown = TRUE), add = TRUE)
+
+  # drop tables if needed
+  if (dropWriteSchema) {
+    schema <- writeSchema(src = cdm)
+    nms <- sparkListTables(con = con, schema = schema)
+    purrr::map(nms, \(x) sparkDropTable(con = con, schema = schema, name = x))
+  }
+
+  # drop temp tables if needed
+  if (dropTempSchema) {
+    schema <- tempSchema(src = cdm)
+    nms <- sparkListTables(con = con, schema = schema)
+    purrr::map(nms, \(x) sparkDropTable(con = con, schema = schema, name = x))
+  }
+
+  return(invisible(TRUE))
+}
+
+#' @export
+insertCdmTo.spark_cdm <- function(cdm, to) {
+  con <- getCon(to)
+  writeSchema <- writeSchema(to)
+
+  achillesSchema <- NULL
+  cohorts <- character()
+  other <- character()
+  for (nm in names(cdm)) {
+    x <- dplyr::collect(cdm[[nm]])
+    cl <- class(x)
+    if ("achilles_table" %in% cl) {
+      achilles <- writeSchema
+    }
+    if (!any(c("achilles_table", "omop_table", "cohort_table") %in% cl)) {
+      other <- c(other, nm)
+    }
+    insertTable(cdm = to, name = nm, table = x, overwrite = TRUE)
+    if ("cohort_table" %in% cl) {
+      cohorts <- c(cohort, nm)
+      insertTable(cdm = to, name = paste0(nm, "_set"), table = attr(x, "cohort_set"), overwrite = TRUE)
+      insertTable(cdm = to, name = paste0(nm, "_attrition"), table = attr(x, "cohort_attrition"), overwrite = TRUE)
+      insertTable(cdm = to, name = paste0(nm, "_codelist"), table = attr(x, "cohort_codelist"), overwrite = TRUE)
+    }
+  }
+
+  newCdm <- cdmFromSpark(
+    con = con,
+    cdmSchema = writeSchema,
+    writeSchema = writeSchema,
+    achillesSchema = achillesSchema,
+    cohortTables = cohorts,
+    cdmVersion = cdmVersion(cdm),
+    cdmName = cdmName(cdm),
+    .softValidation = TRUE,
+    logSql = logSql(to)
+  )
+
+  newCdm <- omopgenerics::readSourceTable(cdm = newCdm, name = other)
+
+  return(newCdm)
 }
 
 # internal functions
+tempSchema <- function(src) {
+  attr(src, "temp_schema")
+}
+writeSchema <- function(src) {
+  attr(src, "write_schema")
+}
+getCon <- function(src) {
+  attr(src, "con")
+}
+schemaToWrite <- function(src, tempoarary) {
+  if (temporary) tempSchema(src) else writeSchema(src)
+}
+logSql <- function(src) {
+  attr(src, "log_sql")
+}
+
 sparkListTables <- function(con, schema) {
-  if (!any(c("catalog", "schema") %in% names(schema))) {
-    x <- DBI::dbGetQuery(conn = con, "SHOW TABLES")
-  } else {
-    schemaName <- paste0(c(schema$catalog, schema$schema), collapse = ".")
-    x <- DBI::dbGetQuery(con, glue::glue("SHOW TABLES IN {schemaName}"))
-  }
-  x <- x |>
+  schemaName <- paste0(c(schema$catalog, schema$schema), collapse = ".")
+  x <- DBI::dbGetQuery(con, glue::glue("SHOW TABLES IN {schemaName}")) |>
     dplyr::as_tibble() |>
-    dplyr::filter(.data$isTemporary != !!any(c("catalog", "schema") %in% names(schema))) |>
+    dplyr::filter(!.data$isTemporary) |>
     dplyr::pull("tableName")
   if (length(schema$prefix) > 0) {
-    x <- x |>
-      purrr::keep(\(x) startsWith(x = x, prefix = schema$prefix)) |>
-      purrr::map_chr(\(x) substr(x, nchar(schema$prefix) + 1, nchar(x)))
+    x <- x[startsWith(x = x, prefix = schema$prefix)]
+    x <- substr(x, nchar(schema$prefix) + 1, nchar(x))
   }
   x <- x[nchar(x) > 0]
   return(x)
 }
 sparkDropTable <- function(con, schema, name) {
   DBI::dbExecute(con, glue::glue("DROP TABLE IF EXISTS {fullName(schema, name)}"))
-  TRUE
+  invisible(TRUE)
 }
 sparkReadTable <- function(con, schema, name) {
   dplyr::tbl(con, fullName(schema, name))
@@ -137,32 +242,11 @@ sparkReadTable <- function(con, schema, name) {
 sparkWriteTable <- function(con, schema, name, value) {
   # it take into account catalog, schema and prefix
   fullname <- fullName(schema, name)
-
-  # check whether it is temporary table or permanent
-  if (isTemporarySchema(schema)) {
-    # insert temporary table
-    x <- sparklyr::sdf_copy_to(con, value, name = fullname, overwrite = TRUE)
-  } else {
-    tmpName <- omopgenerics::uniqueTableName()
-    # drop table if exists
-    sparkDropTable(con = con, schema = schema, name = name)
-    # insert as temp table
-    sparklyr::sdf_copy_to(con, value, name = tmpName, overwrite = TRUE) |>
-      # copy to permanent schema
-      sparklyr::spark_write_table(name = fullname, mode = "overwrite")
-    # drop temp table
-    sparkDropTable(con = con, schema = list(), name = tmpName)
-    x <- sparkReadTable(con = con, schema = schema, name = name)
-  }
-  x
+  # insert data
+  DBI::dbWriteTable(conn = con, name = fullname, value = value)
 }
 sparkComputeTable <- function(query, schema, name) {
-  if (isTemporarySchema(schema)) {
-    x <- sparklyr::sdf_register(x = query, name = name)
-  } else {
-    sparklyr::spark_write_table(query, name = fullName(schema, name), mode = "overwrite")
-    con <- sparklyr::spark_connection(query)
-    x <- sparkReadTable(con = con, schema = schema, name = name)
-  }
-  x
+  sparklyr::spark_write_table(
+    x = query, name = fullName(schema, name), mode = "overwrite"
+  )
 }
