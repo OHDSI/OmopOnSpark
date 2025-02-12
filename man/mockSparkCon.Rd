@@ -7,8 +7,8 @@
 mockSparkCon(
   con = sparklyr::spark_connect(master = "local"),
   databaseName = "GiBleed",
-  cdmSchema = list(),
-  writeSchema = list()
+  cdmSchema = list(schema = "default"),
+  writeSchema = list(schema = "default")
 )
 }
 \arguments{

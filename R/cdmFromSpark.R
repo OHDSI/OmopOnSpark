@@ -11,6 +11,10 @@
 #' @param achillesSchema Schema where achilled tables are located. Schema is
 #' defined with a named character list/vector; allowed names are: 'catalog',
 #' 'schema' and 'prefix'.
+#' @param tempSchema Schema used to create temporary tables. Schema is
+#' defined with a named character list/vector; allowed names are: 'catalog' and
+#' 'schema'. 'prefix' will be ignored and all temp tables will be created start
+#' with 'tamp_' and 5 random letters.
 #' @param cohortTables Names of cohort tables to be read from `writeSchema`.
 #' @param cdmVersion The version of the cdm (either "5.3" or "5.4"). If NULL
 #' `cdm_source$cdm_version` will be used instead.
@@ -38,6 +42,7 @@ cdmFromSpark <- function(con,
                          cdmSchema,
                          writeSchema,
                          achillesSchema = NULL,
+                         tempSchema = writeSchema,
                          cohortTables = character(),
                          cdmVersion = NULL,
                          cdmName = NULL,
