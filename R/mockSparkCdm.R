@@ -68,7 +68,7 @@ mockSparkCdm <- function(con = sparklyr::spark_connect(master = "local"),
     tempSchema = tempSchema, cdmName = databaseName, .softValidation = TRUE
   )
 
-  return(con)
+  return(cdm)
 }
 
 createSchema <- function(con, schema) {
