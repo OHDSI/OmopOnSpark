@@ -71,6 +71,10 @@ validateSchema <- function(schema, allowEmpty, call = parent.frame()) {
     cli::cli_abort(c(x = "Names in {.arg {nm}} must be a choice between {.var {allowedNames}}. Not allowed names found: {.var {notAllowed}}."), call = call)
   }
 
+  if (!allowEmpty & !"schema" %in% names(schema)) {
+    cli::cli_abort(c(x = "{.arg schema} must be provided."), call = call)
+  }
+
   return(schema)
 }
 validateConnection <- function(con, call = parent.frame()) {
