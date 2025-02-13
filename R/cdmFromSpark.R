@@ -95,7 +95,11 @@ cdmFromSpark <- function(con,
       sparkReadTable(con = con, schema = cdmSchema, name = x) |>
         omopgenerics::newCdmTable(src = src, name = x)
     }) |>
-    omopgenerics::newCdmReference(cdmName = cdmName, cdmVersion = cdmVersion)
+    omopgenerics::newCdmReference(
+      cdmName = cdmName,
+      cdmVersion = cdmVersion,
+      .softValidation = .softValidation
+    )
 
   # read achilles tables
   if (length(achillesSchema) > 0) {
@@ -118,7 +122,7 @@ cdmFromSpark <- function(con,
 
 }
 readCohorts <- function(cdm, cohortTables) {
-  src <- cdmSource(cdm)
+  src <- omopgenerics::cdmSource(cdm)
   con <- getCon(src)
   schema <- writeSchema(src)
 

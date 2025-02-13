@@ -12,7 +12,7 @@
 dropTempTables <- function(src, schema) {
   schema <- validateSchema(schema, FALSE)
   if (inherits(src, "cdm_reference")) {
-    src <- cdmSource(src)
+    src <- omopgenerics::cdmSource(src)
   }
   if (inherits(src, "spark_cdm")) {
     src <- getCon(src)
