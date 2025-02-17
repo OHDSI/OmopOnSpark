@@ -118,10 +118,10 @@ cdmFromSpark <- function(con,
   }
 
   # read cohort tables
-  cdm <- readCohorts(cdm = cdm, cohortTables = cohortTables)
+  cdm <- readCohorts(cdm = cdm, cohortTables = cohortTables, .softValidation = .softValidation)
 
 }
-readCohorts <- function(cdm, cohortTables) {
+readCohorts <- function(cdm, cohortTables, .softValidation) {
   src <- omopgenerics::cdmSource(cdm)
   con <- getCon(src)
   schema <- writeSchema(src)
@@ -156,11 +156,13 @@ readCohorts <- function(cdm, cohortTables) {
         )
       }
     }
-    cdm[[nm]] <- tabs$cohort |>
+    cdm[[nm]] <- tabs$cohort
+    cdm[[nm]] <- cdm[[nm]] |>
       omopgenerics::newCohortTable(
         cohortSetRef = tabs$cohort_set,
         cohortAttritionRef = tabs$cohort_attrition,
-        cohortCodelistRef = tabs$cohort_codelist
+        cohortCodelistRef = tabs$cohort_codelist,
+        .softValidation = .softValidation
       )
   }
 
