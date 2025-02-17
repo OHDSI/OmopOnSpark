@@ -44,6 +44,12 @@ cdm$person |>
 
   expect_identical(start_count, end_count)
 
+  # overwrite table
+  expect_no_error(cdm$person_2 <- cdm$person_2 |>
+    head(1) |>
+    dplyr::compute(name = "person_2"))
+
+
   disconnect(con)
 
 })
