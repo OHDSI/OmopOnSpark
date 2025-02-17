@@ -3,6 +3,7 @@ test_that("compute working", {
 folder <- file.path(tempdir(), "temp_spark_compute")
 config <- sparklyr::spark_config()
 config$spark.sql.warehouse.dir <- folder
+config$sparklyr.gateway.timeout <- 300
 options(sparklyr.log.console = TRUE)
 con <- sparklyr::spark_connect(master = "local", config = config)
 createSchema(con = con, schema = list(schema = "my_schema", prefix = "test_"))
@@ -43,7 +44,6 @@ cdm$person |>
 
   expect_identical(start_count, end_count)
 
-  sparklyr::spark_disconnect(con)
-
+  disconnect(con)
 
 })
