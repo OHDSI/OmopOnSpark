@@ -52,3 +52,4 @@ docs
 
 spark-warehouse/
 derby.log
+tests/testthat/logs/log4j.spark.log

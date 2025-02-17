@@ -73,29 +73,6 @@ insertTable.spark_cdm <- function(cdm,
 }
 
 #' @export
-compute.spark_cdm <- function(x, name, temporary = FALSE, overwrite = TRUE, ...) {
-  # check source and name
-  src <- attr(x, "tbl_source")
-  currentName <- attr(x, "tbl_name")
-
-  # get attributes
-  schema <- schemaToWrite(src, temporary)
-  con <- getCon(src)
-
-  if (identical(currentName, name)) {
-    intermediate <- omopgenerics::uniqueTableName()
-    sparkComputeTable(query = x, schema = schema, name = intermediate)
-    x <- sparkReadTable(con = con, schema = schema, name = intermediate)
-    on.exit(sparkDropTable(con = con, schema = schema, name = intermediate))
-  }
-
-  x <- sparkComputeTable(query = x, schema = schema, name = name)
-
-  class(x) <- c("spark_cdm", class(x))
-  return(x)
-}
-
-#' @export
 cdmTableFromSource.spark_cdm <- function(src, value) {
   if (inherits(value, "data.frame")) {
     "To insert a local table to a cdm_reference object use insertTable function." |>
@@ -247,10 +224,13 @@ sparkReadTable <- function(con, schema, name) {
   dplyr::tbl(con, fullName(schema, name))
 }
 sparkWriteTable <- function(con, schema, name, value) {
+
+  sparkDropTable(con = con, schema = schema, name = name)
+
   # it take into account catalog, schema and prefix
   fullname <- fullName(schema, name)
   # insert data
-  DBI::dbWriteTable(conn = con, name = fullname, value = value)
+  DBI::dbWriteTable(conn = con, name = fullname, value = value, overwrite = TRUE)
 }
 sparkComputeTable <- function(query, schema, name) {
   sparklyr::spark_write_table(
