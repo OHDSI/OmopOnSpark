@@ -9,9 +9,13 @@ isTemporarySchema <- function(schema) {
   !any(c("catalog", "schema") %in% names(schema))
 }
 
-validateSchema <- function(schema, call = parent.frame()) {
-  if (is.null(schema)) {
-    return(list())
+validateSchema <- function(schema, allowEmpty = FALSE, call = parent.frame()) {
+  if (length(schema) == 0) {
+    if (allowEmpty) {
+      return(list())
+    } else {
+      cli::cli_abort(c(x = "`schema` can not be empty."))
+    }
   }
 
   # name of object
@@ -65,6 +69,10 @@ validateSchema <- function(schema, call = parent.frame()) {
   notAllowed <- presentNames[!presentNames %in% allowedNames]
   if (length(notAllowed) > 0) {
     cli::cli_abort(c(x = "Names in {.arg {nm}} must be a choice between {.var {allowedNames}}. Not allowed names found: {.var {notAllowed}}."), call = call)
+  }
+
+  if (!allowEmpty & !"schema" %in% names(schema)) {
+    cli::cli_abort(c(x = "{.arg schema} must be provided."), call = call)
   }
 
   return(schema)

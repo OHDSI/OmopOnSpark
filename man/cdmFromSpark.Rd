@@ -6,9 +6,10 @@
 \usage{
 cdmFromSpark(
   con,
-  cdmSchema = list(),
-  writeSchema = list(),
-  achillesSchema = list(),
+  cdmSchema,
+  writeSchema,
+  achillesSchema = NULL,
+  tempSchema = writeSchema,
   cohortTables = character(),
   cdmVersion = NULL,
   cdmName = NULL,
@@ -30,6 +31,11 @@ and 'prefix'.}
 \item{achillesSchema}{Schema where achilled tables are located. Schema is
 defined with a named character list/vector; allowed names are: 'catalog',
 'schema' and 'prefix'.}
+
+\item{tempSchema}{Schema used to create temporary tables. Schema is
+defined with a named character list/vector; allowed names are: 'catalog' and
+'schema'. 'prefix' will be ignored and all temp tables will be created start
+with 'tamp_' and 5 random letters.}
 
 \item{cohortTables}{Names of cohort tables to be read from \code{writeSchema}.}
 

@@ -1,116 +1,121 @@
 test_that("test internal functions", {
   skip_on_cran()
+
   # create connection
   con <- sparklyr::spark_connect(master = "local", config = config)
 
-  # check there are no tables
-  expect_identical(sparkListTables(con = con, schema = list()), character())
-
-  # insert a temp table and check that we can list it
-  x <- cars |>
-    utils::head(1) |>
-    dplyr::as_tibble()
-  sparkWriteTable(con = con, schema = list(), name = "cars", value = x)
-  expect_identical(sparkListTables(con = con, schema = list()), "cars")
-
-  # create schema my_schema
+  # create my_schema
   schema <- list(schema = "my_schema")
   createSchema(con = con, schema = schema)
 
-  # write permanent table in my_schema
-  sparkWriteTable(con = con, schema = schema, name = "cars2", value = x)
-  expect_identical(sparkListTables(con = con, schema = schema), "cars2")
+  # no table found at the beginning
+  expectTables(con = con, schema = schema, tabs = character())
 
-  # expect temp table is still there
-  expect_identical(sparkListTables(con = con, schema = list()), "cars")
+  # insert table and check it exists
+  sparkWriteTable(con = con, schema = schema, name = "cars", value = cars)
+  expectTables(con = con, schema = schema, tabs = "cars")
 
-  # create a new temp table with prefix now
-  schema <- list(prefix = "my_prefix_")
-  sparkWriteTable(con = con, schema = schema, name = "cars3", value = x)
-  expect_identical(sparkListTables(con = con, schema = list()), c("cars", "my_prefix_cars3"))
-  expect_identical(sparkListTables(con = con, schema = schema), "cars3")
+  # read the table
+  x <- sparkReadTable(con = con, schema = schema, name = "cars")
+  expect_identical(dplyr::as_tibble(cars), dplyr::collect(x))
 
-  # drop only "cars3"
-  sparkDropTable(con = con, schema = schema, "cars3")
-  expect_identical(sparkListTables(con = con, schema = list()), "cars")
-  expect_identical(sparkListTables(con = con, schema = schema), character())
+  # compute to another name
+  x |>
+    dplyr::mutate(speed_dist = .data$speed * .data$dist) |>
+    sparkComputeTable(schema = schema, name = "cars2")
+  expectTables(con = con, schema = schema, tabs = c("cars", "cars2"))
 
-  # read temp table
-  df1 <- sparkReadTable(con = con, schema = list(), "cars")
-  expect_true(inherits(df1, "tbl_spark"))
-  expect_equal(dplyr::collect(df1), x)
+  # drop a table
+  sparkDropTable(con = con, schema = schema, name = "cars")
+  expectTables(con = con, schema = schema, tabs = "cars2")
 
-  # read permanent
-  df2 <- sparkReadTable(con = con, schema = list(schema = "my_schema"), "cars2")
-  expect_true(inherits(df2, "tbl_spark"))
-  expect_equal(dplyr::collect(df2), x)
+  # check prefix works
+  newSchema <- list(schema = "my_schema", prefix = "mc_")
 
-  # compute to temporary table
-  df1 <- df1 |>
-    dplyr::mutate(b = 1L) |>
-    sparkComputeTable(schema = list(), name = "cars_modified")
-  expect_true("cars_modified" %in% sparkListTables(con, list()))
-  expect_true(inherits(df1, "tbl_spark"))
-  expect_equal(df1 |> dplyr::collect(), x |> dplyr::mutate(b = 1L))
+  # no table found at the beginning
+  expectTables(con = con, schema = newSchema, tabs = character())
+  expectTables(con = con, schema = schema, tabs = "cars2")
 
-  schema <- list(schema = "my_schema", prefix = "my_prefix_")
-  # compute to permanent table
-  df2 <- df2 |>
-    dplyr::mutate(x = 1L) |>
-    sparkComputeTable(schema = schema, name = "cars_modified")
-  expect_true("cars_modified" %in% sparkListTables(con, schema))
-  expect_true(inherits(df2, "tbl_spark"))
-  expect_equal(df2 |> dplyr::collect(), x |> dplyr::mutate(x = 1L))
+  # insert table and check it exists
+  sparkWriteTable(con = con, schema = newSchema, name = "cars", value = cars)
+  expectTables(con = con, schema = newSchema, tabs = c("cars"))
+  expectTables(con = con, schema = schema, tabs = c("cars2", "mc_cars"))
 
-  # drop a temporary table
-  expect_true("cars_modified" %in% sparkListTables(con, list()))
-  sparkDropTable(con, list(), "cars_modified")
-  expect_true(!"cars_modified" %in% sparkListTables(con, list()))
+  # read the table
+  x <- sparkReadTable(con = con, schema = newSchema, name = "cars")
+  expect_identical(dplyr::as_tibble(cars), dplyr::collect(x))
 
-  # drop a permanent table
-  expect_true("cars_modified" %in% sparkListTables(con, schema))
-  sparkDropTable(con, schema, "cars_modified")
-  expect_true(!"cars_modified" %in% sparkListTables(con, schema))
+  # compute to another name
+  x |>
+    dplyr::mutate(speed_dist = .data$speed * .data$dist) |>
+    sparkComputeTable(schema = newSchema, name = "cars2")
+  expectTables(con = con, schema = newSchema, tabs = c("cars", "cars2"))
+  expectTables(con = con, schema = schema, tabs = c("cars2", "mc_cars", "mc_cars2"))
 
-  # overwrite a temporary table with write
-  schema <- list(prefix = "mc_")
-  dft <- sparkWriteTable(con, schema, "cars", cars)
-  expect_true(inherits(dft, "tbl_spark"))
-  expect_equal(dplyr::collect(dft), dplyr::tibble(cars))
-  expect_true("cars" %in% sparkListTables(con, schema))
-  expect_true("mc_cars" %in% sparkListTables(con, list()))
-  expect_identical(
-    dplyr::collect(dft), dplyr::collect(sparkReadTable(con, schema, "cars"))
-  )
-  dft <- sparkWriteTable(con, schema, "cars", mtcars)
-  expect_true(inherits(dft, "tbl_spark"))
-  expect_equal(dplyr::collect(dft), dplyr::tibble(mtcars))
+  # drop a table
+  sparkDropTable(con = con, schema = newSchema, name = "cars")
+  expectTables(con = con, schema = newSchema, tabs = c("cars2"))
+  expectTables(con = con, schema = schema, tabs = c("cars2", "mc_cars2"))
 
-  # overwrite a permanent table with write
+  # disconnect
+  disconnect(con)
+})
+
+test_that("test source can be created", {
+  skip_on_cran()
+
+  # create connection
+  con <- sparklyr::spark_connect(master = "local", config = config)
+
+  # use default schema
+  schema <- list(schema = "default")
+  expectTables(con = con, schema = schema, tabs = character())
+  expect_no_error(sparkSource(con = con, writeSchema = schema))
+  expectTables(con = con, schema = schema, tabs = character())
+
+  # create schema with prefix
   schema <- list(schema = "my_schema", prefix = "mc_")
-  dft <- sparkWriteTable(con, schema, "cars", cars)
-  expect_true(inherits(dft, "tbl_spark"))
-  expect_equal(dplyr::collect(dft), dplyr::tibble(cars))
-  expect_true("cars" %in% sparkListTables(con, schema))
-  expect_true("mc_cars" %in% sparkListTables(con, list()))
-  expect_identical(
-    dplyr::collect(dft), dplyr::collect(sparkReadTable(con, schema, "cars"))
-  )
-  dft <- sparkWriteTable(con, schema, "cars", mtcars)
-  expect_true(inherits(dft, "tbl_spark"))
-  expect_equal(dplyr::collect(dft), dplyr::tibble(mtcars))
+  createSchema(con = con, schema = schema)
+  expectTables(con = con, schema = schema, tabs = character())
+  expect_no_error(sparkSource(con = con, writeSchema = schema))
+  expectTables(con = con, schema = schema, tabs = character())
 
-  # overwrite a temporary table with compute
-  schema <- list()
-  expect_true("cars" %in% sparkListTables(con, schema))
-  expect_no_error(dft <- sparkComputeTable(dft, schema, "cars"))
-  expect_true("cars" %in% sparkListTables(con, schema))
+  # disconnect
+  disconnect(con)
+})
 
-  # overwrite a permanent table with compute
+test_that("test methods", {
+  skip_on_cran()
+
+  # create connection
+  con <- sparklyr::spark_connect(master = "local", config = config)
+
+  # create schema with prefix
   schema <- list(schema = "my_schema", prefix = "mc_")
-  expect_true("cars" %in% sparkListTables(con, schema))
-  #expect_no_error(dft <- sparkComputeTable(dft, schema, "cars")) ## THIS TEST IS FAILING
-  expect_true("cars" %in% sparkListTables(con, schema))
+  createSchema(con = con, schema = schema)
+
+  # create source
+  src <- sparkSource(con = con, writeSchema = schema)
+
+  # insertTable
+  tab1 <- insertTable(src, name = "my_table", table = cars, overwrite = TRUE, temporary = FALSE)
+  expect_true(inherits(tab1, "cdm_table"))
+  expect_identical(dbplyr::remote_name(tab1), "mc_my_table")
+  expect_identical(omopgenerics::tableName(tab1), "my_table")
+  tab2 <- insertTable(src, name = "my_table", table = cars, overwrite = TRUE, temporary = TRUE)
+  expect_true(inherits(tab2, "cdm_table"))
+  expect_true(startsWith(dbplyr::remote_name(tab2), "temp_"))
+  expect_true(endsWith(dbplyr::remote_name(tab2), "my_table"))
+  # TODO expect_true(is.na(omopgenerics::tableName(tab2)))
+
+  # compute
+
+  # cdmTableFromSource
+  # listSourceTables
+  # dropSourceTable
+  # readSourceTable
+  # cdmDisconnect
+  # insertCdmTo
 
   # disconnect
   disconnect(con)

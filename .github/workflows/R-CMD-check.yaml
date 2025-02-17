@@ -52,9 +52,9 @@ jobs:
 
       - name: Install Spark
         run: |
-            options(timeout = 600)
+            options(timeout = 3600)
             # options(sparklyr.log.console = TRUE)
-            sparklyr::spark_install(version = "3.0")
+            sparklyr::spark_install("3.0")
             # config <- sparklyr::spark_config()
             # config$spark.sql.warehouse.dir <- tempdir()
             # sparklyr::spark_connect(master = "local", config = config)

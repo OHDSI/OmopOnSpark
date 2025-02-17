@@ -25,15 +25,14 @@ test_that("test validateSchema", {
   expect_identical(res, list(schema = "schema"))
 
   writeSchema <- c(catalog = "schema")
-  expect_no_error(res <- validateSchema(writeSchema))
-  expect_identical(res, list(catalog = "schema"))
+  expect_error(res <- validateSchema(writeSchema))
 
   writeSchema <- list(catalog = "schema")
-  expect_no_error(res <- validateSchema(writeSchema))
-  expect_identical(res, list(catalog = "schema"))
+  expect_error(res <- validateSchema(writeSchema))
 
   writeSchema <- NULL
-  expect_no_error(res <- validateSchema(writeSchema))
+  expect_error(res <- validateSchema(writeSchema))
+  expect_no_error(res <- validateSchema(writeSchema, TRUE))
   expect_identical(res, list())
 
   writeSchema <- list(catalog = 1)

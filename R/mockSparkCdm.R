@@ -6,6 +6,7 @@
 #' created if it does not exist.
 #' @param writeSchema Schema to include cohort tables. Schema will be created if
 #' it does not exist.
+#' @param tempSchema Schema to include temporary tables.
 #'
 #' @return Connection to the spark data set with Eunomia loaded.
 #'
@@ -16,24 +17,28 @@
 #' con <- mockSparkCon()
 #' }
 #'
-mockSparkCon <- function(con = sparklyr::spark_connect(master = "local"),
+mockSparkCdm <- function(con = sparklyr::spark_connect(master = "local"),
                          databaseName = "GiBleed",
-                         cdmSchema = list(),
-                         writeSchema = list()) {
+                         cdmSchema = list(schema = "default"),
+                         writeSchema = list(schema = "default"),
+                         tempSchema = writeSchema) {
   # initial validation
   con <- validateConnection(con)
   omopgenerics::assertCharacter(databaseName, length = 1)
-  cdmSchema <- validateSchema(cdmSchema)
-  writeSchema <- validateSchema(writeSchema)
+  cdmSchema <- validateSchema(cdmSchema, FALSE)
+  writeSchema <- validateSchema(writeSchema, FALSE)
+  tempSchema <- validateSchema(tempSchema, FALSE)
 
   # create schemas if necessary
   createSchema(con, cdmSchema)
   createSchema(con, writeSchema)
+  createSchema(con, tempSchema)
 
   # download dataset in temp file
   url <- paste0("https://example-data.ohdsi.dev/", databaseName, ".zip")
   folder <- file.path(tempdir(), paste0("dataset_", paste0(sample(letters, 6), collapse = "")))
   dir.create(folder)
+  on.exit(unlink(folder, recursive = TRUE))
   zipFile <- file.path(folder, "dataset.zip")
   utils::download.file(url, zipFile)
 
@@ -52,15 +57,18 @@ mockSparkCon <- function(con = sparklyr::spark_connect(master = "local"),
       )
       if ("schema" %in% names(cdmSchema)) {
         DBI::dbExecute(conn = con, glue::glue(
-          "CREATE TABLE {quoteName(cdmSchema, name)} AS (SELECT * FROM `{name}`)"
+          "CREATE TABLE {fullName(cdmSchema, name)} AS (SELECT * FROM `{name}`)"
         ))
         DBI::dbExecute(conn = con, glue::glue("DROP TABLE `{name}`"))
       }
     })
 
-  unlink(folder, recursive = TRUE)
+  cdm <- cdmFromSpark(
+    con = con, cdmSchema = cdmSchema, writeSchema = writeSchema,
+    tempSchema = tempSchema, cdmName = databaseName, .softValidation = TRUE
+  )
 
-  return(con)
+  return(cdm)
 }
 
 createSchema <- function(con, schema) {
