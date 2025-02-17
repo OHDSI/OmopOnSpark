@@ -143,7 +143,7 @@ readCohorts <- function(cdm, cohortTables) {
     }
     tabs <- list(
       cohort = sparkReadTable(con = con, schema = schema, name = nm) |>
-        omopgenerics::newCdmTable(src = src, name = name),
+        omopgenerics::newCdmTable(src = src, name = nm),
       cohort_set = NULL,
       cohort_attrition = NULL,
       cohort_codelist = NULL
@@ -152,7 +152,7 @@ readCohorts <- function(cdm, cohortTables) {
       nam <- paste0(nm, "_", atr)
       if (nam %in% ls) {
         tabs[[paste0("cohort_", atr)]] <- sparkReadTable(
-          con = con, schema = schema, name = name
+          con = con, schema = schema, name = nam
         )
       }
     }

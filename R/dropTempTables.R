@@ -26,9 +26,9 @@ dropTempTables <- function(src, schema) {
   }
 
   schema$prefix <- "temp_"
-  nms <- sparkListTables(con = con, schema = schema)
+  nms <- sparkListTables(con = src, schema = schema)
   cli::cli_inform(c(i = "{length(nms)} temporary table{?s} indentified."))
-  purrr::map(nms, \(x) sparkDropTable(con = con, schema = schema, name = x))
+  purrr::map(nms, \(x) sparkDropTable(con = src, schema = schema, name = x))
 
   invisible(TRUE)
 }

@@ -9,7 +9,7 @@ isTemporarySchema <- function(schema) {
   !any(c("catalog", "schema") %in% names(schema))
 }
 
-validateSchema <- function(schema, allowEmpty, call = parent.frame()) {
+validateSchema <- function(schema, allowEmpty = FALSE, call = parent.frame()) {
   if (length(schema) == 0) {
     if (allowEmpty) {
       return(list())

@@ -26,3 +26,7 @@ omopgenerics::readSourceTable
 #' @importFrom omopgenerics insertCdmTo
 #' @export
 omopgenerics::insertCdmTo
+
+#' @importFrom omopgenerics cdmDisconnect
+#' @export
+omopgenerics::cdmDisconnect

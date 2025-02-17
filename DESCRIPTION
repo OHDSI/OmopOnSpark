@@ -16,9 +16,10 @@ Config/testthat/parallel: true
 Imports: 
     cli,
     DBI,
+    dbplyr,
     dplyr,
     glue,
-    omopgenerics,
+    omopgenerics (>= 1.0.0),
     purrr,
     rlang,
     sparklyr,

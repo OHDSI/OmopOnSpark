@@ -185,7 +185,7 @@ insertCdmTo.spark_cdm <- function(cdm, to) {
     }
     insertTable(cdm = to, name = nm, table = x, overwrite = TRUE)
     if ("cohort_table" %in% cl) {
-      cohorts <- c(cohort, nm)
+      cohorts <- c(cohorts, nm)
       insertTable(cdm = to, name = paste0(nm, "_set"), table = attr(x, "cohort_set"), overwrite = TRUE)
       insertTable(cdm = to, name = paste0(nm, "_attrition"), table = attr(x, "cohort_attrition"), overwrite = TRUE)
       insertTable(cdm = to, name = paste0(nm, "_codelist"), table = attr(x, "cohort_codelist"), overwrite = TRUE)
@@ -198,8 +198,8 @@ insertCdmTo.spark_cdm <- function(cdm, to) {
     writeSchema = writeSchema,
     achillesSchema = achillesSchema,
     cohortTables = cohorts,
-    cdmVersion = cdmVersion(cdm),
-    cdmName = cdmName(cdm),
+    cdmVersion = omopgenerics::cdmVersion(cdm),
+    cdmName = omopgenerics::cdmName(cdm),
     .softValidation = TRUE,
     logSql = logSql(to)
   )
