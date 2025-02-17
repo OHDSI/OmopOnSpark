@@ -29,6 +29,21 @@ test_that("cdm validation", {
   #                                   checkOverlapObservation = TRUE,
   #                                   validation = "error"))
 
+  expect_no_error(omopgenerics::validateCdmArgument(cdm_local,
+                                                    checkStartBeforeEndObservation = TRUE,
+                                                    validation = "error"))
+  # expect_no_error(omopgenerics::validateCdmArgument(cdm,
+  #                                   checkStartBeforeEndObservation = TRUE,
+  #                                   validation = "error"))
+
+  expect_no_error(omopgenerics::validateCdmArgument(cdm_local,
+                                                    checkPlausibleObservationDates = TRUE,
+                                                    validation = "error"))
+  expect_no_error(omopgenerics::validateCdmArgument(cdm,
+                                                    checkPlausibleObservationDates = TRUE,
+                                                    validation = "error"))
+
+
   expect_identical(
   sort(cdm_local$observation_period |>
     dplyr::pull("observation_period_start_date")),
