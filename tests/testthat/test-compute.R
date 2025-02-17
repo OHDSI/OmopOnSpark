@@ -3,6 +3,7 @@ test_that("compute working", {
 folder <- file.path(tempdir(), "temp_spark_compute")
 config <- sparklyr::spark_config()
 config$spark.sql.warehouse.dir <- folder
+options(sparklyr.log.console = TRUE)
 con <- sparklyr::spark_connect(master = "local", config = config)
 createSchema(con = con, schema = list(schema = "my_schema", prefix = "test_"))
 src <- sparkSource(con = con, writeSchema = list(schema = "my_schema", prefix = "test_"))
