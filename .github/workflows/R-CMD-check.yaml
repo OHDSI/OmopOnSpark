@@ -19,11 +19,7 @@ jobs:
       fail-fast: false
       matrix:
         config:
-         # - {os: macos-latest,   r: 'release'}
-         # - {os: windows-latest, r: 'release'}
-         # - {os: ubuntu-latest,   r: 'devel', http-user-agent: 'release'}
-          - {os: ubuntu-latest,   r: 'release'}
-         # - {os: ubuntu-latest,   r: 'oldrel-1'}
+          - {os: ubuntu-latest, r: 'release'}
 
     env:
       GITHUB_PAT: ${{ secrets.GITHUB_TOKEN }}
@@ -50,14 +46,21 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
+      - name: Cache Spark
+        uses: actions/cache@v3
+        with:
+          path: ~/.cache/spark
+          key: sparklyr-spark-3.0-${{ runner.os }}
+          restore-keys: |
+            sparklyr-spark-3.0-
+            sparklyr-spark-
+
       - name: Install Spark
+        if: steps.cache-spark.outputs.cache-hit != 'true'
         run: |
             options(timeout = 3600)
             # options(sparklyr.log.console = TRUE)
             sparklyr::spark_install("3.0")
-            # config <- sparklyr::spark_config()
-            # config$spark.sql.warehouse.dir <- tempdir()
-            # sparklyr::spark_connect(master = "local", config = config)
         shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@v2

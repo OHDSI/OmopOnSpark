@@ -71,6 +71,13 @@ mockSparkCdm <- function(con = sparklyr::spark_connect(master = "local"),
   return(cdm)
 }
 
+#' Create schema
+#'
+#' @param con con
+#' @param schema schema
+#'
+#' @returns con
+#' @export
 createSchema <- function(con, schema) {
   nms <- names(schema)
   if ("catalog" %in% nms) {
