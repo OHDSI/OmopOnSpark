@@ -2,38 +2,22 @@
 % Please edit documentation in R/mockSparkCdm.R
 \name{mockSparkCdm}
 \alias{mockSparkCdm}
-\title{creates a local mock database connection}
+\title{creates a cdm reference to local spark OMOP CDM tables}
 \usage{
-mockSparkCdm(
-  con = sparklyr::spark_connect(master = "local"),
-  databaseName = "GiBleed",
-  cdmSchema = list(schema = "default"),
-  writeSchema = list(schema = "default"),
-  tempSchema = writeSchema
-)
+mockSparkCdm(path)
 }
 \arguments{
-\item{con}{A spark connection using \code{sparklyr::spark_connect()}.}
-
-\item{databaseName}{Name of the dataset to download.}
-
-\item{cdmSchema}{Schema to include omop standard tables. Schema will be
-created if it does not exist.}
-
-\item{writeSchema}{Schema to include cohort tables. Schema will be created if
-it does not exist.}
-
-\item{tempSchema}{Schema to include temporary tables.}
+\item{path}{A directory for files}
 }
 \value{
-Connection to the spark data set with Eunomia loaded.
+A cdm reference with synthetic data in a local spark connection
 }
 \description{
-creates a local mock database connection
+creates a cdm reference to local spark OMOP CDM tables
 }
 \examples{
 \dontrun{
-con <- mockSparkCon()
+mockSparkCdm()
 }
 
 }
