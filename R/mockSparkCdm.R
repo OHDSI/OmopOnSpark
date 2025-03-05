@@ -1,71 +1,50 @@
-#' creates a local mock database connection
+#' creates a cdm reference to local spark OMOP CDM tables
 #'
-#' @param con A spark connection using `sparklyr::spark_connect()`.
-#' @param databaseName Name of the dataset to download.
-#' @param cdmSchema Schema to include omop standard tables. Schema will be
-#' created if it does not exist.
-#' @param writeSchema Schema to include cohort tables. Schema will be created if
-#' it does not exist.
-#' @param tempSchema Schema to include temporary tables.
+#' @param path A directory for files
 #'
-#' @return Connection to the spark data set with Eunomia loaded.
+#' @return A cdm reference with synthetic data in a local spark connection
 #'
 #' @export
 #'
 #' @examples
 #' \dontrun{
-#' con <- mockSparkCon()
+#' mockSparkCdm()
 #' }
 #'
-mockSparkCdm <- function(con = sparklyr::spark_connect(master = "local"),
-                         databaseName = "GiBleed",
-                         cdmSchema = list(schema = "default"),
-                         writeSchema = list(schema = "default"),
-                         tempSchema = writeSchema) {
-  # initial validation
-  con <- validateConnection(con)
-  omopgenerics::assertCharacter(databaseName, length = 1)
-  cdmSchema <- validateSchema(cdmSchema, FALSE)
-  writeSchema <- validateSchema(writeSchema, FALSE)
-  tempSchema <- validateSchema(tempSchema, FALSE)
+mockSparkCdm <- function(path) {
 
-  # create schemas if necessary
-  createSchema(con, cdmSchema)
-  createSchema(con, writeSchema)
-  createSchema(con, tempSchema)
+  folder <- path
+  working_config <- sparklyr::spark_config()
+  working_config$spark.sql.warehouse.dir <- folder
+  con <- sparklyr::spark_connect(master = "local",
+                                 config = working_config)
+  createSchema(con = con,
+               schema = list(schema = "omop"))
+  src <- sparkSource(con = con,
+                     writeSchema = list(schema = "omop"))
 
-  # download dataset in temp file
-  url <- paste0("https://example-data.ohdsi.dev/", databaseName, ".zip")
-  folder <- file.path(tempdir(), paste0("dataset_", paste0(sample(letters, 6), collapse = "")))
-  dir.create(folder)
-  on.exit(unlink(folder, recursive = TRUE))
-  zipFile <- file.path(folder, "dataset.zip")
-  utils::download.file(url, zipFile)
+  cdm_local <- omock::mockCdmReference() |>
+    omock::mockPerson(nPerson = 10) |>
+    omock::mockObservationPeriod() |>
+    omock::mockConditionOccurrence() |>
+    omock::mockCohort()
 
-  # unzip dataset
-  utils::unzip(zipFile, exdir = folder)
-
-  list.files(file.path(folder, databaseName), full.names = TRUE) |>
-    purrr::map(\(x) {
-      name <- tools::file_path_sans_ext(basename(x))
-      cli::cli_inform("Creating table: {.pkg {name}}")
-      sparklyr::spark_read_parquet(
-        sc = con,
-        name = name,
-        path = x,
-        overwrite = TRUE
-      )
-      if ("schema" %in% names(cdmSchema)) {
-        DBI::dbExecute(conn = con, glue::glue(
-          "CREATE TABLE {fullName(cdmSchema, name)} AS (SELECT * FROM `{name}`)"
-        ))
-        DBI::dbExecute(conn = con, glue::glue("DROP TABLE `{name}`"))
-      }
-    })
+  folder <- file.path(tempdir(), "temp_spark")
+  working_config <- sparklyr::spark_config()
+  working_config$spark.sql.warehouse.dir <- folder
+  con <- sparklyr::spark_connect(master = "local", config = working_config)
+  createSchema(con = con, schema = list(schema = "omop"))
+  src <- sparkSource(con = con,
+                     writeSchema = list(schema = "omop"))
+  cdm <- insertCdmTo(cdm_local, src)
 
   cdm <- cdmFromSpark(
-    con = con, cdmSchema = cdmSchema, writeSchema = writeSchema,
-    tempSchema = tempSchema, cdmName = databaseName, .softValidation = TRUE
+    con = con,
+    cdmSchema = "omop",
+    writeSchema = "omop",
+    # tempSchema = "temp",
+    cdmName = "mock local spark",
+    .softValidation = TRUE
   )
 
   return(cdm)

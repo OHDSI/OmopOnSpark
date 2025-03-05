@@ -24,41 +24,26 @@ devtools::install_github("oxford-pharmacoepi/OmopSparkConnector")
 
 ``` r
 library(OmopSparkConnector)
-cdm_local <- omock::mockCdmReference() |>
-  omock::mockPerson(nPerson = 10) |>
-  omock::mockObservationPeriod() |>
-  omock::mockConditionOccurrence()
-
-folder <- file.path(tempdir(), "temp_spark")
-working_config <- sparklyr::spark_config()
-working_config$spark.sql.warehouse.dir <- folder
-con <- sparklyr::spark_connect(master = "local", config = working_config)
-createSchema(con = con, schema = list(schema = "omop"))
-src <- sparkSource(con = con, 
-                   writeSchema = list(schema = "omop"))
-cdm <- insertCdmTo(cdm_local, src)
+cdm <- mockSparkCdm(path = file.path(tempdir(), "temp_spark"))
+#> Re-using existing Spark connection to local
 #> ! Validation has been turned off, this is not recommended as analytical
 #>   packages assumed the cdm_reference object fulfills the cdm validation
 #>   criteria.
-cdm
-#> 
-#> ── # OMOP CDM reference (sparklyr) of mock database ────────────────────────────
-#> • omop tables: cdm_source, concept, concept_ancestor, concept_relationship,
-#> concept_synonym, condition_occurrence, drug_strength, observation_period,
-#> person, vocabulary
-#> • cohort tables: -
-#> • achilles tables: -
-#> • other tables: -
+#> ! As no names where provided, it was assumed `cdmSchema = c(schema = 'omop')`
+#> ! As no names where provided, it was assumed `writeSchema = c(schema = 'omop')`
+#> ! Validation has been turned off, this is not recommended as analytical
+#>   packages assumed the cdm_reference object fulfills the cdm validation
+#>   criteria.
 cdm$person |> 
   dplyr::glimpse()
 #> Rows: ??
 #> Columns: 18
 #> Database: spark_connection
 #> $ person_id                   <int> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-#> $ gender_concept_id           <int> 8532, 8507, 8532, 8532, 8532, 8507, 8507, …
-#> $ year_of_birth               <int> 1973, 1955, 1965, 1968, 1978, 1998, 1979, …
-#> $ month_of_birth              <int> 10, 12, 4, 11, 12, 8, 2, 1, 9, 8
-#> $ day_of_birth                <int> 22, 9, 5, 29, 18, 15, 23, 2, 17, 25
+#> $ gender_concept_id           <int> 8507, 8532, 8532, 8532, 8507, 8507, 8507, …
+#> $ year_of_birth               <int> 1981, 1953, 1961, 1959, 1971, 1992, 1968, …
+#> $ month_of_birth              <int> 5, 12, 8, 7, 11, 4, 6, 10, 12, 6
+#> $ day_of_birth                <int> 29, 3, 27, 21, 15, 28, 29, 10, 30, 19
 #> $ race_concept_id             <int> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA
 #> $ ethnicity_concept_id        <int> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA
 #> $ birth_datetime              <dttm> 1970-01-01 01:00:00, 1970-01-01 01:00:00, …

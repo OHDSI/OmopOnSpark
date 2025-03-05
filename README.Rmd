@@ -35,20 +35,7 @@ devtools::install_github("oxford-pharmacoepi/OmopSparkConnector")
 
 ```{r}
 library(OmopSparkConnector)
-cdm_local <- omock::mockCdmReference() |>
-  omock::mockPerson(nPerson = 10) |>
-  omock::mockObservationPeriod() |>
-  omock::mockConditionOccurrence()
-
-folder <- file.path(tempdir(), "temp_spark")
-working_config <- sparklyr::spark_config()
-working_config$spark.sql.warehouse.dir <- folder
-con <- sparklyr::spark_connect(master = "local", config = working_config)
-createSchema(con = con, schema = list(schema = "omop"))
-src <- sparkSource(con = con, 
-                   writeSchema = list(schema = "omop"))
-cdm <- insertCdmTo(cdm_local, src)
-cdm
+cdm <- mockSparkCdm(path = file.path(tempdir(), "temp_spark"))
 cdm$person |> 
   dplyr::glimpse()
 ```
