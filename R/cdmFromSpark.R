@@ -120,6 +120,8 @@ cdmFromSpark <- function(con,
   # read cohort tables
   cdm <- readCohorts(cdm = cdm, cohortTables = cohortTables, .softValidation = .softValidation)
 
+  cdm
+
 }
 readCohorts <- function(cdm, cohortTables, .softValidation) {
   src <- omopgenerics::cdmSource(cdm)
@@ -165,6 +167,8 @@ readCohorts <- function(cdm, cohortTables, .softValidation) {
         .softValidation = .softValidation
       )
   }
+
+  class(cdm) <- c("spark_cdm", class(cdm))
 
   return(cdm)
 }

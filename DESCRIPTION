@@ -13,7 +13,7 @@ Suggests:
     testthat (>= 3.0.0),
     omock
 Config/testthat/edition: 3
-Config/testthat/parallel: true
+Config/testthat/parallel: false
 Imports: 
     cli,
     DBI,
