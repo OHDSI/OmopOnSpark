@@ -31,7 +31,22 @@ sparkWriteTable <- function(con, schema, name, value) {
 
   # it take into account catalog, schema and prefix
   fullname <- fullName(schema, name)
-  # insert data
-  DBI::dbWriteTable(conn = con, name = fullname, value = value, overwrite = TRUE)
+  # insert data as a spark dataframe
+  tmp_tbl <- omopgenerics::uniqueTableName()
+  spark_df <- sparklyr::sdf_copy_to(con,
+                                    value,
+                                    name = tmp_tbl,
+                                    overwrite = TRUE)
+  # as a spark table
+  sparklyr::spark_write_table(x = spark_df,
+                              name = fullname,
+                              mode = "overwrite")
+  # drop spark dataframe
+  con %>%
+    sparklyr::spark_session() |>
+    sparklyr::invoke("catalog") |>
+  rm(spark_df)
+  # DBI::dbWriteTable(conn = con, name = fullname, value = value, overwrite = TRUE)
+
 }
 
