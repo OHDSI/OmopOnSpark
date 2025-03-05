@@ -45,8 +45,11 @@ sparkWriteTable <- function(con, schema, name, value) {
   con %>%
     sparklyr::spark_session() |>
     sparklyr::invoke("catalog") |>
+    sparklyr::invoke("dropTempView", tmp_tbl)
   rm(spark_df)
   # DBI::dbWriteTable(conn = con, name = fullname, value = value, overwrite = TRUE)
+
+  return(invisible(NULL))
 
 }
 
