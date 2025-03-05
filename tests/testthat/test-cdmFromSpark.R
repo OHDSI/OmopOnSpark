@@ -15,12 +15,20 @@ test_that("creating a cdm reference", {
 
   insertCdmTo(cdm_local, src)
 
+  # without validation
   cdm <- cdmFromSpark(con = con,
                cdmSchema = list(schema = "my_schema", prefix = "test_"),
                writeSchema = list(schema = "my_schema", prefix = "test_"),
                cohortTables = "my_cohort",
                cdmName = "my spark cdm",
                .softValidation = TRUE)
+
+  # with validation
+  # cdm <- cdmFromSpark(con = con,
+  #                     cdmSchema = list(schema = "my_schema", prefix = "test_"),
+  #                     writeSchema = list(schema = "my_schema", prefix = "test_"),
+  #                     cohortTables = "my_cohort",
+  #                     cdmName = "my spark cdm")
 
   expect_identical(omopgenerics::cdmName(cdm), "my spark cdm")
   expect_identical(omopgenerics::cdmVersion(cdm), "5.3")

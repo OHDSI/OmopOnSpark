@@ -3,6 +3,7 @@
 #'
 #' @param cdm cdm reference
 #' @param dropWriteSchema Whether to drop tables in the writeSchema
+#' @param dropTempSchema Whether to drop tables in the tempSchema
 #' @param ... Not used
 #'
 #' @export
