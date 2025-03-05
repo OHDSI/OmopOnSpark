@@ -50,7 +50,17 @@ jobs:
           distribution: 'temurin'
           java-version: '11'
 
+      - name: Cache Spark
+        uses: actions/cache@v2
+        with:
+          path: ~/.cache/spark
+          key: sparklyr-spark-3.0
+          restore-keys: |
+            sparklyr-spark-3.0
+            sparklyr-spark-
+
       - name: Install Spark
+        if: steps.cache-spark.outputs.cache-hit != 'true'
         run: |
             options(timeout = 3600)
             # options(sparklyr.log.console = TRUE)
