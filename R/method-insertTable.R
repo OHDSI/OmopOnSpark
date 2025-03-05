@@ -27,11 +27,21 @@ insertTable.spark_cdm <- function(cdm,
 
 sparkWriteTable <- function(con, schema, name, value) {
 
-  sparkDropTable(con = con, schema = schema, name = name)
-
-  # it take into account catalog, schema and prefix
+  # take into account catalog, schema and prefix
   fullname <- fullName(schema, name)
-  # insert data
-  DBI::dbWriteTable(conn = con, name = fullname, value = value, overwrite = TRUE)
-}
+  # first insert data as a spark dataframe
+  tmp_tbl <- omopgenerics::uniqueTableName()
+  spark_df <- sparklyr::sdf_copy_to(con,
+                                    value,
+                                    name = tmp_tbl,
+                                    overwrite = TRUE)
+  # now as a spark table
+  sparklyr::spark_write_table(x = spark_df,
+                              name = fullname,
+                              mode = "overwrite")
+  # drop spark dataframe and rm to remove from rstudio pane
+  sparkDropDataFrame(con = con, name = tmp_tbl)
+  rm(spark_df)
 
+  return(invisible(NULL))
+}
