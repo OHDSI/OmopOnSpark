@@ -40,7 +40,7 @@ sparkWriteTable <- function(con, schema, name, value) {
                               name = fullname,
                               mode = "overwrite")
   # drop spark dataframe and rm to remove from rstudio pane
-  sparkDropDataFrame
+  sparkDropDataFrame(con = con, name = tmp_tbl)
   rm(spark_df)
 
   return(invisible(NULL))
