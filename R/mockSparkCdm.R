@@ -29,20 +29,12 @@ mockSparkCdm <- function(path) {
     omock::mockConditionOccurrence() |>
     omock::mockCohort()
 
-  folder <- file.path(tempdir(), "temp_spark")
-  working_config <- sparklyr::spark_config()
-  working_config$spark.sql.warehouse.dir <- folder
-  con <- sparklyr::spark_connect(master = "local", config = working_config)
-  createSchema(con = con, schema = list(schema = "omop"))
-  src <- sparkSource(con = con,
-                     writeSchema = list(schema = "omop"))
   cdm <- insertCdmTo(cdm_local, src)
 
   cdm <- cdmFromSpark(
     con = con,
     cdmSchema = "omop",
     writeSchema = "omop",
-    # tempSchema = "temp",
     cdmName = "mock local spark",
     .softValidation = TRUE
   )
