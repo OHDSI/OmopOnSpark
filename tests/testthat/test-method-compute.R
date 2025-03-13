@@ -38,6 +38,7 @@ cdm$person |>
     head(1) |>
     dplyr::compute(name = "person_2"))
 
-
   cdmDisconnect(cdm)
+  unlink(folder, recursive = TRUE)
+
 })

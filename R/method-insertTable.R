@@ -70,11 +70,18 @@ insertTableToSparkCdmReference <- function(cdm,
   }
 
   # write table
-  sparkWriteTable(con = con, schema = schema, name = name, value = table)
-
-  # read table
- cdm[[name]] <- sparkReadTable(con = con, schema = schema, name = name) |>
-    omopgenerics::newCdmTable(src = attr(cdm, "cdm_source"), name = name)
+  if(isTRUE(temporary)){
+    tmp_tbl <- sparklyr::sdf_copy_to(con,
+                                     table,
+                                     name = omopgenerics::uniqueTableName(),
+                                     overwrite = TRUE)
+    cdm[[name]] <-  tmp_tbl |>
+      omopgenerics::newCdmTable(src = attr(cdm, "cdm_source"), name = name)
+  } else {
+    sparkWriteTable(con = con, schema = schema, name = name, value = table)
+    cdm[[name]] <- sparkReadTable(con = con, schema = schema, name = name) |>
+      omopgenerics::newCdmTable(src = attr(cdm, "cdm_source"), name = name)
+  }
 
   cdm
 
@@ -100,3 +107,4 @@ sparkWriteTable <- function(con, schema, name, value) {
 
   return(invisible(NULL))
 }
+

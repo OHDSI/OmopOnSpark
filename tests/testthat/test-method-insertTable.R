@@ -1,6 +1,6 @@
 test_that("insert permanent table to cdm ref", {
 
-  skip_on_cran()
+skip_on_cran()
 
 path <- file.path(tempdir(), "temp_spark")
 cdm <- mockSparkCdm(path)
@@ -13,6 +13,8 @@ cdm <- insertTable(cdm = cdm,
                    temporary = FALSE)
 # we should get back our cdm reference with the table added
 expect_true("cars" %in% names(cdm))
+expect_identical(omopgenerics::tableName(cdm$cars), "cars")
+expect_no_error(omopgenerics::validateCdmTable(cdm$cars))
 
 expect_identical(
   cdm$cars |>
@@ -42,12 +44,61 @@ expect_no_error(cdm <- insertTable(cdm = cdm,
                          temporary = FALSE))
 expect_true("cars_2" %in% names(cdm))
 
-
 cdmDisconnect(cdm)
+unlink(folder, recursive = TRUE)
+
 })
 
 test_that("insert temp table to cdm ref", {
-# TO ADD
+
+  skip_on_cran()
+
+  path <- file.path(tempdir(), "temp_spark")
+  cdm <- mockSparkCdm(path)
+
+  # insert a permanent table
+  cdm <- insertTable(cdm = cdm,
+                     name = "cars",
+                     table = cars,
+                     overwrite = TRUE,
+                     temporary = TRUE)
+  # we should get back our cdm reference with the table added
+  expect_true("cars" %in% names(cdm))
+  # expect_true(is.na(omopgenerics::tableName(cdm$cars)))
+  expect_no_error(omopgenerics::validateCdmTable(cdm$cars))
+
+  expect_identical(
+    cdm$cars |>
+      dplyr::collect() |>
+      dplyr::arrange("speed", "dist"),
+    dplyr::tibble(cars) |>
+      dplyr::arrange("speed", "dist"))
+
+  # insert and overwrite
+  expect_no_error(insertTable(cdm = cdm,
+                              name = "cars",
+                              table = cars,
+                              overwrite = TRUE,
+                              temporary = TRUE))
+
+  # overwrite false with existing table
+  # this will no longer cause an error when using temp tables
+  expect_no_error(cdm <- insertTable(cdm = cdm,
+                                  name = "cars",
+                                  table = cars,
+                                  overwrite = FALSE,
+                                  temporary = TRUE))
+
+  expect_no_error(cdm <- insertTable(cdm = cdm,
+                                     name = "cars_2",
+                                     table = cars,
+                                     overwrite = FALSE,
+                                     temporary = TRUE))
+  expect_true("cars_2" %in% names(cdm))
+
+  cdmDisconnect(cdm)
+  unlink(folder, recursive = TRUE)
+
 })
 
 test_that("test insert to cdm source", {
@@ -75,4 +126,5 @@ test_that("test insert to cdm source", {
   # TODO expect_true(is.na(omopgenerics::tableName(tab2)))
 
   sparklyr::spark_disconnect(con)
+  unlink(folder, recursive = TRUE)
 })

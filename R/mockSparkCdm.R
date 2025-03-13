@@ -12,7 +12,6 @@
 #' }
 #'
 mockSparkCdm <- function(path) {
-
   folder <- path
   working_config <- sparklyr::spark_config()
   working_config$spark.sql.warehouse.dir <- folder
