@@ -5,7 +5,6 @@
 #' @param writeSchema A write schema with writing permissions.
 #' @param tempSchema A write schema with writing permissions to emulate
 #' temporary tables.
-#' @param logSql Whether to log executed sql in a log file
 #'
 #' @return A spark_cdm object.
 #' @export
@@ -16,29 +15,25 @@
 #' sparkSource(con)
 #' }
 #'
-sparkSource <- function(con, writeSchema, tempSchema = writeSchema, logSql = NULL) {
+sparkSource <- function(con, writeSchema, tempSchema = writeSchema) {
   con <- validateConnection(con)
   writeSchema <- validateSchema(writeSchema, FALSE)
   tempSchema <- validateSchema(tempSchema, FALSE)
-  logSql <- validateLogSql(logSql)
-
   # create source
   newSparkSource(
     con = con,
     writeSchema = writeSchema,
-    tempSchema = tempSchema,
-    logSql = logSql
+    tempSchema = tempSchema
   )
 }
 
-newSparkSource <- function(con, writeSchema, tempSchema, logSql) {
+newSparkSource <- function(con, writeSchema, tempSchema) {
   tempPrefix <- paste0("temp_", paste0(sample(letters, 5), collapse = ""), "_")
   tempSchema$prefix <- tempPrefix
   structure(
     .Data = list(),
     con = con,
     write_schema = writeSchema,
-    log_sql = logSql,
     temp_schema = tempSchema,
     class = "spark_cdm"
   ) |>
@@ -58,7 +53,3 @@ getCon <- function(src) {
 schemaToWrite <- function(src, temporary) {
   if (temporary) tempSchema(src) else writeSchema(src)
 }
-logSql <- function(src) {
-  attr(src, "log_sql")
-}
-

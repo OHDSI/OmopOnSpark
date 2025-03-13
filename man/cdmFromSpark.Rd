@@ -13,8 +13,7 @@ cdmFromSpark(
   cohortTables = character(),
   cdmVersion = NULL,
   cdmName = NULL,
-  .softValidation = FALSE,
-  logSql = NULL
+  .softValidation = FALSE
 )
 }
 \arguments{
@@ -48,9 +47,6 @@ with 'tamp_' and 5 random letters.}
 \item{.softValidation}{Whether to use soft validation, this is not
 recommended as analysis pipelines assume the cdm fullfill the validation
 criteria.}
-
-\item{logSql}{Path to a folder to write the sql executed. Use \code{logSql = NULL}
-if you don't want the sql to be exported.}
 }
 \value{
 A cdm reference object

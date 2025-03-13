@@ -23,8 +23,6 @@
 #' @param .softValidation Whether to use soft validation, this is not
 #' recommended as analysis pipelines assume the cdm fullfill the validation
 #' criteria.
-#' @param logSql Path to a folder to write the sql executed. Use `logSql = NULL`
-#' if you don't want the sql to be exported.
 #'
 #' @return A cdm reference object
 #' @export
@@ -46,8 +44,7 @@ cdmFromSpark <- function(con,
                          cohortTables = character(),
                          cdmVersion = NULL,
                          cdmName = NULL,
-                         .softValidation = FALSE,
-                         logSql = NULL) {
+                         .softValidation = FALSE) {
   # initial checks
   con <- validateConnection(con)
   cdmSchema <- validateSchema(cdmSchema, FALSE)
@@ -58,7 +55,6 @@ cdmFromSpark <- function(con,
   omopgenerics::assertChoice(cdmVersion, c("5.3", "5.4"), length = 1, null = T)
   omopgenerics::assertCharacter(cdmName, length = 1, null = TRUE)
   omopgenerics::assertLogical(.softValidation, length = 1)
-  logSql <- validateLogSql(logSql)
 
   if (.softValidation) {
     cli::cli_inform(c("!" = "Validation has been turned off, this is not recommended as analytical packages assumed the cdm_reference object fulfills the cdm validation criteria."))
@@ -68,8 +64,7 @@ cdmFromSpark <- function(con,
   src <- sparkSource(
     con = con,
     writeSchema = writeSchema,
-    tempSchema = tempSchema,
-    logSql = logSql
+    tempSchema = tempSchema
   )
 
   # available cdm tables
