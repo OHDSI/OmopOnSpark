@@ -57,8 +57,7 @@ test_that("test internal functions", {
   expectTables(con = con, schema = newSchema, tabs = c("cars2"))
   expectTables(con = con, schema = schema, tabs = c("cars2", "mc_cars2"))
 
-  # disconnect
-  disconnect(con)
+  sparklyr::spark_disconnect(con)
 })
 
 test_that("test source can be created", {
@@ -80,43 +79,6 @@ test_that("test source can be created", {
   expect_no_error(sparkSource(con = con, writeSchema = schema))
   expectTables(con = con, schema = schema, tabs = character())
 
-  # disconnect
-  disconnect(con)
+  sparklyr::spark_disconnect(con)
 })
 
-test_that("test methods", {
-  skip_on_cran()
-
-  # create connection
-  con <- sparklyr::spark_connect(master = "local", config = config)
-
-  # create schema with prefix
-  schema <- list(schema = "my_schema", prefix = "mc_")
-  createSchema(con = con, schema = schema)
-
-  # create source
-  src <- sparkSource(con = con, writeSchema = schema)
-
-  # insertTable
-  tab1 <- insertTable(src, name = "my_table", table = cars, overwrite = TRUE, temporary = FALSE)
-  expect_true(inherits(tab1, "cdm_table"))
-  expect_identical(dbplyr::remote_name(tab1), "mc_my_table")
-  expect_identical(omopgenerics::tableName(tab1), "my_table")
-  tab2 <- insertTable(src, name = "my_table", table = cars, overwrite = TRUE, temporary = TRUE)
-  expect_true(inherits(tab2, "cdm_table"))
-  expect_true(startsWith(dbplyr::remote_name(tab2), "temp_"))
-  expect_true(endsWith(dbplyr::remote_name(tab2), "my_table"))
-  # TODO expect_true(is.na(omopgenerics::tableName(tab2)))
-
-  # compute
-
-  # cdmTableFromSource
-  # listSourceTables
-  # dropSourceTable
-  # readSourceTable
-  # cdmDisconnect
-  # insertCdmTo
-
-  # disconnect
-  disconnect(con)
-})

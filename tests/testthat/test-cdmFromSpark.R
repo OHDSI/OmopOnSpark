@@ -48,7 +48,7 @@ test_that("creating a cdm reference", {
     omopgenerics::settings(cdm_local$my_cohort),
     omopgenerics::settings(cdm$my_cohort))
 
-  disconnect(con)
+  cdmDisconnect(con)
 
 })
 
@@ -101,6 +101,6 @@ test_that("cdm validation", {
          dplyr::pull("observation_period_start_date"))
   )
 
-  disconnect(con)
+  cdmDisconnect(con)
 
 })

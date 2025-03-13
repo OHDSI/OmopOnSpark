@@ -4,6 +4,31 @@ insertTable.spark_cdm <- function(cdm,
                                   table,
                                   overwrite = TRUE,
                                   temporary = FALSE) {
+
+  if(inherits(cdm, "cdm_source")){
+  insertTableToSparkSource(cdm = cdm,
+                           name = name,
+                           table = table,
+                           overwrite = overwrite,
+                           temporary = temporary)
+  } else if (inherits(cdm, "cdm_reference")) {
+    insertTableToSparkCdmReference(cdm = cdm,
+                             name = name,
+                             table = table,
+                             overwrite = overwrite,
+                             temporary = temporary)
+  } else {
+    cli::cli_abort("cdm must be a cdm reference or a cdm source")
+  }
+
+
+}
+
+insertTableToSparkSource <- function(cdm,
+                                     name,
+                                     table,
+                                     overwrite,
+                                     temporary){
   # get attributes
   schema <- schemaToWrite(cdm, temporary)
   con <- getCon(cdm)
@@ -23,6 +48,36 @@ insertTable.spark_cdm <- function(cdm,
   # read table
   sparkReadTable(con = con, schema = schema, name = name) |>
     omopgenerics::newCdmTable(src = cdm, name = name)
+
+}
+
+insertTableToSparkCdmReference <- function(cdm,
+                                           name,
+                                           table,
+                                           overwrite,
+                                           temporary){
+  # get attributes
+  schema <- schemaToWrite(attr(cdm, "cdm_source"), temporary)
+  con <- getCon(attr(cdm, "cdm_source"))
+
+  # check overwrite
+  if (overwrite) {
+    sparkDropTable(con = con, schema = schema, name = name)
+  } else if (name %in% sparkListTables(con = con, schema = schema)) {
+    cli::cli_abort(c(
+      x = "Table {.pkg {name}} already exists use `overwrite = FALSE`."
+    ))
+  }
+
+  # write table
+  sparkWriteTable(con = con, schema = schema, name = name, value = table)
+
+  # read table
+ cdm[[name]] <- sparkReadTable(con = con, schema = schema, name = name) |>
+    omopgenerics::newCdmTable(src = attr(cdm, "cdm_source"), name = name)
+
+  cdm
+
 }
 
 sparkWriteTable <- function(con, schema, name, value) {

@@ -9,7 +9,7 @@ sparkDropTable <- function(con, schema, name) {
 }
 
 sparkDropDataFrame <- function(con, name){
-  con %>%
+  con |>
     sparklyr::spark_session() |>
     sparklyr::invoke("catalog") |>
     sparklyr::invoke("dropTempView", name)
