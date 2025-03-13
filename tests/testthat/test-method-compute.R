@@ -1,18 +1,7 @@
 test_that("compute working", {
 
 folder <- file.path(tempdir(), "temp_spark_compute")
-config <- sparklyr::spark_config()
-config$spark.sql.warehouse.dir <- folder
-config$sparklyr.gateway.timeout <- 300
-options(sparklyr.log.console = TRUE)
-con <- sparklyr::spark_connect(master = "local", config = config)
-createSchema(con = con, schema = list(schema = "my_schema", prefix = "test_"))
-src <- sparkSource(con = con, writeSchema = list(schema = "my_schema", prefix = "test_"))
-
-cdm_local <- omock::emptyCdmReference(cdmName = "mock") |>
-  omock::mockPerson(nPerson = 10)
-
-cdm <- insertCdmTo(cdm = cdm_local, to = src)
+cdm <- mockSparkCdm(folder)
 
 cdm$person_2 <- cdm$person |>
   dplyr::compute()
@@ -49,7 +38,7 @@ cdm$person |>
     head(1) |>
     dplyr::compute(name = "person_2"))
 
-
-  disconnect(con)
+  cdmDisconnect(cdm)
+  unlink(folder, recursive = TRUE)
 
 })

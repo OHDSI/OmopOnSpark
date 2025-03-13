@@ -11,8 +11,8 @@ cdmDisconnect.spark_cdm <- function(cdm, dropWriteSchema = FALSE, dropTempSchema
   # input check
   omopgenerics::assertLogical(dropWriteSchema, length = 1)
   omopgenerics::assertLogical(dropTempSchema, length = 1)
-
-  on.exit(sparklyr::spark_disconnect(attr(attr(cdm, "cdm_source"), "con")), add = TRUE)
+  con <- attr(attr(cdm, "cdm_source"), "con")
+  on.exit(sparklyr::spark_disconnect(con), add = TRUE)
 
   # drop tables if needed
   if (dropWriteSchema) {

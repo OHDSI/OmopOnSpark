@@ -9,5 +9,6 @@ test_that("basic mock cdm", {
     dplyr::collect()
   expect_true(nrow(person_5) == 5)
   cdmDisconnect(cdm)
+  unlink(folder, recursive = TRUE)
 
 })
