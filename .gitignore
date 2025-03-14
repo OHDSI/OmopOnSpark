@@ -56,3 +56,4 @@ tests/testthat/logs/log4j.spark.log
 logs/log4j.spark.log
 /logs
 /tests/testthat/logs
+inst/doc
