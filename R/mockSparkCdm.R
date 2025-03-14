@@ -17,10 +17,12 @@ mockSparkCdm <- function(path) {
   working_config$spark.sql.warehouse.dir <- folder
   con <- sparklyr::spark_connect(master = "local",
                                  config = working_config)
-  createSchema(con = con,
-               schema = list(schema = "omop"))
+  DBI::dbExecute(con, glue::glue("CREATE SCHEMA IF NOT EXISTS omop"))
+  DBI::dbExecute(con, glue::glue("CREATE SCHEMA IF NOT EXISTS results"))
   src <- sparkSource(con = con,
-                     writeSchema = list(schema = "omop"))
+                     cdmSchema = "omop",
+                     writeSchema = "results",
+                     writePrefix = "my_study_")
 
   cdm_local <- omock::mockCdmReference() |>
     omock::mockPerson(nPerson = 10) |>
@@ -33,9 +35,10 @@ mockSparkCdm <- function(path) {
   cdm <- cdmFromSpark(
     con = con,
     cdmSchema = "omop",
-    writeSchema = "omop",
+    writeSchema = "results",
     cdmName = "mock local spark",
-    .softValidation = TRUE
+    .softValidation = TRUE,
+    writePrefix = "my_study_"
   )
 
   return(cdm)

@@ -7,16 +7,15 @@ test_that("disconnect connection", {
   working_config <- sparklyr::spark_config()
   working_config$spark.sql.warehouse.dir <- folder
   con <- sparklyr::spark_connect(master = "local", config = working_config)
+  DBI::dbExecute(con, glue::glue("CREATE SCHEMA IF NOT EXISTS my_schema"))
 
-
-  createSchema(con = con, schema = list(schema = "my_schema", prefix = "test_"))
-  src <- sparkSource(con = con, writeSchema = list(schema = "my_schema", prefix = "test_"))
+  src <- sparkSource(con = con, cdmSchema = "my_schema", writeSchema = "my_schema")
 
   insertCdmTo(cdm_local, src)
 
   cdm <- cdmFromSpark(con = con,
-                      cdmSchema = list(schema = "my_schema", prefix = "test_"),
-                      writeSchema = list(schema = "my_schema", prefix = "test_"),
+                      cdmSchema = "my_schema",
+                      writeSchema = "my_schema",
                       cdmName = "my spark cdm",
                       .softValidation = TRUE)
 

@@ -2,7 +2,9 @@
 #' @export
 insertCdmTo.spark_cdm <- function(cdm, to) {
   con <- getCon(to)
+  cdmSchema <- cdmSchema(to)
   writeSchema <- writeSchema(to)
+  writePrefix <- writePrefix(to)
 
   achillesSchema <- NULL
   cohorts <- character()
@@ -16,7 +18,19 @@ insertCdmTo.spark_cdm <- function(cdm, to) {
     if (!any(c("achilles_table", "omop_table", "cohort_table") %in% cl)) {
       other <- c(other, nm)
     }
-    insertTable(cdm = to, name = nm, table = x, overwrite = TRUE)
+    # omop tables in cdm schema, otherwise in write schema with prefix
+     if("omop_table" %in% cl){
+    sparkWriteTable(con = con,
+                    schema = cdmSchema,
+                    prefix = NULL,
+                    name = nm,
+                    value = x)
+    } else {
+      insertTable(cdm = to,
+                  name = nm,
+                  table = x,
+                  overwrite = TRUE)
+    }
     if ("cohort_table" %in% cl) {
       cohorts <- c(cohorts, nm)
       insertTable(cdm = to, name = paste0(nm, "_set"), table = attr(x, "cohort_set"), overwrite = TRUE)
@@ -27,13 +41,14 @@ insertCdmTo.spark_cdm <- function(cdm, to) {
 
   newCdm <- cdmFromSpark(
     con = con,
-    cdmSchema = writeSchema,
+    cdmSchema = cdmSchema,
     writeSchema = writeSchema,
     achillesSchema = achillesSchema,
     cohortTables = cohorts,
     cdmVersion = omopgenerics::cdmVersion(cdm),
     cdmName = omopgenerics::cdmName(cdm),
-    .softValidation = TRUE
+    .softValidation = TRUE,
+    writePrefix = writePrefix
   )
 
   # newCdm <- omopgenerics::readSourceTable(cdm = newCdm, name = other)
