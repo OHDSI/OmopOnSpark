@@ -10,26 +10,24 @@ test_that("creating a cdm reference", {
   working_config <- sparklyr::spark_config()
   working_config$spark.sql.warehouse.dir <- folder
   con <- sparklyr::spark_connect(master = "local", config = working_config)
-  createSchema(con = con, schema = list(schema = "my_schema", prefix = "test_"))
-  src <- sparkSource(con = con, writeSchema = list(schema = "my_schema", prefix = "test_"))
+  DBI::dbExecute(con, glue::glue("CREATE SCHEMA IF NOT EXISTS public"))
+  DBI::dbExecute(con, glue::glue("CREATE SCHEMA IF NOT EXISTS results"))
+
+  src <- sparkSource(con = con,
+                     cdmSchema = "public",
+                     writeSchema = "results",
+                     writePrefix = "study_1_")
 
   insertCdmTo(cdm_local, src)
 
-  # without validation
   cdm <- cdmFromSpark(con = con,
-               cdmSchema = list(schema = "my_schema", prefix = "test_"),
-               writeSchema = list(schema = "my_schema", prefix = "test_"),
+               cdmSchema = "public",
+               writeSchema = "results",
                cohortTables = "my_cohort",
                cdmName = "my spark cdm",
-               .softValidation = TRUE)
-
-  # with validation
-  # cdm <- cdmFromSpark(con = con,
-  #                     cdmSchema = list(schema = "my_schema", prefix = "test_"),
-  #                     writeSchema = list(schema = "my_schema", prefix = "test_"),
-  #                     cohortTables = "my_cohort",
-  #                     cdmName = "my spark cdm")
-
+               .softValidation = TRUE,
+               writePrefix = "study_1_")
+  expect_identical(writeSchema(cdm), "results")
   expect_identical(omopgenerics::cdmName(cdm), "my spark cdm")
   expect_identical(omopgenerics::cdmVersion(cdm), "5.3")
   expect_true(inherits(cdm, "cdm_reference"))
@@ -63,29 +61,29 @@ test_that("cdm validation", {
   working_config <- sparklyr::spark_config()
   working_config$spark.sql.warehouse.dir <- folder
   con <- sparklyr::spark_connect(master = "local", config = working_config)
-  createSchema(con = con, schema = list(schema = "my_schema", prefix = "test_"))
-  src <- sparkSource(con = con, writeSchema = list(schema = "my_schema", prefix = "test_"))
+  createSchema(con = con, schema = list(schema = "my_schema"))
+  src <- sparkSource(con = con, cdmSchema = "my_schema", writeSchema = "my_schema")
 
   insertCdmTo(cdm_local, src)
 
   cdm <- cdmFromSpark(con = con,
-                      cdmSchema = list(schema = "my_schema", prefix = "test_"),
-                      writeSchema = list(schema = "my_schema", prefix = "test_"),
+                      cdmSchema = "my_schema",
+                      writeSchema = "my_schema",
                       .softValidation = TRUE)
 
   expect_no_error(omopgenerics::validateCdmArgument(cdm_local,
                                     checkOverlapObservation = TRUE,
                                     validation = "error"))
-  # expect_no_error(omopgenerics::validateCdmArgument(cdm,
-  #                                   checkOverlapObservation = TRUE,
-  #                                   validation = "error"))
+  expect_no_error(omopgenerics::validateCdmArgument(cdm,
+                                    checkOverlapObservation = TRUE,
+                                    validation = "error"))
 
   expect_no_error(omopgenerics::validateCdmArgument(cdm_local,
                                                     checkStartBeforeEndObservation = TRUE,
                                                     validation = "error"))
-  # expect_no_error(omopgenerics::validateCdmArgument(cdm,
-  #                                   checkStartBeforeEndObservation = TRUE,
-  #                                   validation = "error"))
+  expect_no_error(omopgenerics::validateCdmArgument(cdm,
+                                    checkStartBeforeEndObservation = TRUE,
+                                    validation = "error"))
 
   expect_no_error(omopgenerics::validateCdmArgument(cdm_local,
                                                     checkPlausibleObservationDates = TRUE,

@@ -8,23 +8,20 @@
 #' @param writeSchema Schema where with writing permissions. Schema is defined
 #' with a named character list/vector; allowed names are: 'catalog', 'schema'
 #' and 'prefix'.
-#' @param achillesSchema Schema where achilled tables are located. Schema is
-#' defined with a named character list/vector; allowed names are: 'catalog',
-#' 'schema' and 'prefix'.
-#' @param tempSchema Schema used to create temporary tables. Schema is
-#' defined with a named character list/vector; allowed names are: 'catalog' and
-#' 'schema'. 'prefix' will be ignored and all temp tables will be created start
-#' with 'tamp_' and 5 random letters.
 #' @param cohortTables Names of cohort tables to be read from `writeSchema`.
 #' @param cdmVersion The version of the cdm (either "5.3" or "5.4"). If NULL
 #' `cdm_source$cdm_version` will be used instead.
 #' @param cdmName The name of the cdm object, if NULL
 #' `cdm_source$cdm_source_name` will be used instead.
+#' @param achillesSchema Schema where achilled tables are located. Schema is
+#' defined with a named character list/vector; allowed names are: 'catalog',
+#' 'schema' and 'prefix'.
 #' @param .softValidation Whether to use soft validation, this is not
 #' recommended as analysis pipelines assume the cdm fullfill the validation
 #' criteria.
-#' @param logSql Path to a folder to write the sql executed. Use `logSql = NULL`
-#' if you don't want the sql to be exported.
+#' @param writePrefix A prefix that will be added to all tables created in the
+#' write_schema. This can be used to create namespace in your database
+#' write_schema for your tables.
 #'
 #' @return A cdm reference object
 #' @export
@@ -41,24 +38,24 @@
 cdmFromSpark <- function(con,
                          cdmSchema,
                          writeSchema,
-                         achillesSchema = NULL,
-                         tempSchema = writeSchema,
-                         cohortTables = character(),
+                         cohortTables = NULL,
                          cdmVersion = NULL,
                          cdmName = NULL,
+                         achillesSchema = NULL,
                          .softValidation = FALSE,
-                         logSql = NULL) {
+                         writePrefix = NULL) {
   # initial checks
   con <- validateConnection(con)
-  cdmSchema <- validateSchema(cdmSchema, FALSE)
-  writeSchema <- validateSchema(writeSchema, FALSE)
-  achillesSchema <- validateSchema(achillesSchema, TRUE)
-  tempSchema <- validateSchema(tempSchema, FALSE)
+  omopgenerics::assertCharacter(cdmSchema, length = 1, null = FALSE)
+  omopgenerics::assertCharacter(writeSchema, length = 1, null = FALSE)
+  omopgenerics::assertCharacter(achillesSchema, length = 1, null = TRUE)
+  # cdmSchema <- validateSchema(cdmSchema, FALSE)
+  # writeSchema <- validateSchema(writeSchema, FALSE)
+  # achillesSchema <- validateSchema(achillesSchema, TRUE)
   omopgenerics::assertCharacter(cohortTables, null = TRUE)
   omopgenerics::assertChoice(cdmVersion, c("5.3", "5.4"), length = 1, null = T)
   omopgenerics::assertCharacter(cdmName, length = 1, null = TRUE)
   omopgenerics::assertLogical(.softValidation, length = 1)
-  logSql <- validateLogSql(logSql)
 
   if (.softValidation) {
     cli::cli_inform(c("!" = "Validation has been turned off, this is not recommended as analytical packages assumed the cdm_reference object fulfills the cdm validation criteria."))
@@ -67,19 +64,19 @@ cdmFromSpark <- function(con,
   # create spark source
   src <- sparkSource(
     con = con,
+    cdmSchema = cdmSchema,
     writeSchema = writeSchema,
-    tempSchema = tempSchema,
-    logSql = logSql
+    writePrefix = writePrefix
   )
 
   # available cdm tables
-  cdmTables <- sparkListTables(con = con, schema = cdmSchema) |>
+  cdmTables <- sparkListTables(con = con, schema = cdmSchema, prefix = NULL) |>
     purrr::keep(\(x) x %in% omopgenerics::omopTables())
 
   # extract cdm name
   if (is.null(cdmName)) {
     if ("cdm_source" %in% cdmTables) {
-      cdmName <- sparkReadTable(con = con, schema = cdmSchema, name = "cdm_source") |>
+      cdmName <- sparkReadTable(con = con, schema = cdmSchema, prefix = NULL, name = "cdm_source") |>
         dplyr::pull("cdm_source_name")
     }
     if (length(cdmName) != 1) {
@@ -92,7 +89,7 @@ cdmFromSpark <- function(con,
   cdm <- cdmTables |>
     rlang::set_names() |>
     purrr::map(\(x) {
-      sparkReadTable(con = con, schema = cdmSchema, name = x) |>
+      sparkReadTable(con = con, schema = cdmSchema, prefix = NULL, name = x) |>
         omopgenerics::newCdmTable(src = src, name = x)
     }) |>
     omopgenerics::newCdmReference(
@@ -127,8 +124,8 @@ readCohorts <- function(cdm, cohortTables, .softValidation) {
   src <- omopgenerics::cdmSource(cdm)
   con <- getCon(src)
   schema <- writeSchema(src)
-
-  ls <- sparkListTables(con = con, schema = schema)
+  prefix <- writePrefix(src)
+  ls <- sparkListTables(con = con, schema = schema, prefix = prefix)
 
   # not found cohorts
   notFound <- cohortTables[!cohortTables %in% ls]
@@ -144,7 +141,7 @@ readCohorts <- function(cdm, cohortTables, .softValidation) {
       cli::cli_warn(c("!" = "Attributes: {.var {notPresent}} not found for cohort {.pkg {nm}}."))
     }
     tabs <- list(
-      cohort = sparkReadTable(con = con, schema = schema, name = nm) |>
+      cohort = sparkReadTable(con = con, schema = schema, prefix = prefix, name = nm) |>
         omopgenerics::newCdmTable(src = src, name = nm),
       cohort_set = NULL,
       cohort_attrition = NULL,

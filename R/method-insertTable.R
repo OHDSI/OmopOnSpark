@@ -30,24 +30,32 @@ insertTableToSparkSource <- function(cdm,
                                      overwrite,
                                      temporary){
   # get attributes
-  schema <- schemaToWrite(cdm, temporary)
+  schema <- writeSchema(cdm)
+  prefix <- writePrefix(cdm)
   con <- getCon(cdm)
 
   # check overwrite
   if (overwrite) {
-    sparkDropTable(con = con, schema = schema, name = name)
-  } else if (name %in% sparkListTables(con = con, schema = schema)) {
+    sparkDropTable(con = con, schema = schema, prefix = prefix, name = name)
+  } else if (name %in% sparkListTables(con = con, schema = schema, prefix = prefix)) {
     cli::cli_abort(c(
       x = "Table {.pkg {name}} already exists use `overwrite = FALSE`."
     ))
   }
 
-  # write table
-  sparkWriteTable(con = con, schema = schema, name = name, value = table)
 
-  # read table
-  sparkReadTable(con = con, schema = schema, name = name) |>
-    omopgenerics::newCdmTable(src = cdm, name = name)
+  if(isTRUE(temporary)){
+    sparklyr::sdf_copy_to(con,
+                          table,
+                          name = omopgenerics::uniqueTableName(),
+                          overwrite = TRUE) |>
+      omopgenerics::newCdmTable(src = cdm,
+                                name = NA_character_)
+  } else {
+    sparkWriteTable(con = con, schema = schema, prefix = prefix, name = name, value = table)
+    sparkReadTable(con = con, schema = schema, prefix = prefix, name = name) |>
+      omopgenerics::newCdmTable(src = cdm, name = name)
+  }
 
 }
 
@@ -57,13 +65,14 @@ insertTableToSparkCdmReference <- function(cdm,
                                            overwrite,
                                            temporary){
   # get attributes
-  schema <- schemaToWrite(attr(cdm, "cdm_source"), temporary)
+  schema <- writeSchema(cdm)
+  prefix <- writePrefix(cdm)
   con <- getCon(attr(cdm, "cdm_source"))
 
   # check overwrite
   if (overwrite) {
-    sparkDropTable(con = con, schema = schema, name = name)
-  } else if (name %in% sparkListTables(con = con, schema = schema)) {
+    sparkDropTable(con = con, schema = schema, prefix = prefix, name = name)
+  } else if (name %in% sparkListTables(con = con, schema = schema, prefix = prefix)) {
     cli::cli_abort(c(
       x = "Table {.pkg {name}} already exists use `overwrite = FALSE`."
     ))
@@ -76,10 +85,11 @@ insertTableToSparkCdmReference <- function(cdm,
                                      name = omopgenerics::uniqueTableName(),
                                      overwrite = TRUE)
     cdm[[name]] <-  tmp_tbl |>
-      omopgenerics::newCdmTable(src = attr(cdm, "cdm_source"), name = name)
+      omopgenerics::newCdmTable(src = attr(cdm, "cdm_source"),
+                                name = NA_character_)
   } else {
-    sparkWriteTable(con = con, schema = schema, name = name, value = table)
-    cdm[[name]] <- sparkReadTable(con = con, schema = schema, name = name) |>
+    sparkWriteTable(con = con, schema = schema, prefix = prefix, name = name, value = table)
+    cdm[[name]] <- sparkReadTable(con = con, schema = schema, prefix = prefix, name = name) |>
       omopgenerics::newCdmTable(src = attr(cdm, "cdm_source"), name = name)
   }
 
@@ -87,10 +97,13 @@ insertTableToSparkCdmReference <- function(cdm,
 
 }
 
-sparkWriteTable <- function(con, schema, name, value) {
-
+sparkWriteTable <- function(con, schema, prefix, name, value) {
   # take into account catalog, schema and prefix
-  fullname <- fullName(schema, name)
+  if(is.null(prefix)){
+    fullname <- paste0(schema, ".", name)
+  } else {
+    fullname <- paste0(schema, ".", prefix, name)
+  }
   # first insert data as a spark dataframe
   tmp_tbl <- omopgenerics::uniqueTableName()
   spark_df <- sparklyr::sdf_copy_to(con,

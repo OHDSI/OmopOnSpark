@@ -2,10 +2,10 @@
 #' Create a spark source object.
 #'
 #' @param con A connection to a spark database.
+#' @param cdmSchema A schema for the OMOP CDM core tables.
 #' @param writeSchema A write schema with writing permissions.
-#' @param tempSchema A write schema with writing permissions to emulate
-#' temporary tables.
-#' @param logSql Whether to log executed sql in a log file
+#' @param writePrefix A write prefix used whenever writing tables in the write
+#' schema.
 #'
 #' @return A spark_cdm object.
 #' @export
@@ -16,49 +16,60 @@
 #' sparkSource(con)
 #' }
 #'
-sparkSource <- function(con, writeSchema, tempSchema = writeSchema, logSql = NULL) {
+sparkSource <- function(con, cdmSchema, writeSchema, writePrefix = NULL) {
   con <- validateConnection(con)
-  writeSchema <- validateSchema(writeSchema, FALSE)
-  tempSchema <- validateSchema(tempSchema, FALSE)
-  logSql <- validateLogSql(logSql)
-
+  # writeSchema <- validateSchema(writeSchema, FALSE)
   # create source
   newSparkSource(
     con = con,
+    cdmSchema = cdmSchema,
     writeSchema = writeSchema,
-    tempSchema = tempSchema,
-    logSql = logSql
+    writePrefix = writePrefix
   )
 }
 
-newSparkSource <- function(con, writeSchema, tempSchema, logSql) {
+newSparkSource <- function(con, cdmSchema, writeSchema, writePrefix) {
   tempPrefix <- paste0("temp_", paste0(sample(letters, 5), collapse = ""), "_")
-  tempSchema$prefix <- tempPrefix
   structure(
     .Data = list(),
     con = con,
+    cdm_schema = cdmSchema,
     write_schema = writeSchema,
-    log_sql = logSql,
-    temp_schema = tempSchema,
+    write_prefix = writePrefix,
     class = "spark_cdm"
   ) |>
     omopgenerics::newCdmSource(sourceType = "sparklyr")
 }
 
 # internal functions
-tempSchema <- function(src) {
-  attr(src, "temp_schema")
+cdmSchema <- function(src) {
+  if(inherits(src, "cdm_reference")){
+    return(attr(omopgenerics::cdmSource(src), "cdm_schema"))
+  } else {
+    attr(src, "cdm_schema")
+  }
 }
 writeSchema <- function(src) {
-  attr(src, "write_schema")
+  if(inherits(src, "cdm_reference")){
+    return(attr(omopgenerics::cdmSource(src), "write_schema"))
+  } else {
+    attr(src, "write_schema")
+  }
+}
+writePrefix <- function(src) {
+  if(inherits(src, "cdm_reference")){
+    return(attr(omopgenerics::cdmSource(src), "write_prefix"))
+  } else {
+    attr(src, "write_prefix")
+  }
 }
 getCon <- function(src) {
-  attr(src, "con")
+  if(inherits(src, "cdm_reference")){
+    return(attr(omopgenerics::cdmSource(src), "con"))
+  } else {
+    attr(src, "con")
+  }
 }
 schemaToWrite <- function(src, temporary) {
-  if (temporary) tempSchema(src) else writeSchema(src)
+  writeSchema(src)
 }
-logSql <- function(src) {
-  attr(src, "log_sql")
-}
-

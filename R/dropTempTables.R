@@ -10,7 +10,7 @@
 #' @export
 #'
 dropTempTables <- function(src, schema) {
-  schema <- validateSchema(schema, FALSE)
+  # schema <- validateSchema(schema, FALSE)
   if (inherits(src, "cdm_reference")) {
     src <- omopgenerics::cdmSource(src)
   }

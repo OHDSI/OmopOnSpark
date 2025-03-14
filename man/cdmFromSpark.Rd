@@ -8,13 +8,12 @@ cdmFromSpark(
   con,
   cdmSchema,
   writeSchema,
-  achillesSchema = NULL,
-  tempSchema = writeSchema,
-  cohortTables = character(),
+  cohortTables = NULL,
   cdmVersion = NULL,
   cdmName = NULL,
+  achillesSchema = NULL,
   .softValidation = FALSE,
-  logSql = NULL
+  writePrefix = NULL
 )
 }
 \arguments{
@@ -28,15 +27,6 @@ defined with a named character list/vector; allowed names are: 'catalog',
 with a named character list/vector; allowed names are: 'catalog', 'schema'
 and 'prefix'.}
 
-\item{achillesSchema}{Schema where achilled tables are located. Schema is
-defined with a named character list/vector; allowed names are: 'catalog',
-'schema' and 'prefix'.}
-
-\item{tempSchema}{Schema used to create temporary tables. Schema is
-defined with a named character list/vector; allowed names are: 'catalog' and
-'schema'. 'prefix' will be ignored and all temp tables will be created start
-with 'tamp_' and 5 random letters.}
-
 \item{cohortTables}{Names of cohort tables to be read from \code{writeSchema}.}
 
 \item{cdmVersion}{The version of the cdm (either "5.3" or "5.4"). If NULL
@@ -45,12 +35,17 @@ with 'tamp_' and 5 random letters.}
 \item{cdmName}{The name of the cdm object, if NULL
 \code{cdm_source$cdm_source_name} will be used instead.}
 
+\item{achillesSchema}{Schema where achilled tables are located. Schema is
+defined with a named character list/vector; allowed names are: 'catalog',
+'schema' and 'prefix'.}
+
 \item{.softValidation}{Whether to use soft validation, this is not
 recommended as analysis pipelines assume the cdm fullfill the validation
 criteria.}
 
-\item{logSql}{Path to a folder to write the sql executed. Use \code{logSql = NULL}
-if you don't want the sql to be exported.}
+\item{writePrefix}{A prefix that will be added to all tables created in the
+write_schema. This can be used to create namespace in your database
+write_schema for your tables.}
 }
 \value{
 A cdm reference object

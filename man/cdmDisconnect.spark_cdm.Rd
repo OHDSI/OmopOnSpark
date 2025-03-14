@@ -4,14 +4,12 @@
 \alias{cdmDisconnect.spark_cdm}
 \title{Disconnect the connection of the cdm object}
 \usage{
-\method{cdmDisconnect}{spark_cdm}(cdm, dropWriteSchema = FALSE, dropTempSchema = FALSE, ...)
+\method{cdmDisconnect}{spark_cdm}(cdm, dropWriteSchema = FALSE, ...)
 }
 \arguments{
 \item{cdm}{cdm reference}
 
 \item{dropWriteSchema}{Whether to drop tables in the writeSchema}
-
-\item{dropTempSchema}{Whether to drop tables in the tempSchema}
 
 \item{...}{Not used}
 }
