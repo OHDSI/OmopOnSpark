@@ -8,11 +8,13 @@ dropSourceTable.spark_cdm <- function(cdm, name) {
   toDropCdm <- namesCdm[namesCdm %in% toDrop]
   toDropSource <- namesSource[namesSource %in% toDrop]
 
-  for(i in seq_along(toDropSource)){
-  sparkDropTable(con = getCon(cdm),
-                 schema = writeSchema(cdm),
-                 prefix = writePrefix(cdm),
-                 name = toDropSource[i])
+  for (i in seq_along(toDropSource)) {
+    sparkDropTable(
+      con = getCon(cdm),
+      schema = writeSchema(cdm),
+      prefix = writePrefix(cdm),
+      name = toDropSource[i]
+    )
   }
 }
 
@@ -30,18 +32,13 @@ selectTables <- function(tables, name) {
   unique(res[res %in% tables])
 }
 
-
 sparkDropTable <- function(con, schema, prefix, name) {
-  if(is.null(prefix)){
-    tbl_name <- paste0(schema, ".", name)
-  } else {
-    tbl_name <- paste0(schema, ".", prefix, name)
-  }
+  tbl_name <- getWriteTableName(writeSchema = schema, prefix = prefix, name = name)
   DBI::dbExecute(con, glue::glue("DROP TABLE IF EXISTS {tbl_name}"))
   invisible(TRUE)
 }
 
-sparkDropDataFrame <- function(con, name){
+sparkDropDataFrame <- function(con, name) {
   con |>
     sparklyr::spark_session() |>
     sparklyr::invoke("catalog") |>

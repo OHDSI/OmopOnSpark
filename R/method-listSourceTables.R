@@ -8,7 +8,7 @@ sparkListTables <- function(con, schema, prefix) {
     dplyr::as_tibble() |>
     dplyr::filter(!.data$isTemporary) |>
     dplyr::pull("tableName")
-  if (!is.null(prefix)){
+  if (!is.null(prefix)) {
     x <- x[startsWith(x = x, prefix = prefix)]
     x <- substr(x, nchar(prefix) + 1, nchar(x))
   }

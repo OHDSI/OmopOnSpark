@@ -4,10 +4,10 @@ readSourceTable.spark_cdm <- function(cdm, name) {
 }
 
 sparkReadTable <- function(con, schema, prefix = NULL, name) {
-  if(is.null(prefix)){
-  tbl_name <- paste0(schema, ".", name)
+  if (is.null(prefix)) {
+    tbl_name <- paste0(schema, ".", name)
   } else {
-  tbl_name <- paste0(schema, ".", prefix, name)
+    tbl_name <- paste0(schema, ".", prefix, name)
   }
   dplyr::tbl(con, I(tbl_name))
 }

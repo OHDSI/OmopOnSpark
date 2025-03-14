@@ -12,7 +12,7 @@ cdmTableFromSource.spark_cdm <- function(src, value) {
   }
   schema <- writeSchema(src)
 
-  remoteName <-  dbplyr::remote_name(value)
+  remoteName <- dbplyr::remote_name(value)
   if ("prefix" %in% names(schema)) {
     prefix <- schema$prefix
     if (substr(remoteName, 1, nchar(prefix)) == prefix) {

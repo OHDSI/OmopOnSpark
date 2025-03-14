@@ -1,4 +1,3 @@
-
 #' @export
 insertCdmTo.spark_cdm <- function(cdm, to) {
   con <- getCon(to)
@@ -19,17 +18,21 @@ insertCdmTo.spark_cdm <- function(cdm, to) {
       other <- c(other, nm)
     }
     # omop tables in cdm schema, otherwise in write schema with prefix
-     if("omop_table" %in% cl){
-    sparkWriteTable(con = con,
-                    schema = cdmSchema,
-                    prefix = NULL,
-                    name = nm,
-                    value = x)
+    if ("omop_table" %in% cl) {
+      sparkInsertTable(
+        con = con,
+        schema = cdmSchema,
+        prefix = NULL,
+        name = nm,
+        value = x
+      )
     } else {
-      insertTable(cdm = to,
-                  name = nm,
-                  table = x,
-                  overwrite = TRUE)
+      insertTable(
+        cdm = to,
+        name = nm,
+        table = x,
+        overwrite = TRUE
+      )
     }
     if ("cohort_table" %in% cl) {
       cohorts <- c(cohorts, nm)
