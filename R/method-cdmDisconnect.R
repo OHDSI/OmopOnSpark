@@ -1,4 +1,3 @@
-
 #' Disconnect the connection of the cdm object
 #'
 #' @param cdm cdm reference
@@ -6,7 +5,7 @@
 #' @param ... Not used
 #'
 #' @export
-cdmDisconnect.spark_cdm <- function(cdm, dropWriteSchema = FALSE,  ...) {
+cdmDisconnect.spark_cdm <- function(cdm, dropWriteSchema = FALSE, ...) {
   # input check
   omopgenerics::assertLogical(dropWriteSchema, length = 1)
   con <- attr(attr(cdm, "cdm_source"), "con")

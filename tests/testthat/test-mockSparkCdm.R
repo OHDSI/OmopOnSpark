@@ -1,5 +1,4 @@
 test_that("basic mock cdm", {
-
   folder <- file.path(tempdir(), "temp_spark")
   cdm <- mockSparkCdm(path = folder)
   expect_true(cdmSchema(cdm) == "omop")
@@ -13,5 +12,4 @@ test_that("basic mock cdm", {
   expect_true(nrow(person_5) == 5)
   cdmDisconnect(cdm)
   unlink(folder, recursive = TRUE)
-
 })

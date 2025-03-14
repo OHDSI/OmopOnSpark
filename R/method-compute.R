@@ -10,35 +10,37 @@ compute.spark_cdm <- function(x, name, temporary = FALSE, overwrite = TRUE, ...)
   con <- getCon(src)
 
   if (isFALSE(overwrite)) {
- if (name %in% sparkListTables(con = con, schema = schema, prefix = prefix)) {
-    cli::cli_abort(c(
-      x = "Table {.pkg {name}} already exists use `overwrite = TRUE` to overwrite."
-    ))
- }}
+    if (name %in% sparkListTables(con = con, schema = schema, prefix = prefix)) {
+      cli::cli_abort(c(
+        x = "Table {.pkg {name}} already exists use `overwrite = TRUE` to overwrite."
+      ))
+    }
+  }
 
   if (identical(currentName, name)) {
     intermediate <- omopgenerics::uniqueTableName()
     sparkComputeTable(query = x, schema = schema, prefix = prefix, name = intermediate)
     x <- sparkReadTable(con = con, schema = schema, prefix = prefix, name = intermediate)
-    on.exit(sparkDropTable(con = con,
-                           schema = schema,
-                           prefix = prefix,
-                           name = intermediate))
+    on.exit(sparkDropTable(
+      con = con,
+      schema = schema,
+      prefix = prefix,
+      name = intermediate
+    ))
   }
 
-  if(isTRUE(temporary)){
+  if (isTRUE(temporary)) {
     sparkComputeTemporaryTable(con = con, query = x) |>
       omopgenerics::newCdmTable(src = src, name = NA_character_)
   } else {
-  sparkComputeTable(query = x, schema = schema, prefix = prefix, name = name)
-  sparkReadTable(con = con, schema = schema, prefix = prefix, name = name) |>
-    omopgenerics::newCdmTable(src = src, name = name)
+    sparkComputeTable(query = x, schema = schema, prefix = prefix, name = name)
+    sparkReadTable(con = con, schema = schema, prefix = prefix, name = name) |>
+      omopgenerics::newCdmTable(src = src, name = name)
   }
-
 }
 
 sparkComputeTable <- function(query, schema, prefix, name) {
-  if(is.null(prefix)){
+  if (is.null(prefix)) {
     tbl_name <- paste0(schema, ".", name)
   } else {
     tbl_name <- paste0(schema, ".", prefix, name)
@@ -48,9 +50,10 @@ sparkComputeTable <- function(query, schema, prefix, name) {
   )
 }
 
-sparkComputeTemporaryTable <- function(con, query){
+sparkComputeTemporaryTable <- function(con, query) {
   sparklyr::sdf_copy_to(con,
-                        query,
-                        name = omopgenerics::uniqueTableName(),
-                        overwrite = TRUE)
+    query,
+    name = omopgenerics::uniqueTableName(),
+    overwrite = TRUE
+  )
 }

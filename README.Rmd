@@ -44,10 +44,11 @@ To work with OmopSparkConnector, we will first need to create a connection to ou
 
 ```{r, eval=FALSE}
 con <- sparklyr::spark_connect(.....)
-cdm <- cdmFromSpark(con, 
-             cdmSchema = "omop", 
-             writeSchema = "results", 
-             writePrefix = "study_1_")
+cdm <- cdmFromSpark(con,
+  cdmSchema = "omop",
+  writeSchema = "results",
+  writePrefix = "study_1_"
+)
 ```
 
 For this introduction we'll use a mock cdm where we have a small synthetic dataset in a local spark database.
@@ -61,10 +62,10 @@ cdm
 
 With our cdm reference created, we now a single object in R that represents our OMOP CDM data. 
 ```{r}
-cdm$person |> 
+cdm$person |>
   dplyr::glimpse()
 
-cdm$observation_period |> 
+cdm$observation_period |>
   dplyr::glimpse()
 ```
 
@@ -89,11 +90,13 @@ Or we can make a cohort of individuals aged between 18 and 65 using the CohortCo
 
 We can also make use of native spark queries. For example we can compute summary statistics on one of our cdm tables using spark functions.
 ```{r}
-cdm$person |> 
-  sdf_describe(cols = c("gender_concept_id",
-                        "year_of_birth",
-                        "month_of_birth",
-                        "day_of_birth"))
+cdm$person |>
+  sdf_describe(cols = c(
+    "gender_concept_id",
+    "year_of_birth",
+    "month_of_birth",
+    "day_of_birth"
+  ))
 ```
 
 With this we are hopefully achieving the best of both worlds. On the one hand we can participate in network studies where code has been written in such a way to work across database platforms. And then on the other we are able to go beyond this approach, writing bespoke code that makes use of Spark-specific functionality.

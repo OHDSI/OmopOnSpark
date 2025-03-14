@@ -1,4 +1,3 @@
-
 #' Create a `cdm_reference` object from a `sparklyr` connection.
 #'
 #' @param con A spark connection created with: `sparklyr::spark_connect()`.
@@ -53,7 +52,7 @@ cdmFromSpark <- function(con,
   # writeSchema <- validateSchema(writeSchema, FALSE)
   # achillesSchema <- validateSchema(achillesSchema, TRUE)
   omopgenerics::assertCharacter(cohortTables, null = TRUE)
-  omopgenerics::assertChoice(cdmVersion, c("5.3", "5.4"), length = 1, null = T)
+  omopgenerics::assertChoice(cdmVersion, c("5.3", "5.4"), length = 1, null = TRUE)
   omopgenerics::assertCharacter(cdmName, length = 1, null = TRUE)
   omopgenerics::assertLogical(.softValidation, length = 1)
 
@@ -118,7 +117,6 @@ cdmFromSpark <- function(con,
   cdm <- readCohorts(cdm = cdm, cohortTables = cohortTables, .softValidation = .softValidation)
 
   cdm
-
 }
 readCohorts <- function(cdm, cohortTables, .softValidation) {
   src <- omopgenerics::cdmSource(cdm)
