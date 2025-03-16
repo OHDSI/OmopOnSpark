@@ -34,7 +34,7 @@ devtools::install_github("oxford-pharmacoepi/OmopSparkConnector")
 
 Let's first load the R libraries.
 
-```{r}
+```{r, message=FALSE, warning=FALSE}
 library(dplyr)
 library(sparklyr)
 library(OmopSparkConnector)
@@ -54,13 +54,17 @@ cdm <- cdmFromSpark(con,
 For this introduction we'll use a mock cdm where we have a small synthetic dataset in a local spark database.
 ```{r}
 cdm <- mockSparkCdm(path = file.path(tempdir(), "temp_spark"))
-cdm
 ```
-
 
 ## Cross platform support
 
 With our cdm reference created, we now a single object in R that represents our OMOP CDM data. 
+```{r}
+cdm
+```
+
+This object contains references to each of our tables
+
 ```{r}
 cdm$person |>
   dplyr::glimpse()
@@ -69,26 +73,32 @@ cdm$observation_period |>
   dplyr::glimpse()
 ```
 
-We can also make use of various existing packages that work with a cdm reference. For example, we can extract a summary of our database using the OmopSketch package.
+With this we can use familiar dplyr code . For example, we can quickly get a count of our person table.
 ```{r}
-# library(OmopSketch)
-# library(flextable)
-# snapshot <- summariseObservationPeriod(cdm$observation_period)
-# tableObservationPeriod(snapshot, type = "flextable")
+cdm$person |> 
+  tally()
 ```
 
-Or we can make a cohort of individuals aged between 18 and 65 using the CohortConstructor package.
+Behind the scenes, the dbplyr R package is translating this to SQL.
 ```{r}
-# library(CohortConstructor)
-# cdm$working_age <- demographicsCohort(cdm,
-#                                       name = "working_age",
-#                                       ageRange = c(18, 65))
-# cdm$working_age
+cdm$person |> 
+  tally() |> 
+  show_query()
+```
+
+We can also make use of various existing packages that work with a cdm reference using this approach. For example, we can extract a summary of missing data in our condition occurrence table using the OmopSketch package.
+```{r}
+library(OmopSketch)
+library(flextable)
+
+missing_condition_data <- OmopSketch::summariseMissingData(cdm, "condition_occurrence")
+tableMissingData(missing_condition_data, type = "flextable")
 ```
 
 ## Native spark support
 
-We can also make use of native spark queries. For example we can compute summary statistics on one of our cdm tables using spark functions.
+As well as making use of packages that provide cross-platform functionality with the cdm reference such as OmopSketch, because OmopSparkConnector is built on top of the sparklyr package we can also make use of native spark queries. For example we can compute summary statistics on one of our cdm tables using spark functions.
+
 ```{r}
 cdm$person |>
   sdf_describe(cols = c(

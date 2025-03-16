@@ -10,6 +10,10 @@ test_that("basic mock cdm", {
     head(5) |>
     dplyr::collect()
   expect_true(nrow(person_5) == 5)
+
+  # analytics works
+  expect_no_error(snapshot <- OmopSketch::summariseOmopSnapshot(cdm))
+
   cdmDisconnect(cdm)
   unlink(folder, recursive = TRUE)
 })
