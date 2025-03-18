@@ -15,6 +15,9 @@ cdm_eunomia_duckdb <- CDMConnector::cdmFromCon(con_eunomia,
 cdm_eunomia_local <- cdm_eunomia_duckdb |> dplyr::collect()
 cdm_eunomia_spark <- insertCdmTo(cdm = cdm_eunomia_local, to = src)
 
+snapshot <- OmopSketch::summariseOmopSnapshot(cdm_eunomia_spark)
+
+# benchmarking
 # compare local duckdb vs local spark
 duckdb_bench <- CDMConnector::benchmarkCDMConnector(cdm_eunomia_duckdb)
 spark_bench <- CDMConnector::benchmarkCDMConnector(cdm_eunomia_spark)

@@ -1,4 +1,18 @@
+
+#' Drop spark tables
+#'
+#' @param cdm A cdm reference
+#' @param name The names of the tables to drop. Tidyselect statements can be
+#' used.
+#'
+#' @description
+#' Drop Spark tables in the write schema of the connection behind the cdm
+#' reference.
+#'
+#'
+#' @returns Drops the Spark tables.
 #' @export
+#'
 dropSourceTable.spark_cdm <- function(cdm, name) {
   namesCdm <- names(cdm)
   namesSource <- listSourceTables(cdm = cdm)

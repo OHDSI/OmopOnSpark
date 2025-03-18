@@ -1,4 +1,20 @@
+#' Insert a table to a cdm object
+#'
+#' @description
+#' Insert a local dataframe into the cdm.
+#'
+#'
+#' @param cdm A cdm reference.
+#' @param name The name of the table to insert.
+#' @param table The table to insert.
+#' @param overwrite Whether to overwrite an existing table.
+#' @param temporary If TRUE, a spark dataframe will be written (that will
+#' persist to the end of the current session). If FALSE, a spark table will be
+#' written (which will persist beyond the end of the current session.)
+#'
+#' @returns The cdm reference with the table added.
 #' @export
+#'
 insertTable.spark_cdm <- function(cdm,
                                   name,
                                   table,

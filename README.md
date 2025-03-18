@@ -27,21 +27,7 @@ Let’s first load the R libraries.
 
 ``` r
 library(dplyr)
-#> 
-#> Attaching package: 'dplyr'
-#> The following objects are masked from 'package:stats':
-#> 
-#>     filter, lag
-#> The following objects are masked from 'package:base':
-#> 
-#>     intersect, setdiff, setequal, union
 library(sparklyr)
-#> Warning: package 'sparklyr' was built under R version 4.4.3
-#> 
-#> Attaching package: 'sparklyr'
-#> The following object is masked from 'package:stats':
-#> 
-#>     filter
 library(OmopSparkConnector)
 ```
 
@@ -55,10 +41,11 @@ conflicts with other users).
 
 ``` r
 con <- sparklyr::spark_connect(.....)
-cdm <- cdmFromSpark(con, 
-             cdmSchema = "omop", 
-             writeSchema = "results", 
-             writePrefix = "study_1_")
+cdm <- cdmFromSpark(con,
+  cdmSchema = "omop",
+  writeSchema = "results",
+  writePrefix = "study_1_"
+)
 ```
 
 For this introduction we’ll use a mock cdm where we have a small
@@ -72,6 +59,14 @@ cdm <- mockSparkCdm(path = file.path(tempdir(), "temp_spark"))
 #> ! Validation has been turned off, this is not recommended as analytical
 #>   packages assumed the cdm_reference object fulfills the cdm validation
 #>   criteria.
+```
+
+## Cross platform support
+
+With our cdm reference created, we now a single object in R that
+represents our OMOP CDM data.
+
+``` r
 cdm
 #> 
 #> ── # OMOP CDM reference (sparklyr) of mock local spark ─────────────────────────
@@ -83,22 +78,19 @@ cdm
 #> • other tables: -
 ```
 
-## Cross platform support
-
-With our cdm reference created, we now a single object in R that
-represents our OMOP CDM data.
+This object contains references to each of our tables
 
 ``` r
-cdm$person |> 
+cdm$person |>
   dplyr::glimpse()
 #> Rows: ??
 #> Columns: 18
 #> Database: spark_connection
 #> $ person_id                   <int> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-#> $ gender_concept_id           <int> 8507, 8532, 8532, 8532, 8507, 8507, 8532, …
-#> $ year_of_birth               <int> 1974, 1963, 1965, 1987, 1975, 1956, 1980, …
-#> $ month_of_birth              <int> 11, 8, 1, 3, 8, 8, 12, 12, 7, 1
-#> $ day_of_birth                <int> 28, 16, 30, 26, 29, 19, 27, 14, 30, 19
+#> $ gender_concept_id           <int> 8507, 8532, 8532, 8507, 8507, 8507, 8507, …
+#> $ year_of_birth               <int> 1960, 1969, 1976, 1981, 1987, 1953, 1999, …
+#> $ month_of_birth              <int> 6, 3, 11, 3, 12, 10, 5, 12, 10, 4
+#> $ day_of_birth                <int> 24, 7, 12, 2, 26, 31, 29, 10, 17, 25
 #> $ race_concept_id             <int> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA
 #> $ ethnicity_concept_id        <int> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA
 #> $ birth_datetime              <dttm> 1970-01-01 01:00:00, 1970-01-01 01:00:00, …
@@ -113,60 +105,82 @@ cdm$person |>
 #> $ ethnicity_source_value      <chr> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA
 #> $ ethnicity_source_concept_id <int> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA
 
-cdm$observation_period |> 
+cdm$observation_period |>
   dplyr::glimpse()
 #> Rows: ??
 #> Columns: 5
 #> Database: spark_connection
 #> $ observation_period_id         <int> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 #> $ person_id                     <int> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-#> $ observation_period_start_date <date> 1994-06-09, 1992-11-29, 2004-07-05, 2009…
-#> $ observation_period_end_date   <date> 1996-07-31, 2009-06-25, 2008-01-05, 2011…
+#> $ observation_period_start_date <date> 1990-05-26, 1980-12-06, 2004-02-22, 2017…
+#> $ observation_period_end_date   <date> 2009-03-08, 1981-08-30, 2006-01-11, 2018…
 #> $ period_type_concept_id        <int> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA
 ```
 
-We can also make use of various existing packages that work with a cdm
-reference. For example, we can extract a summary of our database using
-the OmopSketch package.
-
-``` r
-# library(OmopSketch)
-# library(flextable)
-# snapshot <- summariseObservationPeriod(cdm$observation_period)
-# tableObservationPeriod(snapshot, type = "flextable")
-```
-
-Or we can make a cohort of individuals aged between 18 and 65 using the
-CohortConstructor package.
-
-``` r
-# library(CohortConstructor)
-# cdm$working_age <- demographicsCohort(cdm,
-#                                       name = "working_age",
-#                                       ageRange = c(18, 65))
-# cdm$working_age
-```
-
-## Native spark support
-
-We can also make use of native spark queries. For example we can compute
-summary statistics on one of our cdm tables using spark functions.
+With this we can use familiar dplyr code . For example, we can quickly
+get a count of our person table.
 
 ``` r
 cdm$person |> 
-  sdf_describe(cols = c("gender_concept_id",
-                        "year_of_birth",
-                        "month_of_birth",
-                        "day_of_birth"))
-#> # Source:   table<`sparklyr_tmp_cb2e998f_e7f3_48d2_8f79_1b925d79a939`> [?? x 5]
+  tally()
+#> # Source:   SQL [?? x 1]
 #> # Database: spark_connection
-#>   summary gender_concept_id  year_of_birth     month_of_birth    day_of_birth   
-#>   <chr>   <chr>              <chr>             <chr>             <chr>          
-#> 1 count   10                 10                10                10             
-#> 2 mean    8522.0             1971.5            7.1               23.8           
-#> 3 stddev  12.909944487358048 12.64252084567525 4.175324338699131 6.142746399887…
-#> 4 min     8507               1956              1                 14             
-#> 5 max     8532               1994              12                30
+#>       n
+#>   <dbl>
+#> 1    10
+```
+
+Behind the scenes, the dbplyr R package is translating this to SQL.
+
+``` r
+cdm$person |> 
+  tally() |> 
+  show_query()
+#> <SQL>
+#> SELECT COUNT(*) AS `n`
+#> FROM omop.person
+```
+
+We can also make use of various existing packages that work with a cdm
+reference using this approach. For example, we can extract a summary of
+missing data in our condition occurrence table using the OmopSketch
+package.
+
+``` r
+library(OmopSketch)
+library(flextable)
+
+missing_condition_data <- OmopSketch::summariseMissingData(cdm, "condition_occurrence")
+tableMissingData(missing_condition_data, type = "flextable")
+```
+
+<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
+
+## Native spark support
+
+As well as making use of packages that provide cross-platform
+functionality with the cdm reference such as OmopSketch, because
+OmopSparkConnector is built on top of the sparklyr package we can also
+make use of native spark queries. For example we can compute summary
+statistics on one of our cdm tables using spark functions.
+
+``` r
+cdm$person |>
+  sdf_describe(cols = c(
+    "gender_concept_id",
+    "year_of_birth",
+    "month_of_birth",
+    "day_of_birth"
+  ))
+#> # Source:   table<`sparklyr_tmp_08565f48_368a_4fd3_996d_6ce84d0937eb`> [?? x 5]
+#> # Database: spark_connection
+#>   summary gender_concept_id  year_of_birth      month_of_birth     day_of_birth 
+#>   <chr>   <chr>              <chr>              <chr>              <chr>        
+#> 1 count   10                 10                 10                 10           
+#> 2 mean    8519.5             1974.7             7.6                18.3         
+#> 3 stddev  13.176156917368234 15.867857098199766 3.7475918193480524 10.089047967…
+#> 4 min     8507               1953               3                  2            
+#> 5 max     8532               1999               12                 31
 ```
 
 With this we are hopefully achieving the best of both worlds. On the one
