@@ -8,7 +8,9 @@
 <url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/OmopSparkConnector-package.html</loc></url>
 <url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/cdmDisconnect.spark_cdm.html</loc></url>
 <url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/cdmFromSpark.html</loc></url>
+<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/dropSourceTable.spark_cdm.html</loc></url>
 <url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/index.html</loc></url>
+<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/insertTable.spark_cdm.html</loc></url>
 <url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/mockSparkCdm.html</loc></url>
 <url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/reexports.html</loc></url>
 </urlset>
