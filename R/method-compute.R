@@ -30,7 +30,9 @@ compute.spark_cdm <- function(x, name, temporary = FALSE, overwrite = TRUE, ...)
   }
 
   if (isTRUE(temporary)) {
-    sparkComputeTemporaryTable(con = con, query = x) |>
+    temp_name <- omopgenerics::uniqueTableName(prefix = "tmp_")
+    sparkComputeTable(query = x, schema = schema, prefix = prefix, name = temp_name)
+    sparkReadTable(con = con, schema = schema, prefix = prefix, name = temp_name) |>
       omopgenerics::newCdmTable(src = src, name = NA_character_)
   } else {
     sparkComputeTable(query = x, schema = schema, prefix = prefix, name = name)
@@ -50,10 +52,11 @@ sparkComputeTable <- function(query, schema, prefix, name) {
   )
 }
 
-sparkComputeTemporaryTable <- function(con, query) {
-  sparklyr::sdf_copy_to(con,
-    query,
-    name = omopgenerics::uniqueTableName(),
-    overwrite = TRUE
-  )
-}
+# Below not working on databricks
+# sparkComputeTemporaryTable <- function(con, query) {
+#   sparklyr::sdf_copy_to(con,
+#     query,
+#     name = omopgenerics::uniqueTableName(),
+#     overwrite = TRUE
+#   )
+# }
