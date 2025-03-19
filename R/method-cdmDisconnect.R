@@ -11,6 +11,9 @@ cdmDisconnect.spark_cdm <- function(cdm, dropWriteSchema = FALSE, ...) {
   con <- attr(attr(cdm, "cdm_source"), "con")
   on.exit(sparklyr::spark_disconnect(con), add = TRUE)
 
+  # drop emulated temp tables
+  dropSourceTable(cdm = cdm, name = dplyr::starts_with("tmp_og_"))
+
   # drop tables if needed
   if (dropWriteSchema) {
     schema <- writeSchema(src = cdm)
