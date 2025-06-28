@@ -20,6 +20,7 @@ insertTable.spark_cdm <- function(cdm,
                                   table,
                                   overwrite = TRUE,
                                   temporary = FALSE) {
+
   if (inherits(cdm, "cdm_source")) {
     insertTableToSparkSource(
       cdm = cdm,
@@ -50,7 +51,6 @@ insertTableToSparkSource <- function(cdm,
   schema <- writeSchema(cdm)
   prefix <- writePrefix(cdm)
   con <- getCon(cdm)
-
   # check overwrite
   if (overwrite) {
     sparkDropTable(con = con, schema = schema, prefix = prefix, name = name)
@@ -126,6 +126,7 @@ sparkInsertTable <- function(con, schema, prefix, name, value) {
                                 name = name)
   # first insert data as a spark dataframe
   tmp_tbl <- omopgenerics::uniqueTableName()
+  if(con_type(con) == "sparklyr"){
   spark_df <- sparklyr::sdf_copy_to(con,
     value,
     name = tmp_tbl,
@@ -140,6 +141,12 @@ sparkInsertTable <- function(con, schema, prefix, name, value) {
   # drop spark dataframe and rm to remove from rstudio pane
   sparkDropDataFrame(con = con, name = tmp_tbl)
   rm(spark_df)
+  } else {
+    DBI::dbWriteTable(conn = con,
+                      name = DBI::Id(schema, paste0(prefix, name)),
+                      value = value,
+                      temporary = FALSE)
+  }
 
   return(invisible(NULL))
 }
