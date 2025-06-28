@@ -149,7 +149,7 @@ readCohorts <- function(cdm, cohortTables, .softValidation) {
       nam <- paste0(nm, "_", atr)
       if (nam %in% ls) {
         tabs[[paste0("cohort_", atr)]] <- sparkReadTable(
-          con = con, schema = schema, name = nam
+          con = con, schema = schema, name = nam, prefix = prefix
         )
       }
     }

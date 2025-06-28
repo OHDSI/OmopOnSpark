@@ -57,3 +57,5 @@ logs/log4j.spark.log
 /logs
 /tests/testthat/logs
 inst/doc
+/doc/
+/Meta/
