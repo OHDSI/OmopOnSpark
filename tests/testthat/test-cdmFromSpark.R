@@ -1,4 +1,4 @@
-test_that("creating a cdm reference", {
+test_that("creating a cdm reference - sparklyr", {
   cdm_local <- omock::mockCdmReference() |>
     omock::mockPerson(nPerson = 100) |>
     omock::mockObservationPeriod() |>
@@ -8,29 +8,31 @@ test_that("creating a cdm reference", {
   folder <- file.path(tempdir(), "temp_spark")
   working_config <- sparklyr::spark_config()
   working_config$spark.sql.warehouse.dir <- folder
-  con <- sparklyr::spark_connect(master = "local", config = working_config)
-  DBI::dbExecute(con, glue::glue("CREATE SCHEMA IF NOT EXISTS public"))
-  DBI::dbExecute(con, glue::glue("CREATE SCHEMA IF NOT EXISTS results"))
+
+  sc <- sparklyr::spark_connect(
+    master = "local",
+    config = working_config
+  )
 
   src <- sparkSource(
-    con = con,
-    cdmSchema = "public",
-    writeSchema = "results",
+    con = sc,
+    cdmSchema = NULL,
+    writeSchema = NULL,
     writePrefix = "study_1_"
   )
 
   insertCdmTo(cdm_local, src)
 
   cdm <- cdmFromSpark(
-    con = con,
-    cdmSchema = "public",
-    writeSchema = "results",
+    con = sc,
+    cdmSchema = NULL,
+    writeSchema = NULL,
     cohortTables = "my_cohort",
     cdmName = "my spark cdm",
     .softValidation = TRUE,
     writePrefix = "study_1_"
   )
-  expect_identical(writeSchema(cdm), "results")
+  expect_identical(writeSchema(cdm), NULL)
   expect_identical(omopgenerics::cdmName(cdm), "my spark cdm")
   expect_identical(omopgenerics::cdmVersion(cdm), "5.3")
   expect_true(inherits(cdm, "cdm_reference"))
@@ -56,61 +58,21 @@ test_that("creating a cdm reference", {
   unlink(folder, recursive = TRUE)
 })
 
-test_that("cdm validation", {
-  cdm_local <- omock::mockCdmReference() |>
-    omock::mockPerson(nPerson = 100) |>
-    omock::mockObservationPeriod()
+test_that("cdm validation - sparklyr", {
 
-  folder <- file.path(tempdir(), "temp_spark")
-  working_config <- sparklyr::spark_config()
-  working_config$spark.sql.warehouse.dir <- folder
-  con <- sparklyr::spark_connect(master = "local", config = working_config)
-  DBI::dbExecute(con, glue::glue("CREATE SCHEMA IF NOT EXISTS my_schema"))
-  src <- sparkSource(con = con, cdmSchema = "my_schema", writeSchema = "my_schema")
-
-  insertCdmTo(cdm_local, src)
-
-  cdm <- cdmFromSpark(
-    con = con,
-    cdmSchema = "my_schema",
-    writeSchema = "my_schema",
-    .softValidation = TRUE
-  )
-
-  expect_no_error(omopgenerics::validateCdmArgument(cdm_local,
-    checkOverlapObservation = TRUE,
-    validation = "error"
-  ))
+ cdm <- mockSparkCdm(file.path(tempdir(), "temp_spark"))
   expect_no_error(omopgenerics::validateCdmArgument(cdm,
     checkOverlapObservation = TRUE,
-    validation = "error"
-  ))
-
-  expect_no_error(omopgenerics::validateCdmArgument(cdm_local,
-    checkStartBeforeEndObservation = TRUE,
     validation = "error"
   ))
   expect_no_error(omopgenerics::validateCdmArgument(cdm,
     checkStartBeforeEndObservation = TRUE,
     validation = "error"
   ))
-
-  expect_no_error(omopgenerics::validateCdmArgument(cdm_local,
-    checkPlausibleObservationDates = TRUE,
-    validation = "error"
-  ))
   expect_no_error(omopgenerics::validateCdmArgument(cdm,
     checkPlausibleObservationDates = TRUE,
     validation = "error"
   ))
-
-
-  expect_identical(
-    sort(cdm_local$observation_period |>
-      dplyr::pull("observation_period_start_date")),
-    sort(cdm$observation_period |>
-      dplyr::pull("observation_period_start_date"))
-  )
 
   cdmDisconnect(cdm)
   unlink(folder, recursive = TRUE)

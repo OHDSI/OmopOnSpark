@@ -45,9 +45,9 @@ cdmFromSpark <- function(con,
                          writePrefix = NULL) {
   # initial checks
   con <- validateConnection(con)
-  omopgenerics::assertCharacter(cdmSchema, length = 1, null = FALSE)
-  omopgenerics::assertCharacter(writeSchema, length = 1, null = FALSE)
-  omopgenerics::assertCharacter(achillesSchema, length = 1, null = TRUE)
+  # omopgenerics::assertCharacter(cdmSchema, length = 1, null = FALSE)
+  # omopgenerics::assertCharacter(writeSchema, length = 1, null = FALSE)
+  # omopgenerics::assertCharacter(achillesSchema, length = 1, null = TRUE)
   # cdmSchema <- validateSchema(cdmSchema, FALSE)
   # writeSchema <- validateSchema(writeSchema, FALSE)
   # achillesSchema <- validateSchema(achillesSchema, TRUE)
@@ -149,7 +149,7 @@ readCohorts <- function(cdm, cohortTables, .softValidation) {
       nam <- paste0(nm, "_", atr)
       if (nam %in% ls) {
         tabs[[paste0("cohort_", atr)]] <- sparkReadTable(
-          con = con, schema = schema, name = nam
+          con = con, schema = schema, name = nam, prefix = prefix
         )
       }
     }

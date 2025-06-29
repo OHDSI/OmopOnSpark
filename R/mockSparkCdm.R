@@ -14,17 +14,19 @@
 mockSparkCdm <- function(path) {
   folder <- path
   working_config <- sparklyr::spark_config()
+  # working_config$spark.hadoop.io.nativeio.enabled <- "false"
+  # working_config$spark.hadoop.io.native.lib.available <- "false"
   working_config$spark.sql.warehouse.dir <- folder
-  con <- sparklyr::spark_connect(
+  sc <- sparklyr::spark_connect(
     master = "local",
     config = working_config
   )
-  DBI::dbExecute(con, glue::glue("CREATE SCHEMA IF NOT EXISTS omop"))
-  DBI::dbExecute(con, glue::glue("CREATE SCHEMA IF NOT EXISTS results"))
+  # sparklyr::invoke(sparklyr::hive_context(con), "sql", "CREATE SCHEMA IF NOT EXISTS omop")
+  # sparklyr::invoke(sparklyr::hive_context(con), "sql", "CREATE SCHEMA IF NOT EXISTS results")
   src <- sparkSource(
-    con = con,
-    cdmSchema = "omop",
-    writeSchema = "results",
+    con = sc,
+    cdmSchema = NULL,
+    writeSchema = NULL,
     writePrefix = "my_study_"
   )
 
@@ -37,9 +39,9 @@ mockSparkCdm <- function(path) {
   cdm <- insertCdmTo(cdm_local, src)
 
   cdm <- cdmFromSpark(
-    con = con,
-    cdmSchema = "omop",
-    writeSchema = "results",
+    con = sc,
+    cdmSchema = NULL,
+    writeSchema = NULL,
     cdmName = "mock local spark",
     .softValidation = TRUE,
     writePrefix = "my_study_"

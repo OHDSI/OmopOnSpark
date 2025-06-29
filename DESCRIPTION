@@ -20,11 +20,12 @@ Config/testthat/edition: 3
 Config/testthat/parallel: false
 Imports: 
     cli,
+    datasets,
     DBI,
     dbplyr,
     dplyr,
     glue,
-    omopgenerics (>= 1.0.0),
+    omopgenerics (>= 1.2.0),
     purrr,
     rlang,
     sparklyr

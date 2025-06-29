@@ -1,8 +1,8 @@
 test_that("insert permanent table to cdm ref", {
   skip_on_cran()
 
-  path <- file.path(tempdir(), "temp_spark")
-  cdm <- mockSparkCdm(path)
+  folder <- file.path(tempdir(), "temp_spark")
+  cdm <- mockSparkCdm(folder)
 
   # insert a permanent table
   cdm <- insertTable(
@@ -29,7 +29,7 @@ test_that("insert permanent table to cdm ref", {
   expect_identical(
     dplyr::tbl(
       getCon(cdm),
-      I(paste0(writeSchema(cdm), ".", writePrefix(cdm), "cars"))
+      I(paste0(writePrefix(cdm), "cars"))
     ) |>
       dplyr::collect() |>
       dplyr::arrange("speed", "dist"),
@@ -39,7 +39,7 @@ test_that("insert permanent table to cdm ref", {
   # will not be able to reference the table without the prefix
   expect_error(dplyr::tbl(
     getCon(cdm),
-    I(paste0(writeSchema(cdm), ".", "cars"))
+    I(paste0("cars"))
   ))
 
   # insert and overwrite
@@ -76,8 +76,8 @@ test_that("insert permanent table to cdm ref", {
 test_that("insert temp table to cdm ref", {
   skip_on_cran()
 
-  path <- file.path(tempdir(), "temp_spark")
-  cdm <- mockSparkCdm(path)
+  folder <- file.path(tempdir(), "temp_spark")
+  cdm <- mockSparkCdm(folder)
 
   # insert a temp table
   cdm <- insertTable(
@@ -135,12 +135,15 @@ test_that("insert temp table to cdm ref", {
 test_that("test insert to cdm source - no prefix ", {
   skip_on_cran()
 
-  con <- sparklyr::spark_connect(master = "local", config = config)
-  DBI::dbExecute(con, glue::glue("CREATE SCHEMA IF NOT EXISTS my_schema"))
+  folder <- file.path(tempdir(), "temp_spark")
+  working_config <- sparklyr::spark_config()
+  working_config$spark.sql.warehouse.dir <- folder
+  con <- sparklyr::spark_connect(master = "local", config = working_config)
+
   src <- sparkSource(
     con = con,
-    cdmSchema = "omop",
-    writeSchema = "my_schema",
+    cdmSchema = NULL,
+    writeSchema = NULL,
     writePrefix = NULL
   )
 
@@ -160,11 +163,13 @@ test_that("test insert to cdm source - no prefix ", {
 test_that("test insert to cdm source - prefix ", {
   skip_on_cran()
 
-  con <- sparklyr::spark_connect(master = "local", config = config)
-  DBI::dbExecute(con, glue::glue("CREATE SCHEMA IF NOT EXISTS my_schema"))
+  folder <- file.path(tempdir(), "temp_spark")
+  working_config <- sparklyr::spark_config()
+  working_config$spark.sql.warehouse.dir <- folder
+  con <- sparklyr::spark_connect(master = "local", config = working_config)
   src <- sparkSource(
-    con = con, cdmSchema = "omop",
-    writeSchema = "my_schema", writePrefix = "prefix_"
+    con = con, cdmSchema = NULL,
+    writeSchema = NULL, writePrefix = "prefix_"
   )
 
   tab1 <- insertTable(src, name = "my_table", table = cars, overwrite = TRUE, temporary = FALSE)

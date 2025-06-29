@@ -20,7 +20,7 @@ cdmTableFromSource.spark_cdm <- function(src, value) {
     } else {
       cli::cli_warn(c("!" = "The {.var {remoteName}} does have the required prefix."))
       cli::cli_inform(c(i = "Creating a copy in `writeSchema`"))
-      value <- sparkComputeTable(query = value, schema = schema, name = remoteName)
+      value <- sparklyrComputeTable(query = value, schema = schema, name = remoteName)
     }
   }
 

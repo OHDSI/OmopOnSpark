@@ -9,3 +9,5 @@
 ^LICENSE\.md$
 ^derby\.log
 ^spark-warehouse$
+^doc$
+^Meta$
