@@ -113,10 +113,10 @@
 <span><span class="co">#&gt; Columns: 18</span></span>
 <span><span class="co">#&gt; Database: spark_connection</span></span>
 <span><span class="co">#&gt; $ person_id                   &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10</span></span>
-<span><span class="co">#&gt; $ gender_concept_id           &lt;int&gt; 8507, 8532, 8532, 8507, 8507, 8507, 8507, …</span></span>
-<span><span class="co">#&gt; $ year_of_birth               &lt;int&gt; 1960, 1969, 1976, 1981, 1987, 1953, 1999, …</span></span>
-<span><span class="co">#&gt; $ month_of_birth              &lt;int&gt; 6, 3, 11, 3, 12, 10, 5, 12, 10, 4</span></span>
-<span><span class="co">#&gt; $ day_of_birth                &lt;int&gt; 24, 7, 12, 2, 26, 31, 29, 10, 17, 25</span></span>
+<span><span class="co">#&gt; $ gender_concept_id           &lt;int&gt; 8507, 8532, 8507, 8507, 8532, 8532, 8507, …</span></span>
+<span><span class="co">#&gt; $ year_of_birth               &lt;int&gt; 1972, 1951, 1979, 1997, 1954, 1985, 1956, …</span></span>
+<span><span class="co">#&gt; $ month_of_birth              &lt;int&gt; 1, 9, 7, 7, 5, 2, 2, 5, 11, 7</span></span>
+<span><span class="co">#&gt; $ day_of_birth                &lt;int&gt; 3, 28, 7, 31, 11, 10, 16, 16, 12, 1</span></span>
 <span><span class="co">#&gt; $ race_concept_id             &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA</span></span>
 <span><span class="co">#&gt; $ ethnicity_concept_id        &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA</span></span>
 <span><span class="co">#&gt; $ birth_datetime              &lt;dttm&gt; 1970-01-01 01:00:00, 1970-01-01 01:00:00, …</span></span>
@@ -138,8 +138,8 @@
 <span><span class="co">#&gt; Database: spark_connection</span></span>
 <span><span class="co">#&gt; $ observation_period_id         &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10</span></span>
 <span><span class="co">#&gt; $ person_id                     &lt;int&gt; 1, 2, 3, 4, 5, 6, 7, 8, 9, 10</span></span>
-<span><span class="co">#&gt; $ observation_period_start_date &lt;date&gt; 1990-05-26, 1980-12-06, 2004-02-22, 2017…</span></span>
-<span><span class="co">#&gt; $ observation_period_end_date   &lt;date&gt; 2009-03-08, 1981-08-30, 2006-01-11, 2018…</span></span>
+<span><span class="co">#&gt; $ observation_period_start_date &lt;date&gt; 1981-02-02, 2018-01-11, 1983-06-07, 2000…</span></span>
+<span><span class="co">#&gt; $ observation_period_end_date   &lt;date&gt; 1991-03-20, 2019-10-03, 1994-03-12, 2011…</span></span>
 <span><span class="co">#&gt; $ period_type_concept_id        &lt;int&gt; NA, NA, NA, NA, NA, NA, NA, NA, NA, NA</span></span></code></pre></div>
 <p>With this we can use familiar dplyr code . For example, we can quickly get a count of our person table.</p>
 <div class="sourceCode" id="cb7"><pre class="downlit sourceCode r">
@@ -157,15 +157,35 @@
 <span>  <span class="fu"><a href="https://dplyr.tidyverse.org/reference/explain.html" class="external-link">show_query</a></span><span class="op">(</span><span class="op">)</span></span>
 <span><span class="co">#&gt; &lt;SQL&gt;</span></span>
 <span><span class="co">#&gt; SELECT COUNT(*) AS `n`</span></span>
-<span><span class="co">#&gt; FROM omop.person</span></span></code></pre></div>
+<span><span class="co">#&gt; FROM person</span></span></code></pre></div>
 <p>We can also make use of various existing packages that work with a cdm reference using this approach. For example, we can extract a summary of missing data in our condition occurrence table using the OmopSketch package.</p>
 <div class="sourceCode" id="cb9"><pre class="downlit sourceCode r">
 <code class="sourceCode R"><span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://OHDSI.github.io/OmopSketch/" class="external-link">OmopSketch</a></span><span class="op">)</span></span>
 <span><span class="kw"><a href="https://rdrr.io/r/base/library.html" class="external-link">library</a></span><span class="op">(</span><span class="va"><a href="https://ardata-fr.github.io/flextable-book/" class="external-link">flextable</a></span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: package 'flextable' was built under R version 4.2.2</span></span>
 <span></span>
-<span><span class="va">missing_condition_data</span> <span class="op">&lt;-</span> <span class="fu">OmopSketch</span><span class="fu">::</span><span class="fu"><a href="https://OHDSI.github.io/OmopSketch/reference/summariseMissingData.html" class="external-link">summariseMissingData</a></span><span class="op">(</span><span class="va">cdm</span>, <span class="st">"condition_occurrence"</span><span class="op">)</span></span>
-<span><span class="fu"><a href="https://OHDSI.github.io/OmopSketch/reference/tableMissingData.html" class="external-link">tableMissingData</a></span><span class="op">(</span><span class="va">missing_condition_data</span>, type <span class="op">=</span> <span class="st">"flextable"</span><span class="op">)</span></span></code></pre></div>
-<p><img src="reference/figures/README-unnamed-chunk-9-1.png" width="100%"></p>
+<span><span class="va">snap</span> <span class="op">&lt;-</span> <span class="fu"><a href="https://OHDSI.github.io/OmopSketch/reference/summariseOmopSnapshot.html" class="external-link">summariseOmopSnapshot</a></span><span class="op">(</span><span class="va">cdm</span><span class="op">)</span></span>
+<span><span class="co">#&gt; Warning: Vocabulary version in cdm_source (NA) doesn't match the one in the vocabulary</span></span>
+<span><span class="co">#&gt; table (mock)</span></span>
+<span><span class="fu"><a href="https://OHDSI.github.io/OmopSketch/reference/tableOmopSnapshot.html" class="external-link">tableOmopSnapshot</a></span><span class="op">(</span><span class="va">snap</span>, type <span class="op">=</span> <span class="st">"tibble"</span><span class="op">)</span></span>
+<span><span class="co">#&gt; # A tibble: 13 × 3</span></span>
+<span><span class="co">#&gt;    Variable           Estimate                [header_name]Database name\n[hea…¹</span></span>
+<span><span class="co">#&gt;    &lt;chr&gt;              &lt;chr&gt;                   &lt;chr&gt;                             </span></span>
+<span><span class="co">#&gt;  1 General            Snapshot date           2025-06-29                        </span></span>
+<span><span class="co">#&gt;  2 General            Person count            10                                </span></span>
+<span><span class="co">#&gt;  3 General            Vocabulary version      mock                              </span></span>
+<span><span class="co">#&gt;  4 Observation period N                       10                                </span></span>
+<span><span class="co">#&gt;  5 Observation period Start date              1960-09-21                        </span></span>
+<span><span class="co">#&gt;  6 Observation period End date                2019-10-03                        </span></span>
+<span><span class="co">#&gt;  7 Cdm                Source name             mock                              </span></span>
+<span><span class="co">#&gt;  8 Cdm                Version                 5.3                               </span></span>
+<span><span class="co">#&gt;  9 Cdm                Holder name             &lt;NA&gt;                              </span></span>
+<span><span class="co">#&gt; 10 Cdm                Release date            &lt;NA&gt;                              </span></span>
+<span><span class="co">#&gt; 11 Cdm                Description             &lt;NA&gt;                              </span></span>
+<span><span class="co">#&gt; 12 Cdm                Documentation reference &lt;NA&gt;                              </span></span>
+<span><span class="co">#&gt; 13 Cdm                Source type             sparklyr                          </span></span>
+<span><span class="co">#&gt; # ℹ abbreviated name:</span></span>
+<span><span class="co">#&gt; #   ¹​`[header_name]Database name\n[header_level]mock local spark`</span></span></code></pre></div>
 </div>
 <div class="section level2">
 <h2 id="native-spark-support">Native spark support<a class="anchor" aria-label="anchor" href="#native-spark-support"></a>
@@ -179,15 +199,15 @@
 <span>    <span class="st">"month_of_birth"</span>,</span>
 <span>    <span class="st">"day_of_birth"</span></span>
 <span>  <span class="op">)</span><span class="op">)</span></span>
-<span><span class="co">#&gt; # Source:   table&lt;`sparklyr_tmp_08565f48_368a_4fd3_996d_6ce84d0937eb`&gt; [?? x 5]</span></span>
+<span><span class="co">#&gt; # Source:   table&lt;`sparklyr_tmp_20b74ffd_d980_4d73_975b_03be43f93d9f`&gt; [?? x 5]</span></span>
 <span><span class="co">#&gt; # Database: spark_connection</span></span>
-<span><span class="co">#&gt;   summary gender_concept_id  year_of_birth      month_of_birth     day_of_birth </span></span>
-<span><span class="co">#&gt;   &lt;chr&gt;   &lt;chr&gt;              &lt;chr&gt;              &lt;chr&gt;              &lt;chr&gt;        </span></span>
-<span><span class="co">#&gt; 1 count   10                 10                 10                 10           </span></span>
-<span><span class="co">#&gt; 2 mean    8519.5             1974.7             7.6                18.3         </span></span>
-<span><span class="co">#&gt; 3 stddev  13.176156917368234 15.867857098199766 3.7475918193480524 10.089047967…</span></span>
-<span><span class="co">#&gt; 4 min     8507               1953               3                  2            </span></span>
-<span><span class="co">#&gt; 5 max     8532               1999               12                 31</span></span></code></pre></div>
+<span><span class="co">#&gt;   summary gender_concept_id  year_of_birth     month_of_birth    day_of_birth   </span></span>
+<span><span class="co">#&gt;   &lt;chr&gt;   &lt;chr&gt;              &lt;chr&gt;             &lt;chr&gt;             &lt;chr&gt;          </span></span>
+<span><span class="co">#&gt; 1 count   10                 10                10                10             </span></span>
+<span><span class="co">#&gt; 2 mean    8517.0             1971.8            5.6               13.5           </span></span>
+<span><span class="co">#&gt; 3 stddev  12.909944487358052 17.55499295863651 3.238655413730965 9.766723549322…</span></span>
+<span><span class="co">#&gt; 4 min     8507               1951              1                 1              </span></span>
+<span><span class="co">#&gt; 5 max     8532               1998              11                31</span></span></code></pre></div>
 <p>With this we are hopefully achieving the best of both worlds. On the one hand we can participate in network studies where code has been written in such a way to work across database platforms. And then on the other we are able to go beyond this approach, writing bespoke code that makes use of Spark-specific functionality.</p>
 </div>
 </div>
@@ -218,7 +238,7 @@
 <div class="developers">
 <h2 data-toc-skip>Developers</h2>
 <ul class="list-unstyled">
-<li>First Last <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/YOUR-ORCID-ID" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a> </li>
+<li>First Last <br><small class="roles"> Author, maintainer </small> <a href="https://orcid.org/YOUR-ORCID-ID" target="orcid.widget" aria-label="ORCID" class="external-link"><span class="fab fa-orcid orcid" aria-hidden="true"></span></a>  </li>
 </ul>
 </div>
 
@@ -238,7 +258,7 @@
 </div>
 
 <div class="pkgdown-footer-right">
-  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.1.</p>
+  <p>Site built with <a href="https://pkgdown.r-lib.org/" class="external-link">pkgdown</a> 2.1.3.</p>
 </div>
 
     </footer>
