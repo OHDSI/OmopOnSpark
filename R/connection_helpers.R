@@ -31,7 +31,7 @@ native_odbc_con <- function(con){
     tblName <- omopgenerics::uniqueTableName()
     DBI::dbWriteTable(conn = con,
                       name = tblName,
-                      value = cars |> head(1))
+                      value = datasets::cars |> utils::head(1))
     DBI::dbRemoveTable(conn = con,
                        name = tblName)
     FALSE
@@ -40,7 +40,7 @@ native_odbc_con <- function(con){
   })
 }
 
-validateSparklyeConnection <- function(con){
+validateSparklyrConnection <- function(con){
 if (!sparklyr::connection_is_open(con)) {
   cli::cli_abort(c(x = "{.arg con} connection is closed, please provide an open connection."), call = call)
 }

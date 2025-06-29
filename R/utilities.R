@@ -28,10 +28,20 @@ getCon <- function(src) {
 }
 
 getWriteTableName <- function(writeSchema, prefix, name) {
+  if(!is.null(writeSchema)){
   if (is.null(prefix)) {
     tbl_name <- paste0(writeSchema, ".", name)
   } else {
     tbl_name <- paste0(writeSchema, ".", prefix, name)
+  }
+  }
+
+  if(is.null(writeSchema)){
+    if (is.null(prefix)) {
+      tbl_name <- name
+    } else {
+      tbl_name <- paste0(prefix, name)
+    }
   }
   tbl_name
 }

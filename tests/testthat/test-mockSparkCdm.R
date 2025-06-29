@@ -1,8 +1,8 @@
 test_that("basic mock cdm", {
   folder <- file.path(tempdir(), "temp_spark")
   cdm <- mockSparkCdm(path = folder)
-  expect_true(cdmSchema(cdm) == "omop")
-  expect_true(writeSchema(cdm) == "results")
+  expect_true(is.null(cdmSchema(cdm)))
+  expect_true(is.null(writeSchema(cdm)))
   expect_true(writePrefix(cdm) == "my_study_")
   # overwrite
   cdm <- mockSparkCdm(path = folder)

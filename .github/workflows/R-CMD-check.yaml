@@ -60,7 +60,7 @@ jobs:
         run: |
             options(timeout = 3600)
             # options(sparklyr.log.console = TRUE)
-            sparklyr::spark_install("3.0")
+            sparklyr::spark_install("3.5.1")
         shell: Rscript {0}
 
       - uses: r-lib/actions/check-r-package@v2

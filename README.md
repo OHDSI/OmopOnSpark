@@ -87,10 +87,10 @@ cdm$person |>
 #> Columns: 18
 #> Database: spark_connection
 #> $ person_id                   <int> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-#> $ gender_concept_id           <int> 8507, 8532, 8532, 8507, 8507, 8507, 8507, …
-#> $ year_of_birth               <int> 1960, 1969, 1976, 1981, 1987, 1953, 1999, …
-#> $ month_of_birth              <int> 6, 3, 11, 3, 12, 10, 5, 12, 10, 4
-#> $ day_of_birth                <int> 24, 7, 12, 2, 26, 31, 29, 10, 17, 25
+#> $ gender_concept_id           <int> 8507, 8532, 8507, 8507, 8532, 8532, 8507, …
+#> $ year_of_birth               <int> 1972, 1951, 1979, 1997, 1954, 1985, 1956, …
+#> $ month_of_birth              <int> 1, 9, 7, 7, 5, 2, 2, 5, 11, 7
+#> $ day_of_birth                <int> 3, 28, 7, 31, 11, 10, 16, 16, 12, 1
 #> $ race_concept_id             <int> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA
 #> $ ethnicity_concept_id        <int> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA
 #> $ birth_datetime              <dttm> 1970-01-01 01:00:00, 1970-01-01 01:00:00, …
@@ -112,8 +112,8 @@ cdm$observation_period |>
 #> Database: spark_connection
 #> $ observation_period_id         <int> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
 #> $ person_id                     <int> 1, 2, 3, 4, 5, 6, 7, 8, 9, 10
-#> $ observation_period_start_date <date> 1990-05-26, 1980-12-06, 2004-02-22, 2017…
-#> $ observation_period_end_date   <date> 2009-03-08, 1981-08-30, 2006-01-11, 2018…
+#> $ observation_period_start_date <date> 1981-02-02, 2018-01-11, 1983-06-07, 2000…
+#> $ observation_period_end_date   <date> 1991-03-20, 2019-10-03, 1994-03-12, 2011…
 #> $ period_type_concept_id        <int> NA, NA, NA, NA, NA, NA, NA, NA, NA, NA
 ```
 
@@ -138,7 +138,7 @@ cdm$person |>
   show_query()
 #> <SQL>
 #> SELECT COUNT(*) AS `n`
-#> FROM omop.person
+#> FROM person
 ```
 
 We can also make use of various existing packages that work with a cdm
@@ -149,12 +149,31 @@ package.
 ``` r
 library(OmopSketch)
 library(flextable)
+#> Warning: package 'flextable' was built under R version 4.2.2
 
-missing_condition_data <- OmopSketch::summariseMissingData(cdm, "condition_occurrence")
-tableMissingData(missing_condition_data, type = "flextable")
+snap <- summariseOmopSnapshot(cdm)
+#> Warning: Vocabulary version in cdm_source (NA) doesn't match the one in the vocabulary
+#> table (mock)
+tableOmopSnapshot(snap, type = "tibble")
+#> # A tibble: 13 × 3
+#>    Variable           Estimate                [header_name]Database name\n[hea…¹
+#>    <chr>              <chr>                   <chr>                             
+#>  1 General            Snapshot date           2025-06-29                        
+#>  2 General            Person count            10                                
+#>  3 General            Vocabulary version      mock                              
+#>  4 Observation period N                       10                                
+#>  5 Observation period Start date              1960-09-21                        
+#>  6 Observation period End date                2019-10-03                        
+#>  7 Cdm                Source name             mock                              
+#>  8 Cdm                Version                 5.3                               
+#>  9 Cdm                Holder name             <NA>                              
+#> 10 Cdm                Release date            <NA>                              
+#> 11 Cdm                Description             <NA>                              
+#> 12 Cdm                Documentation reference <NA>                              
+#> 13 Cdm                Source type             sparklyr                          
+#> # ℹ abbreviated name:
+#> #   ¹​`[header_name]Database name\n[header_level]mock local spark`
 ```
-
-<img src="man/figures/README-unnamed-chunk-9-1.png" width="100%" />
 
 ## Native spark support
 
@@ -172,15 +191,15 @@ cdm$person |>
     "month_of_birth",
     "day_of_birth"
   ))
-#> # Source:   table<`sparklyr_tmp_08565f48_368a_4fd3_996d_6ce84d0937eb`> [?? x 5]
+#> # Source:   table<`sparklyr_tmp_20b74ffd_d980_4d73_975b_03be43f93d9f`> [?? x 5]
 #> # Database: spark_connection
-#>   summary gender_concept_id  year_of_birth      month_of_birth     day_of_birth 
-#>   <chr>   <chr>              <chr>              <chr>              <chr>        
-#> 1 count   10                 10                 10                 10           
-#> 2 mean    8519.5             1974.7             7.6                18.3         
-#> 3 stddev  13.176156917368234 15.867857098199766 3.7475918193480524 10.089047967…
-#> 4 min     8507               1953               3                  2            
-#> 5 max     8532               1999               12                 31
+#>   summary gender_concept_id  year_of_birth     month_of_birth    day_of_birth   
+#>   <chr>   <chr>              <chr>             <chr>             <chr>          
+#> 1 count   10                 10                10                10             
+#> 2 mean    8517.0             1971.8            5.6               13.5           
+#> 3 stddev  12.909944487358052 17.55499295863651 3.238655413730965 9.766723549322…
+#> 4 min     8507               1951              1                 1              
+#> 5 max     8532               1998              11                31
 ```
 
 With this we are hopefully achieving the best of both worlds. On the one

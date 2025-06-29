@@ -91,8 +91,8 @@ We can also make use of various existing packages that work with a cdm reference
 library(OmopSketch)
 library(flextable)
 
-missing_condition_data <- OmopSketch::summariseMissingData(cdm, "condition_occurrence")
-tableMissingData(missing_condition_data, type = "flextable")
+snap <- summariseOmopSnapshot(cdm)
+tableOmopSnapshot(snap, type = "tibble")
 ```
 
 ## Native spark support

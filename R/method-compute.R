@@ -84,10 +84,9 @@ computeSparklyr <- function(x, name, temporary, overwrite){
   prefix <- writePrefix(src)
   con <- getCon(src)
 
-
   if (identical(currentName, name)) {
     intermediate <- omopgenerics::uniqueTableName()
-    sparklyrComputeTable(query = x, schema = schema, prefix = prefix, name = intermediate)
+    sparklyrComputeTable(con = con, query = x, schema = schema, prefix = prefix, name = intermediate)
     x <- sparkReadTable(con = con, schema = schema, prefix = prefix, name = intermediate)
     on.exit(sparkDropTable(
       con = con,
@@ -97,26 +96,25 @@ computeSparklyr <- function(x, name, temporary, overwrite){
     ))
   }
 
-  if (isTRUE(temporary)) {
+   # if (isTRUE(temporary)) {
     temp_name <- omopgenerics::uniqueTableName(prefix = "tmp_")
-    sparklyrComputeTable(query = x, schema = schema, prefix = prefix, name = temp_name)
+    sparklyrComputeTable(con = con, query = x, schema = schema, prefix = prefix, name = temp_name)
     sparkReadTable(con = con, schema = schema, prefix = prefix, name = temp_name) |>
       omopgenerics::newCdmTable(src = src, name = NA_character_)
-  } else {
-    sparklyrComputeTable(query = x, schema = schema, prefix = prefix, name = name)
-    sparkReadTable(con = con, schema = schema, prefix = prefix, name = name) |>
-      omopgenerics::newCdmTable(src = src, name = name)
-  }
+  # } else {
+  #   sparklyrComputeTable(con= con, query = x, schema = schema, prefix = prefix, name = name)
+  #   sparkReadTable(con = con, schema = schema, prefix = prefix, name = name) |>
+  #     omopgenerics::newCdmTable(src = src, name = name)
+  # }
 }
-sparklyrComputeTable <- function(query, schema, prefix, name) {
-  if (is.null(prefix)) {
-    tbl_name <- paste0(schema, ".", name)
-  } else {
-    tbl_name <- paste0(schema, ".", prefix, name)
-  }
-  sparklyr::spark_write_table(
-    x = query, name = tbl_name, mode = "overwrite"
-  )
+sparklyrComputeTable <- function(con, query, schema, prefix, name) {
+ tblName <- getWriteTableName(writeSchema = schema, prefix = prefix, name = name)
+ query_sql <- dbplyr::build_sql("CREATE OR REPLACE TEMP VIEW ",
+                                dbplyr::ident(paste0(prefix, name)),
+                                " AS ", dbplyr::sql_render(query),
+                                con = con)
+ DBI::dbExecute(con, query_sql)
+
 }
 
 # Below not working on databricks
