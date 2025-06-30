@@ -32,7 +32,11 @@ computeSparkOdbc <- function(x, name, temporary, overwrite){
   con <- getCon(src)
 
   if (identical(currentName, name)) {
+    if(is.null(prefix)){
+    intermediate_tbl <- omopgenerics::uniqueTableName()
+    } else {
     intermediate_tbl <- omopgenerics::uniqueTableName(prefix = prefix)
+    }
     intermediate_query_sql <- dbplyr::build_sql("CREATE TABLE ",
                                    dbplyr::ident(schema),
                                    dbplyr::sql("."),
@@ -41,7 +45,7 @@ computeSparkOdbc <- function(x, name, temporary, overwrite){
                                    " AS ", dbplyr::sql_render(x),
                                    con = con)
     DBI::dbExecute(con, intermediate_query_sql)
-    x <- dplyr::tbl(con, Id(schema, intermediate_tbl))
+    x <- dplyr::tbl(con, DBI::Id(schema, intermediate_tbl))
   }
 
   if (isTRUE(overwrite)) {
@@ -64,7 +68,7 @@ computeSparkOdbc <- function(x, name, temporary, overwrite){
   #                                dbplyr::ident(paste0(prefix, name)),
   #                                con = con)
   # DBI::dbExecute(con, cache_sql)
-  dplyr::tbl(con, Id(schema, paste0(prefix, name)))
+  dplyr::tbl(con, DBI::Id(schema, paste0(prefix, name)))
 
   # query_sql <- dbplyr::build_sql("CREATE OR REPLACE TEMP VIEW ",
   #                                dbplyr::ident(paste0(prefix, name)),

@@ -120,7 +120,7 @@ insertTableToSparkCdmReference <- function(cdm,
 }
 
 # insert a local dataframe as a spark table (a permanent table)
-sparkInsertTable <- function(con, schema, prefix, name, value) {
+sparkInsertTable <- function(con, schema, prefix, name, value, append = FALSE) {
 
   tbl_name <- getWriteTableName(writeSchema = schema,
                                 prefix = prefix,
@@ -147,8 +147,10 @@ sparkInsertTable <- function(con, schema, prefix, name, value) {
   } else {
     DBI::dbWriteTable(conn = con,
                       name = DBI::Id(schema, paste0(prefix, name)),
-                      value = value,
-                      temporary = FALSE)
+                      value = value |> dplyr::collect() |> dplyr::as_tibble(),
+                      temporary = FALSE,
+                      append = append,
+                      batch_rows = 100000)
   }
 
   return(invisible(NULL))
