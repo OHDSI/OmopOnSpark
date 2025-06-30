@@ -4,12 +4,21 @@
 \alias{create_omop_cdm_tables}
 \title{Create OMOP CDM tables}
 \usage{
-create_omop_cdm_tables(con, schema_name, overwrite = FALSE, id_bigint = FALSE)
+create_omop_cdm_tables(
+  con,
+  schema_name,
+  cdm_version = "5.4",
+  overwrite = FALSE,
+  id_bigint = FALSE
+)
 }
 \arguments{
-\item{con}{Connection}
+\item{con}{Connection. Must be via odbc (sparklyr connection not supported).}
 
 \item{schema_name}{Schema in which to create tables}
+
+\item{cdm_version}{Which version of the OMOP CDM to create. Can be "5.3" or
+"5.4"}
 
 \item{overwrite}{Whether to overwrite existing tables}
 
