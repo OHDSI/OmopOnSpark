@@ -59,3 +59,4 @@ logs/log4j.spark.log
 inst/doc
 /doc/
 /Meta/
+vignettes/logs/log4j.spark.log

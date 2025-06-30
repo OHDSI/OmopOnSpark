@@ -1,8 +1,8 @@
 ---
-title: "Creating a databricks cdm reference"
+title: "Creating a cdm reference using Spark"
 output: rmarkdown::html_vignette
 vignette: >
-  %\VignetteIndexEntry{a02_creating_a_databricks_cdm}
+  %\VignetteIndexEntry{a03_creating_a_cdm_reference}
   %\VignetteEngine{knitr::rmarkdown}
   %\VignetteEncoding{UTF-8}
 ---

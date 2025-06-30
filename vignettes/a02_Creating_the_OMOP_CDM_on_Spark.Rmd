@@ -1,0 +1,46 @@
+---
+title: "Creating the OMOP CDM on Spark"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{a02_Creating_the_OMOP_CDM_on_Spark}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>"
+)
+```
+
+Our first step
+
+Let's start by creating a local spark database which we'll use to illustrate how we can create an OMOP CDM database.
+```{r, warning=FALSE, message=FALSE}
+library(OmopSparkConnector)
+library(DBI)
+library(dplyr)
+folder <- file.path(tempdir(), "temp_spark")
+working_config <- sparklyr::spark_config()
+working_config$spark.sql.warehouse.dir <- folder
+sc <- sparklyr::spark_connect(master = "local",
+                              config = working_config)
+```
+
+With this we can use a single function to create all the OMOP CDM tables. Note, we'll be using version 5.4 of the OMOP CDM.
+```{r, message=FALSE, warning=FALSE}
+createOmopTablesOnSpark(sc, schemaName = NULL, cdmVersion = "5.4")
+```
+
+We can see that we now have each of the OMOP CDM tables in our Spark database.
+```{r}
+dbListTables(sc)
+```
+
+We can see for example that although we don't have data in it yet, we do have the person table with the various fields and their typpes specified.
+```{r}
+tbl(sc, "person") |> 
+  glimpse()
+```
+
