@@ -9,6 +9,7 @@ insertCdmTo.spark_cdm <- function(cdm, to) {
   cohorts <- character()
   other <- character()
   for (nm in names(cdm)) {
+    cli::cli_inform("Adding {nm}")
     x <- dplyr::collect(cdm[[nm]])
     cl <- class(x)
     if ("achilles_table" %in% cl) {
@@ -24,7 +25,8 @@ insertCdmTo.spark_cdm <- function(cdm, to) {
         schema = cdmSchema,
         prefix = NULL,
         name = nm,
-        value = x
+        value = x,
+        append = TRUE
       )
     } else {
       insertTable(

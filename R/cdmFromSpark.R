@@ -162,7 +162,6 @@ readCohorts <- function(cdm, cohortTables, .softValidation) {
         .softValidation = .softValidation
       )
   }
-
   class(cdm) <- c("spark_cdm", class(cdm))
 
   return(cdm)
