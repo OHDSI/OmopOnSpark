@@ -153,3 +153,37 @@ test_that("odbc 5.4 - delta tables", {
   DBI::dbDisconnect(con)
 
 })
+
+test_that("odbc 5.4 - prefixed", {
+
+  skip_on_cran()
+  skip_on_ci()
+
+  con <- DBI::dbConnect(
+    odbc::databricks(),
+    httpPath = Sys.getenv("DATABRICKS_HTTPPATH"),
+    useNativeQuery = FALSE
+  )
+
+  # create schema just for this test
+  test_schema <- omopgenerics::uniqueTableName()
+  DBI::dbExecute(con, glue::glue("CREATE SCHEMA IF NOT EXISTS {test_schema}"))
+
+  src <- sparkSource(
+    con = con,
+    cdmSchema = test_schema,
+    writeSchema = test_schema
+  )
+
+  createOmopTablesOnSpark(con, schemaName = test_schema, cdmVersion = "5.4",
+                          cdmPrefix = "my_prefix_")
+
+  expect_true("my_prefix_person" %in%
+  (DBI::dbGetQuery(con, glue::glue("SHOW TABLES IN {test_schema}")) |> dplyr::pull("tableName")))
+
+  # now remove schema and all the tables inside
+  DBI::dbExecute(con, glue::glue("DROP SCHEMA IF EXISTS {test_schema} CASCADE"))
+
+  DBI::dbDisconnect(con)
+
+})

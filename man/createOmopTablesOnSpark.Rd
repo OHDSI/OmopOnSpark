@@ -9,7 +9,8 @@ createOmopTablesOnSpark(
   schemaName,
   cdmVersion = "5.4",
   overwrite = FALSE,
-  bigInt = FALSE
+  bigInt = FALSE,
+  cdmPrefix = NULL
 )
 }
 \arguments{
@@ -24,6 +25,8 @@ createOmopTablesOnSpark(
 
 \item{bigInt}{Whether to use big integers for person identifier (person_id
 or subject_id)}
+
+\item{cdmPrefix}{Whether to cdmPrefix tables created (not generally recommended).}
 }
 \value{
 OMOP CDM tables created in database
