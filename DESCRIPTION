@@ -15,7 +15,8 @@ Suggests:
     knitr,
     rmarkdown,
     CDMConnector,
-    OmopSketch
+    OmopSketch, 
+    odbc
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Imports: 

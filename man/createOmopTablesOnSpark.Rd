@@ -13,16 +13,17 @@ createOmopTablesOnSpark(
 )
 }
 \arguments{
-\item{con}{Connection. Must be via odbc (sparklyr connection not supported).}
+\item{con}{Connection to a Spark database.}
 
-\item{overwrite}{Whether to overwrite existing tables}
+\item{schemaName}{Schema in which to create tables.}
 
-\item{schema_name}{Schema in which to create tables}
+\item{cdmVersion}{Which version of the OMOP CDM to create. Can be "5.3" or
+"5.4".}
 
-\item{cdm_version}{Which version of the OMOP CDM to create. Can be "5.3" or
-"5.4"}
+\item{overwrite}{Whether to overwrite existing tables.}
 
-\item{id_bigint}{Whether to use big integers}
+\item{idBigint}{Whether to use big integers for person identifier (person_id
+or subject_id)}
 }
 \value{
 OMOP CDM tables created in database
