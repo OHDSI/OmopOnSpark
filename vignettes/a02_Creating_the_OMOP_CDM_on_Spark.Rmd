@@ -14,9 +14,12 @@ knitr::opts_chunk$set(
 )
 ```
 
-Our first step
+The OMOP CDM provides a means of standardising health care data by transforming it into a standard structure. Our first step in getting our data into the OMOP CDM is to create the various tables that make OMOP CDM. 
 
-Let's start by creating a local spark database which we'll use to illustrate how we can create an OMOP CDM database.
+The `createOmopTablesOnSpark()` function can be used to create all the OMOP CDM tables in our Spark database. We'll need to choose which version of the OMOP CDM to use, with both version 5.3 and 5.4 supported. All subsequent analytics work with either format and if uncertain which to choose we would suggest the latest, 5.4. 
+
+Let's create a local spark database which we'll use to illustrate how we can create an OMOP CDM database using `createOmopTablesOnSpark()`.
+
 ```{r, warning=FALSE, message=FALSE}
 library(OmopSparkConnector)
 library(DBI)
@@ -28,7 +31,12 @@ sc <- sparklyr::spark_connect(master = "local",
                               config = working_config)
 ```
 
-With this we can use a single function to create all the OMOP CDM tables. Note, we'll be using version 5.4 of the OMOP CDM.
+Currently we just have an empty database.
+```{r}
+dbListTables(sc)
+```
+
+But using the single function `createOmopTablesOnSpark()` we can create all the version 5.4 OMOP CDM tables using version 5.4.
 ```{r, message=FALSE, warning=FALSE}
 createOmopTablesOnSpark(sc, schemaName = NULL, cdmVersion = "5.4")
 ```
@@ -38,9 +46,8 @@ We can see that we now have each of the OMOP CDM tables in our Spark database.
 dbListTables(sc)
 ```
 
-We can see for example that although we don't have data in it yet, we do have the person table with the various fields and their typpes specified.
+We can see for example that although we don't have data in it yet, we do have the person table with the various fields and their types specified.
 ```{r}
 tbl(sc, "person") |> 
   glimpse()
 ```
-

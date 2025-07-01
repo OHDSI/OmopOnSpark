@@ -5,7 +5,7 @@
 #' @param cdmVersion Which version of the OMOP CDM to create. Can be "5.3" or
 #' "5.4".
 #' @param overwrite Whether to overwrite existing tables.
-#' @param idBigint Whether to use big integers for person identifier (person_id
+#' @param bigInt Whether to use big integers for person identifier (person_id
 #' or subject_id)
 #'
 #' @return OMOP CDM tables created in database
@@ -15,52 +15,52 @@ createOmopTablesOnSpark <- function(con,
                                    schemaName,
                                    cdmVersion = "5.4",
                                    overwrite = FALSE,
-                                   idBigint = FALSE) {
+                                   bigInt = FALSE) {
 
   omopgenerics::assertCharacter(schemaName, null = TRUE)
   omopgenerics::assertChoice(cdmVersion, choices = c("5.3", "5.4"), length = 1)
   omopgenerics::assertLogical(overwrite)
-  omopgenerics::assertLogical(idBigint)
+  omopgenerics::assertLogical(bigInt)
 
-  create_person(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_observation_period(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_visit_occurrence(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_visit_detail(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_condition_occurrence(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_drug_exposure(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_procedure_occurrence(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_device_exposure(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_measurement(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_observation(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_death(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_note(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_note_nlp(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_specimen(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_fact_relationship(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_location(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_care_site(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_provider(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_payer_plan_period(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_cost(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_drug_era(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_dose_era(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_condition_era(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_episode(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_episode_event(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_metadata(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_cdm_source(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_concept(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_vocabulary(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_domain(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_concept_class(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_concept_relationship(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_relationship(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_concept_synonym(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_concept_ancestor(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_source_to_concept_map(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_drug_strength(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_cohort(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
-  create_cohort_definition(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, idBigint = idBigint)
+  create_person(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_observation_period(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_visit_occurrence(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_visit_detail(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_condition_occurrence(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_drug_exposure(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_procedure_occurrence(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_device_exposure(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_measurement(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_observation(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_death(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_note(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_note_nlp(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_specimen(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_fact_relationship(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_location(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_care_site(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_provider(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_payer_plan_period(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_cost(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_drug_era(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_dose_era(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_condition_era(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_episode(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_episode_event(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_metadata(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_cdm_source(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_concept(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_vocabulary(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_domain(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_concept_class(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_concept_relationship(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_relationship(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_concept_synonym(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_concept_ancestor(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_source_to_concept_map(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_drug_strength(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_cohort(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
+  create_cohort_definition(con = con, schemaName = schemaName, cdmVersion = cdmVersion, overwrite = overwrite, bigInt = bigInt)
 }
 
 # helpers
@@ -82,8 +82,8 @@ use_delta <-function(con, overwrite) {
       "USING DELTA"
   }
 }
-id_int_type <- function(idBigint) {
-  if (idBigint) "BIGINT" else "INTEGER"
+id_int_type <- function(bigInt) {
+  if (bigInt) "BIGINT" else "INTEGER"
 }
 schema_prefix <- function(schemaName) {
   if (is.null(schemaName)) {
@@ -94,13 +94,13 @@ schema_prefix <- function(schemaName) {
 }
 
 # sql to create each table
-create_person <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_person <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("--HINT DISTRIBUTE ON KEY (person_id)
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}person
 {use_delta(con)}
 AS
 SELECT
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS gender_concept_id,
 CAST(NULL AS integer) AS year_of_birth,
 CAST(NULL AS integer) AS month_of_birth,
@@ -121,7 +121,7 @@ CAST(NULL AS integer) AS ethnicity_source_concept_id  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created person table")
 }
-create_observation_period <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_observation_period <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(
     con,
     glue::glue(
@@ -131,7 +131,7 @@ create_observation_period <- function(con, schemaName, cdmVersion, overwrite, id
   AS
   SELECT
   CAST(NULL AS integer) AS observation_period_id,
-  CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+  CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
   CAST(NULL AS date) AS observation_period_start_date,
   CAST(NULL AS date) AS observation_period_end_date,
   CAST(NULL AS integer) AS period_type_concept_id  WHERE 1 = 0;"
@@ -140,7 +140,7 @@ create_observation_period <- function(con, schemaName, cdmVersion, overwrite, id
 
   cli::cli_alert_success("Created observation period table")
 }
-create_visit_occurrence <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_visit_occurrence <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   if (cdmVersion == "5.3") {
     DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON KEY (person_id)
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}visit_occurrence
@@ -148,7 +148,7 @@ create_visit_occurrence <- function(con, schemaName, cdmVersion, overwrite, idBi
 AS
 SELECT
 CAST(NULL AS integer) AS visit_occurrence_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS visit_concept_id,
 CAST(NULL AS date) AS visit_start_date,
 CAST(NULL AS TIMESTAMP) AS visit_start_datetime,
@@ -171,7 +171,7 @@ CAST(NULL AS integer) AS preceding_visit_occurrence_id  WHERE 1 = 0;"))
 AS
 SELECT
 CAST(NULL AS integer) AS visit_occurrence_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS visit_concept_id,
 CAST(NULL AS date) AS visit_start_date,
 CAST(NULL AS TIMESTAMP) AS visit_start_datetime,
@@ -193,7 +193,7 @@ CAST(NULL AS integer) AS preceding_visit_occurrence_id  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created visit occurrence table")
 }
-create_visit_detail <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_visit_detail <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   if (cdmVersion == "5.3") {
     DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON KEY (person_id)
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}visit_detail
@@ -201,7 +201,7 @@ create_visit_detail <- function(con, schemaName, cdmVersion, overwrite, idBigint
 AS
 SELECT
 CAST(NULL AS integer) AS visit_detail_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS visit_detail_concept_id,
 CAST(NULL AS date) AS visit_detail_start_date,
 CAST(NULL AS TIMESTAMP) AS visit_detail_start_datetime,
@@ -226,7 +226,7 @@ CAST(NULL AS integer) AS visit_occurrence_id  WHERE 1 = 0;"))
 AS
 SELECT
 CAST(NULL AS integer) AS visit_detail_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS visit_detail_concept_id,
 CAST(NULL AS date) AS visit_detail_start_date,
 CAST(NULL AS TIMESTAMP) AS visit_detail_start_datetime,
@@ -249,14 +249,14 @@ CAST(NULL AS integer) AS visit_occurrence_id  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created visit detail table")
 }
-create_condition_occurrence <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_condition_occurrence <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON KEY (person_id)
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}condition_occurrence
 {use_delta(con)}
 AS
 SELECT
 CAST(NULL AS integer) AS condition_occurrence_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS condition_concept_id,
 CAST(NULL AS date) AS condition_start_date,
 CAST(NULL AS TIMESTAMP) AS condition_start_datetime,
@@ -274,14 +274,14 @@ CAST(NULL AS STRING) AS condition_status_source_value  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created condition occurrence table")
 }
-create_drug_exposure <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_drug_exposure <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON KEY (person_id)
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}drug_exposure
 {use_delta(con)}
 AS
 SELECT
 CAST(NULL AS integer) AS drug_exposure_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS drug_concept_id,
 CAST(NULL AS date) AS drug_exposure_start_date,
 CAST(NULL AS TIMESTAMP) AS drug_exposure_start_datetime,
@@ -306,7 +306,7 @@ CAST(NULL AS STRING) AS dose_unit_source_value  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created drug exposure table")
 }
-create_procedure_occurrence <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_procedure_occurrence <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   if (cdmVersion == "5.3") {
     DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON KEY (person_id)
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}procedure_occurrence
@@ -314,7 +314,7 @@ create_procedure_occurrence <- function(con, schemaName, cdmVersion, overwrite, 
 AS
 SELECT
 CAST(NULL AS integer) AS procedure_occurrence_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS procedure_concept_id,
 CAST(NULL AS date) AS procedure_date,
 CAST(NULL AS TIMESTAMP) AS procedure_datetime,
@@ -334,7 +334,7 @@ CAST(NULL AS STRING) AS modifier_source_value  WHERE 1 = 0;"))
 AS
 SELECT
 CAST(NULL AS integer) AS procedure_occurrence_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS procedure_concept_id,
 CAST(NULL AS date) AS procedure_date,
 CAST(NULL AS TIMESTAMP) AS procedure_datetime,
@@ -354,7 +354,7 @@ CAST(NULL AS STRING) AS modifier_source_value  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created procedure occurrence table")
 }
-create_device_exposure <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_device_exposure <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   if (cdmVersion == "5.3") {
     DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON KEY (person_id)
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}device_exposure
@@ -362,7 +362,7 @@ create_device_exposure <- function(con, schemaName, cdmVersion, overwrite, idBig
 AS
 SELECT
 CAST(NULL AS integer) AS device_exposure_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS device_concept_id,
 CAST(NULL AS date) AS device_exposure_start_date,
 CAST(NULL AS TIMESTAMP) AS device_exposure_start_datetime,
@@ -383,7 +383,7 @@ CAST(NULL AS integer) AS device_source_concept_id  WHERE 1 = 0"))
 AS
 SELECT
 CAST(NULL AS integer) AS device_exposure_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS device_concept_id,
 CAST(NULL AS date) AS device_exposure_start_date,
 CAST(NULL AS TIMESTAMP) AS device_exposure_start_datetime,
@@ -406,7 +406,7 @@ CAST(NULL AS integer) AS unit_source_concept_id  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created device exposure table")
 }
-create_measurement <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_measurement <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   if (cdmVersion == "5.3") {
     DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON KEY (person_id)
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}measurement
@@ -414,7 +414,7 @@ create_measurement <- function(con, schemaName, cdmVersion, overwrite, idBigint)
 AS
 SELECT
 CAST(NULL AS integer) AS measurement_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS measurement_concept_id,
 CAST(NULL AS date) AS measurement_date,
 CAST(NULL AS TIMESTAMP) AS measurement_datetime,
@@ -440,7 +440,7 @@ CAST(NULL AS STRING) AS value_source_value  WHERE 1 = 0;"))
 AS
 SELECT
 CAST(NULL AS integer) AS measurement_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS measurement_concept_id,
 CAST(NULL AS date) AS measurement_date,
 CAST(NULL AS TIMESTAMP) AS measurement_datetime,
@@ -467,7 +467,7 @@ CAST(NULL AS integer) AS meas_event_field_concept_id  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created measurement table")
 }
-create_observation <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_observation <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   if (cdmVersion == "5.3") {
     DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON KEY (person_id)
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}observation
@@ -475,7 +475,7 @@ create_observation <- function(con, schemaName, cdmVersion, overwrite, idBigint)
 AS
 SELECT
 CAST(NULL AS integer) AS observation_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS observation_concept_id,
 CAST(NULL AS date) AS observation_date,
 CAST(NULL AS TIMESTAMP) AS observation_datetime,
@@ -499,7 +499,7 @@ CAST(NULL AS STRING) AS qualifier_source_value  WHERE 1 = 0;"))
 AS
 SELECT
 CAST(NULL AS integer) AS observation_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS observation_concept_id,
 CAST(NULL AS date) AS observation_date,
 CAST(NULL AS TIMESTAMP) AS observation_datetime,
@@ -524,13 +524,13 @@ CAST(NULL AS integer) AS obs_event_field_concept_id  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created observation table")
 }
-create_death <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_death <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON KEY (person_id)
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}death
 {use_delta(con)}
 AS
 SELECT
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS date) AS death_date,
 CAST(NULL AS TIMESTAMP) AS death_datetime,
 CAST(NULL AS integer) AS death_type_concept_id,
@@ -540,7 +540,7 @@ CAST(NULL AS integer) AS cause_source_concept_id  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created death table")
 }
-create_note <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_note <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   if (cdmVersion == "5.3") {
     DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON KEY (person_id)
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}note
@@ -548,7 +548,7 @@ create_note <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
 AS
 SELECT
 CAST(NULL AS integer) AS note_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS date) AS note_date,
 CAST(NULL AS TIMESTAMP) AS note_datetime,
 CAST(NULL AS integer) AS note_type_concept_id,
@@ -568,7 +568,7 @@ CAST(NULL AS STRING) AS note_source_value  WHERE 1 = 0;"))
 AS
 SELECT
 CAST(NULL AS integer) AS note_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS date) AS note_date,
 CAST(NULL AS TIMESTAMP) AS note_datetime,
 CAST(NULL AS integer) AS note_type_concept_id,
@@ -588,7 +588,7 @@ CAST(NULL AS integer) AS note_event_field_concept_id  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created note table")
 }
-create_note_nlp <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_note_nlp <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}note_nlp
 {use_delta(con)}
@@ -611,14 +611,14 @@ CAST(NULL AS STRING) AS term_modifiers  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created note nlp table")
 }
-create_specimen <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_specimen <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON KEY (person_id)
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}specimen
 {use_delta(con)}
 AS
 SELECT
 CAST(NULL AS integer) AS specimen_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS specimen_concept_id,
 CAST(NULL AS integer) AS specimen_type_concept_id,
 CAST(NULL AS date) AS specimen_date,
@@ -635,7 +635,7 @@ CAST(NULL AS STRING) AS disease_status_source_value  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created specimen table")
 }
-create_fact_relationship <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_fact_relationship <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}fact_relationship
 {use_delta(con)}
@@ -649,7 +649,7 @@ CAST(NULL AS integer) AS relationship_concept_id  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created fact relationship table")
 }
-create_location <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_location <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   if (cdmVersion == "5.3") {
     DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}location
@@ -687,7 +687,7 @@ CAST(NULL AS float) AS longitude  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created location table")
 }
-create_care_site <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_care_site <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}care_site
 {use_delta(con)}
@@ -702,7 +702,7 @@ CAST(NULL AS STRING) AS place_of_service_source_value  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created care site table")
 }
-create_provider <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_provider <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}provider
 {use_delta(con)}
@@ -724,14 +724,14 @@ CAST(NULL AS integer) AS gender_source_concept_id  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created provider table")
 }
-create_payer_plan_period <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_payer_plan_period <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON KEY (person_id)
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}payer_plan_period
 {use_delta(con)}
 AS
 SELECT
 CAST(NULL AS integer) AS payer_plan_period_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS date) AS payer_plan_period_start_date,
 CAST(NULL AS date) AS payer_plan_period_end_date,
 CAST(NULL AS integer) AS payer_concept_id,
@@ -750,7 +750,7 @@ CAST(NULL AS integer) AS stop_reason_source_concept_id  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created payer plan period table")
 }
-create_cost <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_cost <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}cost
 {use_delta(con)}
@@ -781,14 +781,14 @@ CAST(NULL AS STRING) AS drg_source_value  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created cost table")
 }
-create_drug_era <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_drug_era <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON KEY (person_id)
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}drug_era
 {use_delta(con)}
 AS
 SELECT
 CAST(NULL AS integer) AS drug_era_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS drug_concept_id,
 CAST(NULL AS date) AS drug_era_start_date,
 CAST(NULL AS date) AS drug_era_end_date,
@@ -797,14 +797,14 @@ CAST(NULL AS integer) AS gap_days  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created drug era table")
 }
-create_dose_era <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_dose_era <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON KEY (person_id)
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}dose_era
 {use_delta(con)}
 AS
 SELECT
 CAST(NULL AS integer) AS dose_era_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS drug_concept_id,
 CAST(NULL AS integer) AS unit_concept_id,
 CAST(NULL AS float) AS dose_value,
@@ -813,14 +813,14 @@ CAST(NULL AS date) AS dose_era_end_date  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created dose era table")
 }
-create_condition_era <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_condition_era <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON KEY (person_id)
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}condition_era
 {use_delta(con)}
 AS
 SELECT
 CAST(NULL AS integer) AS condition_era_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS condition_concept_id,
 CAST(NULL AS date) AS condition_era_start_date,
 CAST(NULL AS date) AS condition_era_end_date,
@@ -828,14 +828,14 @@ CAST(NULL AS integer) AS condition_occurrence_count  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created condition era table")
 }
-create_episode <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_episode <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON KEY (person_id)
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}episode
 {use_delta(con)}
 AS
 SELECT
 CAST(NULL AS integer) AS episode_id,
-CAST(NULL AS {id_int_type(idBigint)}) AS person_id,
+CAST(NULL AS {id_int_type(bigInt)}) AS person_id,
 CAST(NULL AS integer) AS episode_concept_id,
 CAST(NULL AS date) AS episode_start_date,
 CAST(NULL AS TIMESTAMP) AS episode_start_datetime,
@@ -850,7 +850,7 @@ CAST(NULL AS integer) AS episode_source_concept_id  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created episode table")
 }
-create_episode_event <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_episode_event <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   if (cdmVersion == "5.3") {
     return(NULL)
   } else {
@@ -866,7 +866,7 @@ CAST(NULL AS integer) AS episode_event_field_concept_id  WHERE 1 = 0;"))
     cli::cli_alert_success("Created episode event table")
   }
 }
-create_metadata <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_metadata <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   if (cdmVersion == "5.3") {
     DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}metadata
@@ -900,7 +900,7 @@ CAST(NULL AS TIMESTAMP) AS metadata_datetime  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created metadata table")
 }
-create_cdm_source <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_cdm_source <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   if (cdmVersion == "5.3") {
     DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}cdm_source
@@ -938,7 +938,7 @@ CAST(NULL AS STRING) AS vocabulary_version  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created cdm source table")
 }
-create_concept <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_concept <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}concept
 {use_delta(con)}
@@ -957,7 +957,7 @@ CAST(NULL AS STRING) AS invalid_reason  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created concept table")
 }
-create_vocabulary <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_vocabulary <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}vocabulary
 {use_delta(con)}
@@ -971,7 +971,7 @@ CAST(NULL AS integer) AS vocabulary_concept_id  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created vocabulary table")
 }
-create_domain <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_domain <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}domain
 {use_delta(con)}
@@ -983,7 +983,7 @@ CAST(NULL AS integer) AS domain_concept_id  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created domain table")
 }
-create_concept_class <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_concept_class <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}concept_class
 {use_delta(con)}
@@ -995,7 +995,7 @@ CAST(NULL AS integer) AS concept_class_concept_id  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created concept class table")
 }
-create_concept_relationship <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_concept_relationship <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}concept_relationship
 {use_delta(con)}
@@ -1010,7 +1010,7 @@ CAST(NULL AS STRING) AS invalid_reason  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created concept relationship table")
 }
-create_relationship <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_relationship <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}relationship
 {use_delta(con)}
@@ -1025,7 +1025,7 @@ CAST(NULL AS integer) AS relationship_concept_id  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created relationship table")
 }
-create_concept_synonym <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_concept_synonym <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}concept_synonym
 {use_delta(con)}
@@ -1037,7 +1037,7 @@ CAST(NULL AS integer) AS language_concept_id  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created concept synonym table")
 }
-create_concept_ancestor <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_concept_ancestor <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}concept_ancestor
 {use_delta(con)}
@@ -1050,7 +1050,7 @@ CAST(NULL AS integer) AS max_levels_of_separation  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created concept ancestor table")
 }
-create_source_to_concept_map <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_source_to_concept_map <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}source_to_concept_map
 {use_delta(con)}
@@ -1068,7 +1068,7 @@ CAST(NULL AS STRING) AS invalid_reason  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created source to concept map table")
 }
-create_drug_strength <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_drug_strength <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}drug_strength
 {use_delta(con)}
@@ -1089,7 +1089,7 @@ CAST(NULL AS STRING) AS invalid_reason  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created drug strength table")
 }
-create_cohort <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_cohort <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}cohort
 {use_delta(con)}
@@ -1102,7 +1102,7 @@ CAST(NULL AS date) AS cohort_end_date  WHERE 1 = 0;"))
 
   cli::cli_alert_success("Created cohort table")
 }
-create_cohort_definition <- function(con, schemaName, cdmVersion, overwrite, idBigint) {
+create_cohort_definition <- function(con, schemaName, cdmVersion, overwrite, bigInt) {
   DBI::dbExecute(con, glue::glue("-- DISTRIBUTE ON RANDOM
 {create_sql(con, overwrite)} {schema_prefix(schemaName)}cohort_definition
 {use_delta(con)}

@@ -9,7 +9,7 @@ createOmopTablesOnSpark(
   schemaName,
   cdmVersion = "5.4",
   overwrite = FALSE,
-  idBigint = FALSE
+  bigInt = FALSE
 )
 }
 \arguments{
@@ -22,7 +22,7 @@ createOmopTablesOnSpark(
 
 \item{overwrite}{Whether to overwrite existing tables.}
 
-\item{idBigint}{Whether to use big integers for person identifier (person_id
+\item{bigInt}{Whether to use big integers for person identifier (person_id
 or subject_id)}
 }
 \value{
