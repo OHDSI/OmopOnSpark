@@ -1,0 +1,54 @@
+---
+title: "Creating the OMOP CDM on Spark"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{a02_Creating_the_OMOP_CDM_on_Spark}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>", 
+  eval = FALSE
+)
+```
+
+The OMOP CDM provides a means of standardising health care data by transforming it into a standard structure. Our first step in getting our data into the OMOP CDM is to create the various tables that make OMOP CDM. 
+
+The `createOmopTablesOnSpark()` function can be used to create all the OMOP CDM tables in our Spark database. We'll need to choose which version of the OMOP CDM to use, with both version 5.3 and 5.4 supported. All subsequent analytics work with either format and if uncertain which to choose we would suggest the latest, 5.4. 
+
+Let's create a local spark database which we'll use to illustrate how we can create an OMOP CDM database using `createOmopTablesOnSpark()`.
+
+```{r, warning=FALSE, message=FALSE}
+library(OmopSparkConnector)
+library(DBI)
+library(dplyr)
+folder <- file.path(tempdir(), "temp_spark")
+working_config <- sparklyr::spark_config()
+working_config$spark.sql.warehouse.dir <- folder
+sc <- sparklyr::spark_connect(master = "local",
+                              config = working_config)
+```
+
+Currently we just have an empty database.
+```{r}
+dbListTables(sc)
+```
+
+But using the single function `createOmopTablesOnSpark()` we can create all the version 5.4 OMOP CDM tables using version 5.4.
+```{r, message=FALSE, warning=FALSE}
+createOmopTablesOnSpark(sc, schemaName = NULL, cdmVersion = "5.4")
+```
+
+We can see that we now have each of the OMOP CDM tables in our Spark database.
+```{r}
+dbListTables(sc)
+```
+
+We can see for example that although we don't have data in it yet, we do have the person table with the various fields and their types specified.
+```{r}
+tbl(sc, "person") |> 
+  glimpse()
+```

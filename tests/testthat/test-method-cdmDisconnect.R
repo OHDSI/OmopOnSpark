@@ -1,5 +1,8 @@
 test_that("disconnect connection", {
-
+  skip_on_cran()
+  if(sparklyr::spark_installed_versions() |> nrow() == 0){
+    skip()
+  }
   folder <- file.path(tempdir(), omopgenerics::uniqueTableName())
   cdm <- mockSparkCdm(folder)
 
@@ -11,7 +14,10 @@ test_that("disconnect connection", {
 })
 
 test_that("dropping emulated temp tables", {
-
+  skip_on_cran()
+  if(sparklyr::spark_installed_versions() |> nrow() == 0){
+    skip()
+  }
   folder <- file.path(tempdir(), omopgenerics::uniqueTableName())
   cdm <- mockSparkCdm(path = folder)
 

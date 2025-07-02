@@ -1,6 +1,8 @@
 test_that("insert permanent table to cdm ref", {
   skip_on_cran()
-
+  if(sparklyr::spark_installed_versions() |> nrow() == 0){
+    skip()
+  }
   folder <- file.path(tempdir(), "temp_spark")
   cdm <- mockSparkCdm(folder)
 
@@ -75,7 +77,9 @@ test_that("insert permanent table to cdm ref", {
 
 test_that("insert temp table to cdm ref", {
   skip_on_cran()
-
+  if(sparklyr::spark_installed_versions() |> nrow() == 0){
+    skip()
+  }
   folder <- file.path(tempdir(), "temp_spark")
   cdm <- mockSparkCdm(folder)
 
@@ -134,7 +138,9 @@ test_that("insert temp table to cdm ref", {
 
 test_that("test insert to cdm source - no prefix ", {
   skip_on_cran()
-
+  if(sparklyr::spark_installed_versions() |> nrow() == 0){
+    skip()
+  }
   folder <- file.path(tempdir(), "temp_spark")
   working_config <- sparklyr::spark_config()
   working_config$spark.sql.warehouse.dir <- folder
@@ -162,7 +168,9 @@ test_that("test insert to cdm source - no prefix ", {
 
 test_that("test insert to cdm source - prefix ", {
   skip_on_cran()
-
+  if(sparklyr::spark_installed_versions() |> nrow() == 0){
+    skip()
+  }
   folder <- file.path(tempdir(), "temp_spark")
   working_config <- sparklyr::spark_config()
   working_config$spark.sql.warehouse.dir <- folder
