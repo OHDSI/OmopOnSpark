@@ -1,6 +1,6 @@
 sparklyr_reporter <- function() {
 
-  if (using_livy()) {
+  if (sparklyr::using_livy()) {
     MultiReporter$new(
       reporters = list(
         SummaryReporter$new(),

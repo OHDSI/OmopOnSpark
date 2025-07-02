@@ -29,7 +29,9 @@ Imports:
     omopgenerics (>= 1.2.0),
     purrr,
     rlang,
-    sparklyr
+    sparklyr,
+    R6,
+    crayon
 Depends: 
     R (>= 4.1.0)
 VignetteBuilder: knitr
