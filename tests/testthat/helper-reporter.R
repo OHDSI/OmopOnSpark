@@ -1,3 +1,9 @@
+using_livy_version <- function() {
+  lv <- Sys.getenv("LIVY_VERSION")
+  testthat_context$spark$livy$version <- lv
+  lv
+}
+
 using_livy <- function() {
   lt <- FALSE
   if(using_livy_version() != "") lt <- TRUE
