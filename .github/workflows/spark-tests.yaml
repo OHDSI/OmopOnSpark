@@ -130,14 +130,7 @@ jobs:
           print(t_pkgs[, c("Package", "Version")])
         shell: Rscript {0}
 
-      - name: R Tests
-        run: |
-          devtools::load_all()
-          if(Sys.getenv("ARROW_VERSION") != "") {
-            library(arrow)
-          }
-          spark_major <- as.numeric(substr(Sys.getenv("SPARK_VERSION"), 1, 1))
-          if(spark_major < 3) Sys.setenv("JAVA_HOME" = Sys.getenv("JAVA_HOME_8_X64"))
-          Sys.getenv("JAVA_HOME")
-          devtools::test()
-        shell: Rscript {0}
+      - uses: r-lib/actions/check-r-package@v2
+        with:
+          upload-snapshots: true
+          build_args: 'c("--no-manual","--compact-vignettes=gs+qpdf")'
