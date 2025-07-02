@@ -1,6 +1,13 @@
+using_livy <- function() {
+  lt <- FALSE
+  if(using_livy_version() != "") lt <- TRUE
+  lt
+}
+
+
 sparklyr_reporter <- function() {
 
-  if (sparklyr::using_livy()) {
+  if (using_livy()) {
     MultiReporter$new(
       reporters = list(
         SummaryReporter$new(),
@@ -126,3 +133,4 @@ PerformanceReporter <- R6::R6Class("PerformanceReporter",
                                      }
                                    )
 )
+
