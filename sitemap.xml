@@ -2,14 +2,15 @@
 <url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/404.html</loc></url>
 <url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/LICENSE.html</loc></url>
 <url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/articles/a01_getting_started.html</loc></url>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/articles/a02_creating_a_databricks_cdm.html</loc></url>
+<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/articles/a02_Creating_the_OMOP_CDM_on_Spark.html</loc></url>
+<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/articles/a03_creating_a_cdm_reference.html</loc></url>
 <url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/articles/index.html</loc></url>
 <url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/authors.html</loc></url>
 <url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/index.html</loc></url>
 <url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/OmopSparkConnector-package.html</loc></url>
 <url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/cdmDisconnect.spark_cdm.html</loc></url>
 <url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/cdmFromSpark.html</loc></url>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/create_omop_cdm_tables.html</loc></url>
+<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/createOmopTablesOnSpark.html</loc></url>
 <url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/dropSourceTable.spark_cdm.html</loc></url>
 <url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/index.html</loc></url>
 <url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/insertTable.spark_cdm.html</loc></url>
