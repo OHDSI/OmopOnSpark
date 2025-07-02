@@ -14,15 +14,12 @@
 mockSparkCdm <- function(path) {
   folder <- path
   working_config <- sparklyr::spark_config()
-  # working_config$spark.hadoop.io.nativeio.enabled <- "false"
-  # working_config$spark.hadoop.io.native.lib.available <- "false"
   working_config$spark.sql.warehouse.dir <- folder
   sc <- sparklyr::spark_connect(
     master = "local",
     config = working_config
   )
-  # sparklyr::invoke(sparklyr::hive_context(con), "sql", "CREATE SCHEMA IF NOT EXISTS omop")
-  # sparklyr::invoke(sparklyr::hive_context(con), "sql", "CREATE SCHEMA IF NOT EXISTS results")
+
   src <- sparkSource(
     con = sc,
     cdmSchema = NULL,
