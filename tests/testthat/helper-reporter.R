@@ -1,33 +1,12 @@
-using_livy_version <- function() {
-  lv <- Sys.getenv("LIVY_VERSION")
-  testthat_context$spark$livy$version <- lv
-  lv
-}
-
-using_livy <- function() {
-  lt <- FALSE
-  if(using_livy_version() != "") lt <- TRUE
-  lt
-}
-
 
 sparklyr_reporter <- function() {
 
-  if (using_livy()) {
     MultiReporter$new(
       reporters = list(
         SummaryReporter$new(),
         PerformanceReporter$new()
       )
     )
-  } else {
-    MultiReporter$new(
-      reporters = list(
-        SummaryReporter$new(),
-        PerformanceReporter$new()
-      )
-    )
-  }
 }
 
 PerformanceReporter <- R6::R6Class("PerformanceReporter",
