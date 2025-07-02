@@ -1,5 +1,8 @@
 test_that("dropping tables", {
-
+  skip_on_cran()
+  if(sparklyr::spark_installed_versions() |> nrow() == 0){
+    skip()
+  }
   folder <- file.path(tempdir(), "drop_spark")
   cdm <- mockSparkCdm(path = folder)
 

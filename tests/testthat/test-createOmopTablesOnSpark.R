@@ -1,6 +1,9 @@
 test_that("sparklyr 5.3 - views", {
 
   skip_on_cran()
+  if(sparklyr::spark_installed_versions() |> nrow() == 0){
+    skip()
+  }
 
   folder <- file.path(tempdir(), "temp_spark")
   working_config <- sparklyr::spark_config()
@@ -35,6 +38,9 @@ test_that("sparklyr 5.3 - views", {
 test_that("sparklyr 5.4 - views", {
 
   skip_on_cran()
+  if(sparklyr::spark_installed_versions() |> nrow() == 0){
+    skip()
+  }
 
   folder <- file.path(tempdir(), "temp_spark")
   working_config <- sparklyr::spark_config()

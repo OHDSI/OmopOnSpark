@@ -1,4 +1,8 @@
 test_that("compute from permanent to temp", {
+  skip_on_cran()
+  if(sparklyr::spark_installed_versions() |> nrow() == 0){
+    skip()
+  }
   folder <- file.path(tempdir(), "temp_spark_compute")
   cdm <- mockSparkCdm(folder)
 
@@ -45,6 +49,10 @@ test_that("compute from permanent to temp", {
 })
 
 test_that("compute from permanent to permanent", {
+  skip_on_cran()
+  if(sparklyr::spark_installed_versions() |> nrow() == 0){
+    skip()
+  }
   folder <- file.path(tempdir(), "temp_spark_compute")
   cdm <- mockSparkCdm(folder)
 
@@ -100,6 +108,10 @@ test_that("compute from permanent to permanent", {
 })
 
 test_that("compute from temp to permanent", {
+  skip_on_cran()
+  if(sparklyr::spark_installed_versions() |> nrow() == 0){
+    skip()
+  }
   folder <- file.path(tempdir(), "temp_spark_compute")
   cdm <- mockSparkCdm(folder)
 

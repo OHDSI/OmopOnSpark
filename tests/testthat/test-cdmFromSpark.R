@@ -1,4 +1,9 @@
 test_that("creating a cdm reference - sparklyr", {
+  skip_on_cran()
+  if(sparklyr::spark_installed_versions() |> nrow() == 0){
+    skip()
+  }
+
   cdm_local <- omock::mockCdmReference() |>
     omock::mockPerson(nPerson = 100) |>
     omock::mockObservationPeriod() |>
@@ -59,7 +64,10 @@ test_that("creating a cdm reference - sparklyr", {
 })
 
 test_that("cdm validation - sparklyr", {
-
+  skip_on_cran()
+  if(sparklyr::spark_installed_versions() |> nrow() == 0){
+    skip()
+  }
  cdm <- mockSparkCdm(file.path(tempdir(), "temp_spark"))
   expect_no_error(omopgenerics::validateCdmArgument(cdm,
     checkOverlapObservation = TRUE,

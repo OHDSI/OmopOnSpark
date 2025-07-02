@@ -1,6 +1,10 @@
 test_that("dbplyr", {
   skip_on_cran()
 
+  if(sparklyr::spark_installed_versions() |> nrow() == 0){
+    skip()
+  }
+
   path <- file.path(tempdir(), "temp_dbplyr")
   cdm <- mockSparkCdm(path)
 
