@@ -30,5 +30,7 @@ Imports:
     purrr,
     rlang,
     sparklyr
+Depends: 
+    R (>= 4.1.0)
 VignetteBuilder: knitr
 URL: https://oxford-pharmacoepi.github.io/OmopSparkConnector/

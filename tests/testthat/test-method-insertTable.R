@@ -1,6 +1,8 @@
 test_that("insert permanent table to cdm ref", {
   skip_on_cran()
-
+  if(sparklyr::spark_installed_versions() |> nrow() == 0){
+    skip()
+  }
   folder <- file.path(tempdir(), "temp_spark")
   cdm <- mockSparkCdm(folder)
 
