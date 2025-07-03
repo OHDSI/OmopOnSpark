@@ -2,3 +2,21 @@ url: https://oxford-pharmacoepi.github.io/OmopSparkConnector/
 template:
   bootstrap: 5
 
+reference:
+- subtitle: Creating the OMOP CDM in Spark
+- contents:
+  - createOmopTablesOnSpark
+- subtitle: Creating a cdm reference for OMOP CDM data in Spark
+- contents:
+  - cdmFromSpark
+- subtitle: Methods for Spark
+- contents:
+  - cdmDisconnect.spark_cdm
+  - dropSourceTable.spark_cdm
+  - insertTable.spark_cdm
+- subtitle: Utilities
+- contents:
+  - mockSparkCdm
+
+
+
