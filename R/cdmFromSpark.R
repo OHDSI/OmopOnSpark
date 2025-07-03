@@ -21,6 +21,7 @@
 #' @param writePrefix A prefix that will be added to all tables created in the
 #' write_schema. This can be used to create namespace in your database
 #' write_schema for your tables.
+#' @param writePrefix A prefix used with the OMOP CDM tables.
 #'
 #' @return A cdm reference object
 #' @export
@@ -42,7 +43,8 @@ cdmFromSpark <- function(con,
                          cdmName = NULL,
                          achillesSchema = NULL,
                          .softValidation = FALSE,
-                         writePrefix = NULL) {
+                         writePrefix = NULL,
+                         cdmPrefix = NULL) {
   # initial checks
   con <- validateConnection(con)
   # omopgenerics::assertCharacter(cdmSchema, length = 1, null = FALSE)
@@ -69,13 +71,13 @@ cdmFromSpark <- function(con,
   )
 
   # available cdm tables
-  cdmTables <- sparkListTables(con = con, schema = cdmSchema, prefix = NULL) |>
+  cdmTables <- sparkListTables(con = con, schema = cdmSchema, prefix = cdmPrefix) |>
     purrr::keep(\(x) x %in% omopgenerics::omopTables())
 
   # extract cdm name
   if (is.null(cdmName)) {
     if ("cdm_source" %in% cdmTables) {
-      cdmName <- sparkReadTable(con = con, schema = cdmSchema, prefix = NULL, name = "cdm_source") |>
+      cdmName <- sparkReadTable(con = con, schema = cdmSchema, prefix = cdmPrefix, name = "cdm_source") |>
         dplyr::pull("cdm_source_name")
     }
     if (length(cdmName) != 1) {
@@ -88,7 +90,7 @@ cdmFromSpark <- function(con,
   cdm <- cdmTables |>
     rlang::set_names() |>
     purrr::map(\(x) {
-      sparkReadTable(con = con, schema = cdmSchema, prefix = NULL, name = x) |>
+      sparkReadTable(con = con, schema = cdmSchema, prefix = cdmPrefix, name = x) |>
         omopgenerics::newCdmTable(src = src, name = x)
     }) |>
     omopgenerics::newCdmReference(
