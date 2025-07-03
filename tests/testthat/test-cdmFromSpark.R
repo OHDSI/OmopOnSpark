@@ -177,4 +177,4 @@ test_that("creating a cdm reference with prefix - odbc", {
 
   DBI::dbDisconnect(con)
 
-}
+})
