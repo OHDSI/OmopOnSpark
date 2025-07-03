@@ -16,7 +16,9 @@ Suggests:
     rmarkdown,
     CDMConnector,
     OmopSketch, 
-    odbc
+    odbc,
+    R6,
+    crayon
 Config/testthat/edition: 3
 Config/testthat/parallel: false
 Imports: 
@@ -29,9 +31,7 @@ Imports:
     omopgenerics (>= 1.2.0),
     purrr,
     rlang,
-    sparklyr,
-    R6,
-    crayon
+    sparklyr
 Depends: 
     R (>= 4.1.0)
 VignetteBuilder: knitr

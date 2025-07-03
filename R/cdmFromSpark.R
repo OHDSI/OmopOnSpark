@@ -21,7 +21,7 @@
 #' @param writePrefix A prefix that will be added to all tables created in the
 #' write_schema. This can be used to create namespace in your database
 #' write_schema for your tables.
-#' @param writePrefix A prefix used with the OMOP CDM tables.
+#' @param cdmPrefix A prefix used with the OMOP CDM tables.
 #'
 #' @return A cdm reference object
 #' @export

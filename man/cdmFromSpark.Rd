@@ -44,7 +44,11 @@ defined with a named character list/vector; allowed names are: 'catalog',
 recommended as analysis pipelines assume the cdm fullfill the validation
 criteria.}
 
-\item{writePrefix}{A prefix used with the OMOP CDM tables.}
+\item{writePrefix}{A prefix that will be added to all tables created in the
+write_schema. This can be used to create namespace in your database
+write_schema for your tables.}
+
+\item{cdmPrefix}{A prefix used with the OMOP CDM tables.}
 }
 \value{
 A cdm reference object
