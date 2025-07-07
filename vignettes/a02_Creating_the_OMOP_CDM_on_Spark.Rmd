@@ -22,7 +22,7 @@ The `createOmopTablesOnSpark()` function can be used to create all the OMOP CDM 
 Let's create a local spark database which we'll use to illustrate how we can create an OMOP CDM database using `createOmopTablesOnSpark()`.
 
 ```{r, warning=FALSE, message=FALSE}
-library(OmopSparkConnector)
+library(OmopOnSpark)
 library(DBI)
 library(dplyr)
 folder <- file.path(tempdir(), "temp_spark")

@@ -15,7 +15,7 @@ knitr::opts_chunk$set(
 )
 ```
 
-So far we've been using a local Spark connection for introducing the OmopSparkConnector package. However, in practice, when working with patient-level health data our data will most likely be in the cloud-based Databricks plaform which is built around Apache Spark. Once we have created our cdm reference, the same code we have seen when working with a local Spark dataset will also work with Databricks. It is *just* that the way we connect will differ.
+So far we've been using a local Spark connection for introducing the OmopOnSpark package. However, in practice, when working with patient-level health data our data will most likely be in the cloud-based Databricks plaform which is built around Apache Spark. Once we have created our cdm reference, the same code we have seen when working with a local Spark dataset will also work with Databricks. It is *just* that the way we connect will differ.
 
 To create your connection to https://spark.posit.co/deployment/databricks-connect.html. Briefly, first you would save environmental variables. 
 
@@ -63,10 +63,10 @@ spark_cars_df <- sdf_copy_to(con,
 spark_cars_df
 ```
 
-If these basics are working we should be well set-up to start working with OmopSparkConnector. Here we would spefify our cdm schema as we've seen above. And now let's say we have another schema called "my_results_schema" where we want to save any study-specific tables. We'll use this when specifying the write schema. In addition, we can also give a write prefix and all the tables we create during the course of the working with this cdm reference will start with this prefix. 
+If these basics are working we should be well set-up to start working with OmopOnSpark. Here we would spefify our cdm schema as we've seen above. And now let's say we have another schema called "my_results_schema" where we want to save any study-specific tables. We'll use this when specifying the write schema. In addition, we can also give a write prefix and all the tables we create during the course of the working with this cdm reference will start with this prefix. 
 
 ```{r, eval=FALSE}
-library(OmopSparkConnector)
+library(OmopOnSpark)
 cdm <- cdmFromSpark(con,
   cdmSchema = "my_catalog.my_omop_schema",
   writeSchema = "my_catalog.my_results_schema",

@@ -1,4 +1,4 @@
-url: https://oxford-pharmacoepi.github.io/OmopSparkConnector/
+url: https://ohdsi.github.io/OmopOnSpark/
 template:
   bootstrap: 5
 

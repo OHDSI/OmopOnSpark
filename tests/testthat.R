@@ -7,6 +7,6 @@
 # * https://testthat.r-lib.org/articles/special-files.html
 
 library(testthat)
-library(OmopSparkConnector)
+library(OmopOnSpark)
 
-test_check("OmopSparkConnector")
+test_check("OmopOnSpark")
