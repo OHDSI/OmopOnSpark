@@ -1,20 +1,20 @@
 <urlset xmlns = 'http://www.sitemaps.org/schemas/sitemap/0.9'>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/404.html</loc></url>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/LICENSE.html</loc></url>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/articles/a01_getting_started.html</loc></url>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/articles/a02_Creating_the_OMOP_CDM_on_Spark.html</loc></url>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/articles/a03_creating_a_cdm_reference.html</loc></url>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/articles/index.html</loc></url>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/authors.html</loc></url>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/index.html</loc></url>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/OmopSparkConnector-package.html</loc></url>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/cdmDisconnect.spark_cdm.html</loc></url>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/cdmFromSpark.html</loc></url>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/createOmopTablesOnSpark.html</loc></url>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/dropSourceTable.spark_cdm.html</loc></url>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/index.html</loc></url>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/insertTable.spark_cdm.html</loc></url>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/mockSparkCdm.html</loc></url>
-<url><loc>https://oxford-pharmacoepi.github.io/OmopSparkConnector/reference/reexports.html</loc></url>
+<url><loc>https://ohdsi.github.io/OmopOnSpark/404.html</loc></url>
+<url><loc>https://ohdsi.github.io/OmopOnSpark/LICENSE.html</loc></url>
+<url><loc>https://ohdsi.github.io/OmopOnSpark/articles/a01_getting_started.html</loc></url>
+<url><loc>https://ohdsi.github.io/OmopOnSpark/articles/a02_Creating_the_OMOP_CDM_on_Spark.html</loc></url>
+<url><loc>https://ohdsi.github.io/OmopOnSpark/articles/a03_creating_a_cdm_reference.html</loc></url>
+<url><loc>https://ohdsi.github.io/OmopOnSpark/articles/index.html</loc></url>
+<url><loc>https://ohdsi.github.io/OmopOnSpark/authors.html</loc></url>
+<url><loc>https://ohdsi.github.io/OmopOnSpark/index.html</loc></url>
+<url><loc>https://ohdsi.github.io/OmopOnSpark/reference/OmopOnSpark-package.html</loc></url>
+<url><loc>https://ohdsi.github.io/OmopOnSpark/reference/cdmDisconnect.spark_cdm.html</loc></url>
+<url><loc>https://ohdsi.github.io/OmopOnSpark/reference/cdmFromSpark.html</loc></url>
+<url><loc>https://ohdsi.github.io/OmopOnSpark/reference/createOmopTablesOnSpark.html</loc></url>
+<url><loc>https://ohdsi.github.io/OmopOnSpark/reference/dropSourceTable.spark_cdm.html</loc></url>
+<url><loc>https://ohdsi.github.io/OmopOnSpark/reference/index.html</loc></url>
+<url><loc>https://ohdsi.github.io/OmopOnSpark/reference/insertTable.spark_cdm.html</loc></url>
+<url><loc>https://ohdsi.github.io/OmopOnSpark/reference/mockSparkCdm.html</loc></url>
+<url><loc>https://ohdsi.github.io/OmopOnSpark/reference/reexports.html</loc></url>
 </urlset>
 
