@@ -1,4 +1,4 @@
-Package: OmopSparkConnector
+Package: OmopOnSpark
 Title: What the Package Does (One Line, Title Case)
 Version: 0.0.0.9000
 Authors@R: 
@@ -35,4 +35,4 @@ Imports:
 Depends: 
     R (>= 4.1.0)
 VignetteBuilder: knitr
-URL: https://oxford-pharmacoepi.github.io/OmopSparkConnector/
+URL: https://oxford-pharmacoepi.github.io/OmopOnSpark/

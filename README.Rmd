@@ -13,21 +13,21 @@ knitr::opts_chunk$set(
 )
 ```
 
-# OmopSparkConnector
+# OmopOnSpark
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/oxford-pharmacoepi/OmopSparkConnector/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/oxford-pharmacoepi/OmopSparkConnector/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/oxford-pharmacoepi/OmopOnSpark/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/oxford-pharmacoepi/OmopOnSpark/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
-OmopSparkConnector provides a Spark specific implementation of an OMOP CDM reference as defined by the omopgenerics R package. 
+OmopOnSpark provides a Spark specific implementation of an OMOP CDM reference as defined by the omopgenerics R package. 
 
 ## Installation
 
-You can install the development version of OmopSparkConnector from [GitHub](https://github.com/) with:
+You can install the development version of OmopOnSpark from [GitHub](https://github.com/) with:
 
 ``` r
 # install.packages("devtools")
-devtools::install_github("oxford-pharmacoepi/OmopSparkConnector")
+devtools::install_github("oxford-pharmacoepi/OmopOnSpark")
 ```
 
 ## Creating a cdm reference using Sparklyr
@@ -37,10 +37,10 @@ Let's first load the R libraries.
 ```{r, message=FALSE, warning=FALSE}
 library(dplyr)
 library(sparklyr)
-library(OmopSparkConnector)
+library(OmopOnSpark)
 ```
 
-To work with OmopSparkConnector, we will first need to create a connection to our data using the sparklyr. In the example below, we have a schema called "omop" that contains all the OMOP CDM tables and then we have another schema where we can write results during the course of a study. We also set a write prefix so that all the tables we write start with this (which makes it easy to clean up afterwards and avoid any name conflicts with other users).
+To work with OmopOnSpark, we will first need to create a connection to our data using the sparklyr. In the example below, we have a schema called "omop" that contains all the OMOP CDM tables and then we have another schema where we can write results during the course of a study. We also set a write prefix so that all the tables we write start with this (which makes it easy to clean up afterwards and avoid any name conflicts with other users).
 
 ```{r, eval=FALSE}
 con <- sparklyr::spark_connect(.....)
@@ -97,7 +97,7 @@ tableOmopSnapshot(snap, type = "tibble")
 
 ## Native spark support
 
-As well as making use of packages that provide cross-platform functionality with the cdm reference such as OmopSketch, because OmopSparkConnector is built on top of the sparklyr package we can also make use of native spark queries. For example we can compute summary statistics on one of our cdm tables using spark functions.
+As well as making use of packages that provide cross-platform functionality with the cdm reference such as OmopSketch, because OmopOnSpark is built on top of the sparklyr package we can also make use of native spark queries. For example we can compute summary statistics on one of our cdm tables using spark functions.
 
 ```{r}
 cdm$person |>
