@@ -4,9 +4,9 @@
 \name{OmopOnSpark-package}
 \alias{OmopOnSpark}
 \alias{OmopOnSpark-package}
-\title{OmopOnSpark: What the Package Does (One Line, Title Case)}
+\title{OmopOnSpark: Using a Common Data Model on Spark}
 \description{
-What the package does.
+Use health data in the Observational Medical Outcomes Partnership Common Data Model format in Spark.
 }
 \seealso{
 Useful links:
@@ -16,7 +16,12 @@ Useful links:
 
 }
 \author{
-\strong{Maintainer}: First Last \email{first.last@example.com} (\href{https://orcid.org/YOUR-ORCID-ID}{ORCID})
+\strong{Maintainer}: Edward Burn \email{edward.burn@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0002-9286-1128}{ORCID})
+
+Authors:
+\itemize{
+  \item Martí Català \email{marti.catalasabate@ndorms.ox.ac.uk} (\href{https://orcid.org/0000-0003-3308-9905}{ORCID})
+}
 
 }
 \keyword{internal}

@@ -10,16 +10,17 @@
 #' @param overwrite Whether to overwrite an existing table.
 #' @param temporary If TRUE, a spark dataframe will be written (that will
 #' persist to the end of the current session). If FALSE, a spark table will be
-#' written (which will persist beyond the end of the current session.)
+#' written (which will persist beyond the end of the current session).
+#' @param ... For compatability
 #'
 #' @returns The cdm reference with the table added.
 #' @export
-#'
 insertTable.spark_cdm <- function(cdm,
                                   name,
                                   table,
                                   overwrite = TRUE,
-                                  temporary = FALSE) {
+                                  temporary = FALSE,
+                                  ...) {
 
   if (inherits(cdm, "cdm_source")) {
     insertTableToSparkSource(
