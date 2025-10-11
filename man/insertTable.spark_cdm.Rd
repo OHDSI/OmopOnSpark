@@ -4,7 +4,7 @@
 \alias{insertTable.spark_cdm}
 \title{Insert a table to a cdm object}
 \usage{
-\method{insertTable}{spark_cdm}(cdm, name, table, overwrite = TRUE, temporary = FALSE)
+\method{insertTable}{spark_cdm}(cdm, name, table, overwrite = TRUE, temporary = FALSE, ...)
 }
 \arguments{
 \item{cdm}{A cdm reference.}
@@ -17,7 +17,9 @@
 
 \item{temporary}{If TRUE, a spark dataframe will be written (that will
 persist to the end of the current session). If FALSE, a spark table will be
-written (which will persist beyond the end of the current session.)}
+written (which will persist beyond the end of the current session).}
+
+\item{...}{For compatability}
 }
 \value{
 The cdm reference with the table added.

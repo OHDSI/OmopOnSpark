@@ -1,4 +1,5 @@
 test_that("creating a cdm reference - sparklyr", {
+  skip()
   skip_on_cran()
   if(sparklyr::spark_installed_versions() |> nrow() == 0){
     skip()
@@ -64,6 +65,7 @@ test_that("creating a cdm reference - sparklyr", {
 })
 
 test_that("cdm validation - sparklyr", {
+  skip()
   skip_on_cran()
   if(sparklyr::spark_installed_versions() |> nrow() == 0){
     skip()

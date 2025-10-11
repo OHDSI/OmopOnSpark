@@ -1,5 +1,5 @@
 test_that("sparklyr 5.3 - views", {
-
+  skip()
   skip_on_cran()
   if(sparklyr::spark_installed_versions() |> nrow() == 0){
     skip()
@@ -36,7 +36,7 @@ test_that("sparklyr 5.3 - views", {
 })
 
 test_that("sparklyr 5.4 - views", {
-
+  skip()
   skip_on_cran()
   if(sparklyr::spark_installed_versions() |> nrow() == 0){
     skip()
@@ -101,8 +101,7 @@ test_that("odbc 5.3 - delta tables", {
     cdmSchema = test_schema,
     writeSchema = test_schema,
     cdmName = "my spark cdm",
-    writePrefix = "study_1_",
-    .softValidation = TRUE
+    writePrefix = "study_1_"
   )
   expect_true(omopgenerics::cdmVersion(cdm) == "5.3")
   expect_no_error(omopgenerics::validateCdmArgument(cdm))

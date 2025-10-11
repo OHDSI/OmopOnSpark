@@ -1,14 +1,29 @@
 Package: OmopOnSpark
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9000
-Authors@R: 
-    person("First", "Last", , "first.last@example.com", role = c("aut", "cre"),
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does.
+Title: Using a Common Data Model on Spark
+Version: 0.1
+Authors@R: c(
+    person("Edward", "Burn", , "edward.burn@ndorms.ox.ac.uk", 
+    role = c("aut", "cre"), comment = c(ORCID = "0000-0002-9286-1128")),
+    person("Martí", "Català", , "marti.catalasabate@ndorms.ox.ac.uk", 
+    role = c("aut"), comment = c(ORCID = "0000-0003-3308-9905")))
+Description: Use health data in the Observational Medical Outcomes Partnership 
+    Common Data Model format in Spark.
 License: Apache License (>= 2)
 Encoding: UTF-8
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.3.2
+Depends: 
+    R (>= 4.1.0)
+Imports: 
+    cli,
+    datasets,
+    DBI,
+    dbplyr,
+    dplyr,
+    glue,
+    omopgenerics (>= 1.3.1),
+    purrr,
+    rlang
 Suggests: 
     testthat (>= 3.0.0),
     omock,
@@ -18,21 +33,9 @@ Suggests:
     OmopSketch, 
     odbc,
     R6,
-    crayon
+    crayon,
+    sparklyr
 Config/testthat/edition: 3
 Config/testthat/parallel: false
-Imports: 
-    cli,
-    datasets,
-    DBI,
-    dbplyr,
-    dplyr,
-    glue,
-    omopgenerics (>= 1.2.0),
-    purrr,
-    rlang,
-    sparklyr
-Depends: 
-    R (>= 4.1.0)
 VignetteBuilder: knitr
 URL: https://oxford-pharmacoepi.github.io/OmopOnSpark/
