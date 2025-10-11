@@ -64,6 +64,6 @@ executeQuery <- function(con, query){
   if (con_type(con) == "odbc") {
     DatabaseConnector::dbExecute(con, query)
   } else {
-    executeQuery(con, query)
+    DBI::dbExecute(con, query)
   }
 }

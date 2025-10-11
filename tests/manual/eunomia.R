@@ -49,16 +49,16 @@ test_that("dbplyr - odbc", {
   skip_on_cran()
   skip_on_ci()
 
-  con <- DBI::dbConnect(
-    odbc::databricks(),
-    httpPath = Sys.getenv("DATABRICKS_HTTPPATH"),
-    useNativeQuery = FALSE
-  )
   # con <- DBI::dbConnect(
   #   odbc::databricks(),
   #   httpPath = Sys.getenv("DATABRICKS_HTTPPATH"),
   #   useNativeQuery = FALSE
   # )
+  con <- DBI::dbConnect(
+    odbc::databricks(),
+    httpPath = Sys.getenv("DATABRICKS_HTTPPATH"),
+    useNativeQuery = FALSE
+  )
 
  cdm <- cdmFromSpark(con, cdmSchema = "gibleed", writeSchema = "scratch")
  # IncidencePrevalence::benchmarkIncidencePrevalence(cdm = cdm)
