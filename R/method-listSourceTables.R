@@ -5,15 +5,9 @@ listSourceTables.spark_cdm <- function(cdm) {
 
 sparkListTables <- function(con, schema, prefix) {
   if(!is.null(schema)){
-  x <- DBI::dbGetQuery(con, glue::glue("SHOW TABLES IN {schema}")) |>
-    dplyr::as_tibble() |>
-    # dplyr::filter(!.data$isTemporary) |>
-    dplyr::pull("tableName")
+    x <- getExistingTables(con = con, schema = schema)
   } else {
-    x <- DBI::dbGetQuery(con, glue::glue("SHOW TABLES")) |>
-      dplyr::as_tibble() |>
-      # dplyr::filter(!.data$isTemporary) |>
-      dplyr::pull("tableName")
+    x <- getExistingTables(con = con, schema = NULL)
   }
 
   if (!is.null(prefix)) {

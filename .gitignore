@@ -61,3 +61,5 @@ inst/doc
 /Meta/
 vignettes/logs/log4j.spark.log
 .DS_Store
+c:/temp/jdbcDrivers/._.DS_Store
+/c:/temp

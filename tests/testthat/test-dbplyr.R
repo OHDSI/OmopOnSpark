@@ -127,7 +127,7 @@ test_that("dbplyr - odbc", {
 
   # create schema just for this test
   test_schema <- omopgenerics::uniqueTableName()
-  DBI::dbExecute(con, glue::glue("CREATE SCHEMA IF NOT EXISTS {test_schema}"))
+  executeQuery(con, glue::glue("CREATE SCHEMA IF NOT EXISTS {test_schema}"))
 
   src <- sparkSource(
     con = con,
@@ -244,7 +244,7 @@ test_that("dbplyr - odbc", {
                  dplyr::mutate(n = as.integer(n)))
 
   # now remove schema and all the tables inside
-  DBI::dbExecute(con, glue::glue("DROP SCHEMA IF EXISTS {test_schema} CASCADE"))
+  executeQuery(con, glue::glue("DROP SCHEMA IF EXISTS {test_schema} CASCADE"))
 
   DBI::dbDisconnect(con)
 

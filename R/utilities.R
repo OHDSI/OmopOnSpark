@@ -46,4 +46,24 @@ getWriteTableName <- function(writeSchema, prefix, name) {
   tbl_name
 }
 
+getExistingTables <- function(con, schema){
 
+if(is.null(schema)){
+dbTbls <-  DBI::dbGetQuery(con, glue::glue("SHOW TABLES")) |>
+  dplyr::as_tibble()
+} else {
+dbTbls <-  DBI::dbGetQuery(con, glue::glue("SHOW TABLES IN {schema}")) |>
+  dplyr::as_tibble()
+}
+colnames(dbTbls) <- tolower(colnames(dbTbls))
+dbTbls |>
+  dplyr::pull("tablename")
+}
+
+executeQuery <- function(con, query){
+  if (con_type(con) == "odbc") {
+    DatabaseConnector::dbExecute(con, query)
+  } else {
+    executeQuery(con, query)
+  }
+}

@@ -48,7 +48,7 @@ selectTables <- function(tables, name) {
 
 sparkDropTable <- function(con, schema, prefix, name) {
   tbl_name <- getWriteTableName(writeSchema = schema, prefix = prefix, name = name)
-  DBI::dbExecute(con, glue::glue("DROP TABLE IF EXISTS {tbl_name}"))
+  executeQuery(con, glue::glue("DROP TABLE IF EXISTS {tbl_name}"))
   invisible(TRUE)
 }
 
