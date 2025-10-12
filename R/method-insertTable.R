@@ -147,7 +147,7 @@ sparkInsertTable <- function(con, schema, prefix, name, value, append = FALSE) {
   # rm(spark_df)
   } else if (con_type(con) == "odbc") {
     DBI::dbWriteTable(conn = con,
-                      name = DBI::Id(schema, paste0(prefix, name)),
+                      name = getFullName(schema, prefix, name),
                       value = value |> dplyr::collect() |> dplyr::as_tibble(),
                       temporary = FALSE,
                       append = append,

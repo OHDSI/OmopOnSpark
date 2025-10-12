@@ -22,7 +22,6 @@ compute.spark_cdm <- function(x, name, temporary = FALSE, overwrite = TRUE, ...)
 
 
 computeSparkOdbcJdbc <- function(x, name, temporary, overwrite){
-
   # check source and name
   src <- attr(x, "tbl_source")
   # get attributes
@@ -31,6 +30,17 @@ computeSparkOdbcJdbc <- function(x, name, temporary, overwrite){
   prefix <- writePrefix(src)
   con <- getCon(src)
 
+  if(stringr::str_count(schema, pattern = "\\.") > 0){
+    workingCatalog <- gsub("\\..*", "", schema)
+    workingSchema <- gsub(".*\\.", "", schema)
+    table_path_parts <- list(
+        dbplyr::ident(workingCatalog),
+        dbplyr::sql("."),
+        dbplyr::ident(workingSchema))
+    } else {
+    table_path_parts <- list( dbplyr::ident(schema))
+  }
+
   if (identical(currentName, name)) {
     if(is.null(prefix)){
     intermediate_tbl <- omopgenerics::uniqueTableName()
@@ -38,24 +48,31 @@ computeSparkOdbcJdbc <- function(x, name, temporary, overwrite){
     intermediate_tbl <- omopgenerics::uniqueTableName(prefix = prefix)
     }
     intermediate_query_sql <- dbplyr::build_sql("CREATE TABLE ",
-                                   dbplyr::ident(schema),
+                                                !!!table_path_parts,
                                    dbplyr::sql("."),
                                    dbplyr::ident(intermediate_tbl),
                                    dbplyr::sql(" USING DELTA"),
                                    " AS ", dbplyr::sql_render(x),
                                    con = con)
     executeQuery(con, intermediate_query_sql)
-    x <- dplyr::tbl(con, DBI::Id(schema, intermediate_tbl))
+    x <- dplyr::tbl(con,
+                    getFullName(schema = schema,
+                                prefix = NULL,
+                                name = intermediate_tbl)
+                    )
   }
 
   if (isTRUE(overwrite)) {
     if (name %in% sparkListTables(con = con, schema = schema, prefix = prefix)) {
-      DBI::dbRemoveTable(con, name = DBI::Id(schema, paste0(prefix, name)))
+      DBI::dbRemoveTable(con,
+                         name = getFullName(schema = schema,
+                                            prefix = prefix,
+                                            name = name))
     }
   }
 
   query_sql <- dbplyr::build_sql("CREATE TABLE ",
-                                 dbplyr::ident(schema),
+                                 !!!table_path_parts,
                                  dbplyr::sql("."),
                                  dbplyr::ident(paste0(prefix, name)),
                                  dbplyr::sql(" USING DELTA"),
@@ -63,7 +80,10 @@ computeSparkOdbcJdbc <- function(x, name, temporary, overwrite){
                            con = con)
   executeQuery(con, query_sql)
 
-  dplyr::tbl(con, DBI::Id(schema, paste0(prefix, name)))
+  dplyr::tbl(con,
+             getFullName(schema = schema,
+                         prefix = prefix,
+                         name = name))
 
 }
 
