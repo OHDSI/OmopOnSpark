@@ -16,7 +16,7 @@ knitr::opts_chunk$set(
 # OmopOnSpark
 
 <!-- badges: start -->
-[![R-CMD-check](https://github.com/oxford-pharmacoepi/OmopOnSpark/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/oxford-pharmacoepi/OmopOnSpark/actions/workflows/R-CMD-check.yaml)
+[![R-CMD-check](https://github.com/OHDSI/OmopOnSpark/actions/workflows/R-CMD-check.yaml/badge.svg)](https://github.com/OHDSI/OmopOnSpark/actions/workflows/R-CMD-check.yaml)
 <!-- badges: end -->
 
 OmopOnSpark provides a Spark specific implementation of an OMOP CDM reference as defined by the omopgenerics R package. 
@@ -52,20 +52,20 @@ cdm <- cdmFromSpark(con,
 ```
 
 For this introduction we'll use a mock cdm where we have a small synthetic dataset in a local spark database.
-```{r}
+```{r, eval=FALSE}
 cdm <- mockSparkCdm(path = file.path(tempdir(), "temp_spark"))
 ```
 
 ## Cross platform support
 
 With our cdm reference created, we now a single object in R that represents our OMOP CDM data. 
-```{r}
+```{r, eval=FALSE}
 cdm
 ```
 
 This object contains references to each of our tables
 
-```{r}
+```{r, eval=FALSE}
 cdm$person |>
   dplyr::glimpse()
 
@@ -74,20 +74,20 @@ cdm$observation_period |>
 ```
 
 With this we can use familiar dplyr code . For example, we can quickly get a count of our person table.
-```{r}
+```{r, eval=FALSE}
 cdm$person |> 
   tally()
 ```
 
 Behind the scenes, the dbplyr R package is translating this to SQL.
-```{r}
+```{r, eval=FALSE}
 cdm$person |> 
   tally() |> 
   show_query()
 ```
 
 We can also make use of various existing packages that work with a cdm reference using this approach. For example, we can extract a summary of missing data in our condition occurrence table using the OmopSketch package.
-```{r}
+```{r, eval=FALSE}
 library(OmopSketch)
 library(flextable)
 
@@ -99,7 +99,7 @@ tableOmopSnapshot(snap, type = "tibble")
 
 As well as making use of packages that provide cross-platform functionality with the cdm reference such as OmopSketch, because OmopOnSpark is built on top of the sparklyr package we can also make use of native spark queries. For example we can compute summary statistics on one of our cdm tables using spark functions.
 
-```{r}
+```{r, eval=FALSE}
 cdm$person |>
   sdf_describe(cols = c(
     "gender_concept_id",
@@ -114,6 +114,6 @@ With this we are hopefully achieving the best of both worlds. On the one hand we
 # Disconnecting from your spark connection 
 
 We can disconnect from our spark connection like so
-```{r}
+```{r, eval=FALSE}d
 cdmDisconnect(cdm)
 ```

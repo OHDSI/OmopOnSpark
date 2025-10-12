@@ -12,6 +12,13 @@ sparkSource <- function(con, cdmSchema, writeSchema, writePrefix = NULL) {
 
 newSparkSource <- function(con, cdmSchema, writeSchema, writePrefix) {
   tempPrefix <- paste0("temp_", paste0(sample(letters, 5), collapse = ""), "_")
+  sourceName <- dplyr::case_when(
+    con_type(con) == "odbc" ~ "ODBC",
+    con_type(con)  == "jdbc" ~ "DatabaseConnector",
+    con_type(con) == "sparlyr" ~ "Sparklyr",
+    .default = "spark"
+  )
+
   structure(
     .Data = list(),
     con = con,
@@ -20,6 +27,6 @@ newSparkSource <- function(con, cdmSchema, writeSchema, writePrefix) {
     write_prefix = writePrefix,
     class = "spark_cdm"
   ) |>
-    omopgenerics::newCdmSource(sourceType = "sparklyr")
+    omopgenerics::newCdmSource(sourceType = sourceName)
 }
 

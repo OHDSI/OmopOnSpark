@@ -11,3 +11,6 @@
 ^spark-warehouse$
 ^doc$
 ^Meta$
+^c:$
+^cran-comments\.md$
+^CRAN-SUBMISSION$

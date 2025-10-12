@@ -6,7 +6,9 @@ con_type <- function(con){
     "sparklyr"
   } else if("odbc.version" %in% names(DBI::dbGetInfo(con) |> unlist())){
     "odbc"
-  } else {
+  } else if(!is.null(attr(con, "jConnection"))){
+      "jdbc"
+    } else {
     cli::cli_abort("Unkown connection type")
   }
 }
@@ -14,6 +16,8 @@ con_type <- function(con){
 validateConnection <- function(con, call = parent.frame()) {
   if(con_type(con) == "odbc"){
     validateOdbcConnection(con)
+  } else if(con_type(con) == "jdbc"){
+    validateJdbcConnection(con)
   } else {
     validateSparklyrConnection(con)
   }
@@ -25,6 +29,10 @@ validateOdbcConnection <- function(con){
     cli::cli_abort("Native query via ODBC is not currently supported.")
   }
 }
+
+validateJdbcConnection <- function(con){
+}
+
 # checks if odbc connection has been set to use natice queries (TRUE) or not (FALSE)
 native_odbc_con <- function(con){
   tryCatch({

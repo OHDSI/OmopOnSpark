@@ -4,8 +4,8 @@ folder <- file.path(tempdir(), "temp_eunomia")
 working_config <- sparklyr::spark_config()
 working_config$spark.sql.warehouse.dir <- folder
 con <- sparklyr::spark_connect(master = "local", config = working_config)
-DBI::dbExecute(con, glue::glue("CREATE SCHEMA IF NOT EXISTS omop"))
-DBI::dbExecute(con, glue::glue("CREATE SCHEMA IF NOT EXISTS results"))
+executeQuery(con, glue::glue("CREATE SCHEMA IF NOT EXISTS omop"))
+executeQuery(con, glue::glue("CREATE SCHEMA IF NOT EXISTS results"))
 src <- sparkSource(con = con,cdmSchema = "omop", writeSchema = "results")
 
 con_eunomia <- DBI::dbConnect(duckdb::duckdb(), CDMConnector::eunomiaDir())
@@ -44,3 +44,26 @@ cdmDisconnect(cdm_eunomia_spark)
 
 })
 
+test_that("dbplyr - odbc", {
+
+  skip_on_cran()
+  skip_on_ci()
+
+  # con <- DBI::dbConnect(
+  #   odbc::databricks(),
+  #   httpPath = Sys.getenv("DATABRICKS_HTTPPATH"),
+  #   useNativeQuery = FALSE
+  # )
+  con <- DBI::dbConnect(
+    odbc::databricks(),
+    httpPath = Sys.getenv("DATABRICKS_HTTPPATH"),
+    useNativeQuery = FALSE
+  )
+
+ cdm <- cdmFromSpark(con, cdmSchema = "gibleed", writeSchema = "scratch")
+ # IncidencePrevalence::benchmarkIncidencePrevalence(cdm = cdm)
+ CohortConstructor::benchmarkCohortConstructor(cdm = cdm, runCIRCE = FALSE)
+
+ cdmDisconnect(cdm)
+
+})

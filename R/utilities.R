@@ -26,7 +26,6 @@ getCon <- function(src) {
     attr(src, "con")
   }
 }
-
 getWriteTableName <- function(writeSchema, prefix, name) {
   if(!is.null(writeSchema)){
   if (is.null(prefix)) {
@@ -45,5 +44,35 @@ getWriteTableName <- function(writeSchema, prefix, name) {
   }
   tbl_name
 }
+getExistingTables <- function(con, schema){
 
-
+if(is.null(schema)){
+dbTbls <-  DBI::dbGetQuery(con, glue::glue("SHOW TABLES")) |>
+  dplyr::as_tibble()
+} else {
+dbTbls <-  DBI::dbGetQuery(con, glue::glue("SHOW TABLES IN {schema}")) |>
+  dplyr::as_tibble()
+}
+colnames(dbTbls) <- tolower(colnames(dbTbls))
+dbTbls |>
+  dplyr::pull("tablename")
+}
+executeQuery <- function(con, query){
+  if (con_type(con) == "jdbc") {
+    DatabaseConnector::dbExecute(con, query)
+  } else {
+    DBI::dbExecute(con, query)
+  }
+}
+getFullName <- function(schema, prefix, name){
+  if(stringr::str_count(schema, pattern = "\\.") > 0){
+    # includes catalog, so will split out
+    workingCatalog <- gsub("\\..*", "", schema)
+    workingSchema <- gsub(".*\\.", "", schema)
+    workingName <- paste0(prefix, name)
+    fullName <- DBI::Id(workingCatalog, workingSchema, workingName)
+  } else {
+    fullName <- DBI::Id(schema, paste0(prefix, name))
+  }
+  fullName
+}

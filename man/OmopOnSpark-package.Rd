@@ -11,7 +11,7 @@ Use health data in the Observational Medical Outcomes Partnership Common Data Mo
 \seealso{
 Useful links:
 \itemize{
-  \item \url{https://oxford-pharmacoepi.github.io/OmopOnSpark/}
+  \item \url{https://OHDSI.github.io/OmopOnSpark/}
 }
 
 }

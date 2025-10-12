@@ -145,13 +145,20 @@ sparkInsertTable <- function(con, schema, prefix, name, value, append = FALSE) {
   # # drop spark dataframe and rm to remove from rstudio pane
   # sparkDropDataFrame(con = con, name = tmp_tbl)
   # rm(spark_df)
-  } else {
+  } else if (con_type(con) == "odbc") {
     DBI::dbWriteTable(conn = con,
-                      name = DBI::Id(schema, paste0(prefix, name)),
+                      name = getFullName(schema, prefix, name),
                       value = value |> dplyr::collect() |> dplyr::as_tibble(),
                       temporary = FALSE,
                       append = append,
                       batch_rows = 100000)
+  } else {
+    DatabaseConnector::insertTable(
+      connection = con,
+      tableName = paste0(prefix, name),
+      databaseSchema = schema,
+      data = value |> dplyr::collect() |> dplyr::as_tibble()
+    )
   }
 
   return(invisible(NULL))

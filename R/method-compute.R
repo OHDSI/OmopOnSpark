@@ -15,14 +15,13 @@ compute.spark_cdm <- function(x, name, temporary = FALSE, overwrite = TRUE, ...)
   if(con_type(con) == "sparklyr"){
   computeSparklyr(x = x, name = name, temporary = temporary, overwrite = overwrite)
   } else {
-  computeSparkOdbc(x = x, name = name, temporary = temporary, overwrite = overwrite)
+  computeSparkOdbcJdbc(x = x, name = name, temporary = temporary, overwrite = overwrite)
   }
 
 }
 
 
-computeSparkOdbc <- function(x, name, temporary, overwrite){
-
+computeSparkOdbcJdbc <- function(x, name, temporary, overwrite){
   # check source and name
   src <- attr(x, "tbl_source")
   # get attributes
@@ -31,6 +30,17 @@ computeSparkOdbc <- function(x, name, temporary, overwrite){
   prefix <- writePrefix(src)
   con <- getCon(src)
 
+  if(stringr::str_count(schema, pattern = "\\.") > 0){
+    workingCatalog <- gsub("\\..*", "", schema)
+    workingSchema <- gsub(".*\\.", "", schema)
+    table_path_parts <- list(
+        dbplyr::ident(workingCatalog),
+        dbplyr::sql("."),
+        dbplyr::ident(workingSchema))
+    } else {
+    table_path_parts <- list( dbplyr::ident(schema))
+  }
+
   if (identical(currentName, name)) {
     if(is.null(prefix)){
     intermediate_tbl <- omopgenerics::uniqueTableName()
@@ -38,51 +48,49 @@ computeSparkOdbc <- function(x, name, temporary, overwrite){
     intermediate_tbl <- omopgenerics::uniqueTableName(prefix = prefix)
     }
     intermediate_query_sql <- dbplyr::build_sql("CREATE TABLE ",
-                                   dbplyr::ident(schema),
+                                                !!!table_path_parts,
                                    dbplyr::sql("."),
                                    dbplyr::ident(intermediate_tbl),
                                    dbplyr::sql(" USING DELTA"),
                                    " AS ", dbplyr::sql_render(x),
                                    con = con)
-    DBI::dbExecute(con, intermediate_query_sql)
-    x <- dplyr::tbl(con, DBI::Id(schema, intermediate_tbl))
+    executeQuery(con, intermediate_query_sql)
+    x <- dplyr::tbl(con,
+                    getFullName(schema = schema,
+                                prefix = NULL,
+                                name = intermediate_tbl)
+                    )
   }
 
   if (isTRUE(overwrite)) {
     if (name %in% sparkListTables(con = con, schema = schema, prefix = prefix)) {
-      DBI::dbRemoveTable(con, name = DBI::Id(schema, paste0(prefix, name)))
+      DBI::dbRemoveTable(con,
+                         name = getFullName(schema = schema,
+                                            prefix = prefix,
+                                            name = name))
     }
   }
 
   query_sql <- dbplyr::build_sql("CREATE TABLE ",
-                                 dbplyr::ident(schema),
+                                 !!!table_path_parts,
                                  dbplyr::sql("."),
                                  dbplyr::ident(paste0(prefix, name)),
                                  dbplyr::sql(" USING DELTA"),
                            " AS ", dbplyr::sql_render(x),
                            con = con)
-  DBI::dbExecute(con, query_sql)
-  # cache_sql <- dbplyr::build_sql("CACHE TABLE ",
-  #                                dbplyr::ident(schema),
-  #                                dbplyr::sql("."),
-  #                                dbplyr::ident(paste0(prefix, name)),
-  #                                con = con)
-  # DBI::dbExecute(con, cache_sql)
-  dplyr::tbl(con, DBI::Id(schema, paste0(prefix, name)))
+  executeQuery(con, query_sql)
 
-  # query_sql <- dbplyr::build_sql("CREATE OR REPLACE TEMP VIEW ",
-  #                                dbplyr::ident(paste0(prefix, name)),
-  #                                " AS ", dbplyr::sql_render(x),
-  #                                con = con)
-  #
-  # DBI::dbExecute(con, query_sql)
-  # dplyr::tbl(con, Id(paste0(prefix, name)))
+  dplyr::tbl(con,
+             getFullName(schema = schema,
+                         prefix = prefix,
+                         name = name))
 
 }
+
 computeSparklyr <- function(x, name, temporary, overwrite){
-  # check source and name
+
   src <- attr(x, "tbl_source")
-  # get attributes
+
   currentName <- attr(x, "tbl_name")
   schema <- writeSchema(src)
   prefix <- writePrefix(src)
@@ -100,32 +108,20 @@ computeSparklyr <- function(x, name, temporary, overwrite){
     ))
   }
 
-   # if (isTRUE(temporary)) {
     temp_name <- omopgenerics::uniqueTableName(prefix = "tmp_")
     sparklyrComputeTable(con = con, query = x, schema = schema, prefix = prefix, name = temp_name)
     sparkReadTable(con = con, schema = schema, prefix = prefix, name = temp_name) |>
       omopgenerics::newCdmTable(src = src, name = NA_character_)
-  # } else {
-  #   sparklyrComputeTable(con= con, query = x, schema = schema, prefix = prefix, name = name)
-  #   sparkReadTable(con = con, schema = schema, prefix = prefix, name = name) |>
-  #     omopgenerics::newCdmTable(src = src, name = name)
-  # }
+
 }
+
 sparklyrComputeTable <- function(con, query, schema, prefix, name) {
  tblName <- getWriteTableName(writeSchema = schema, prefix = prefix, name = name)
  query_sql <- dbplyr::build_sql("CREATE OR REPLACE TEMP VIEW ",
                                 dbplyr::ident(paste0(prefix, name)),
                                 " AS ", dbplyr::sql_render(query),
                                 con = con)
- DBI::dbExecute(con, query_sql)
+ executeQuery(con, query_sql)
 
 }
 
-# Below not working on databricks
-# sparkComputeTemporaryTable <- function(con, query) {
-#   sparklyr::sdf_copy_to(con,
-#     query,
-#     name = omopgenerics::uniqueTableName(),
-#     overwrite = TRUE
-#   )
-# }
