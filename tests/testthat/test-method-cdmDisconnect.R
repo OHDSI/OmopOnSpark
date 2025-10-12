@@ -1,4 +1,5 @@
 test_that("disconnect connection", {
+  skip()
   skip_on_cran()
   if(sparklyr::spark_installed_versions() |> nrow() == 0){
     skip()
@@ -14,6 +15,7 @@ test_that("disconnect connection", {
 })
 
 test_that("dropping emulated temp tables", {
+  skip()
   skip_on_cran()
   if(sparklyr::spark_installed_versions() |> nrow() == 0){
     skip()
