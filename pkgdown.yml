@@ -5,7 +5,7 @@ articles:
   a01_getting_started: a01_getting_started.html
   a02_Creating_the_OMOP_CDM_on_Spark: a02_Creating_the_OMOP_CDM_on_Spark.html
   a03_creating_a_cdm_reference: a03_creating_a_cdm_reference.html
-last_built: 2025-10-12T16:37Z
+last_built: 2025-10-13T13:48Z
 urls:
   reference: https://ohdsi.github.io/OmopOnSpark/reference
   article: https://ohdsi.github.io/OmopOnSpark/articles
