@@ -131,7 +131,7 @@ getTestCon <- function(test_db, folder = NULL){
 createEmptyTestSchema <- function(con, test_schema){
   if(!is.null(test_schema)){
     cli::cli_inform("Creating schema {test_schema}")
-    executeQuery(sc, glue::glue("CREATE SCHEMA IF NOT EXISTS {test_schema}"))
+    executeQuery(con, glue::glue("CREATE SCHEMA IF NOT EXISTS {test_schema}"))
   }
 }
 removeTestSchema <- function(con, test_schema){
