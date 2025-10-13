@@ -85,10 +85,11 @@ insertTableToSparkCdmReference <- function(cdm,
                                            table,
                                            overwrite,
                                            temporary) {
-  # get attributes
+
   schema <- writeSchema(cdm)
   prefix <- writePrefix(cdm)
   con <- getCon(cdm)
+  cdmPrefix(cdm)
 
   # check overwrite
   if (overwrite) {
