@@ -1,3 +1,3 @@
-folder <- file.path(tempdir(), "temp_spark")
-config <- sparklyr::spark_config()
-config$spark.sql.warehouse.dir <- folder
+dbToTest <- Sys.getenv("DB_TO_TEST")
+# dbToTest <- c("odbc", "jdbc", "sparklyr")
+dbToTest <- c("sparklyr")

@@ -67,6 +67,7 @@ cdmFromSpark <- function(con,
     con = con,
     cdmSchema = cdmSchema,
     writeSchema = writeSchema,
+    cdmPrefix = cdmPrefix,
     writePrefix = writePrefix
   )
 

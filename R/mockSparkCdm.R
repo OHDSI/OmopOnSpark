@@ -15,9 +15,24 @@ mockSparkCdm <- function(path) {
   folder <- path
   working_config <- sparklyr::spark_config()
   working_config$spark.sql.warehouse.dir <- folder
+  list.files(path)
+
+  sparklyr::spark_connect(
+    master = "local",
+    config = working_config,
+    spark_home = Sys.getenv("SPARK_HOME")
+  )
+  working_config <- sparklyr::spark_config()
+  working_config$spark.sql.warehouse.dir <- folder
+  java_home_path <- Sys.getenv("JAVA_HOME")
+  if(!is.null(java_home_path)){
+    working_config$`sparklyr.shell.env` <- paste0("JAVA_HOME=", java_home_path)
+  }
+  # browser()
   sc <- sparklyr::spark_connect(
     master = "local",
-    config = working_config
+    config = working_config,
+    spark_home = Sys.getenv("SPARK_HOME")
   )
 
   src <- sparkSource(

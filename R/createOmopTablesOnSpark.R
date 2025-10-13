@@ -69,7 +69,11 @@ createOmopTablesOnSpark <- function(con,
 # helpers
 create_sql <- function(con, overwrite) {
   if(con_type(con) == "sparklyr"){
-    "CREATE OR REPLACE TEMP VIEW"
+    if (overwrite) {
+      "CREATE OR REPLACE TEMP VIEW"
+    } else {
+      "CREATE TEMP VIEW"
+    }
   } else {
   if (overwrite) {
     "CREATE OR REPLACE TABLE"
